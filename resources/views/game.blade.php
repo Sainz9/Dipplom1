@@ -59,57 +59,34 @@
             
             <div class="lg:col-span-2 space-y-12">
 
-           <section>
-    <h2 class="text-2xl font-bold mb-6 border-l-4 border-brand pl-4">JAWHLAN BAYAR</h2>
-    <div class="aspect-video rounded-xl overflow-hidden shadow-2xl border border-white/10">
-        <iframe 
-            src="{{ $game['trailer'] }}?rel=0" 
-            class="w-full h-full" 
-            title="YouTube video player" 
-            frameborder="0" 
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-            allowfullscreen>
-        </iframe>
-    </div>
-</section>
                 <section>
-                    <h2 class="text-2xl font-bold mb-4 border-l-4 border-brand pl-4">Тоглоом тайлбар</h2>
+                    <h2 class="text-2xl font-bold mb-6 border-l-4 border-brand pl-4">Official Trailer</h2>
+                    <div class="aspect-video rounded-xl overflow-hidden shadow-2xl border border-white/10">
+                        <iframe 
+                            src="{{ $game['trailer'] }}?rel=0" 
+                            class="w-full h-full" 
+                            title="YouTube video player" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                </section>
+                
+                <section>
+                    <h2 class="text-2xl font-bold mb-4 border-l-4 border-brand pl-4">About This Game</h2>
                     <div class="text-gray-300 leading-relaxed space-y-4 text-lg">
                         <p class="font-medium text-white">{{ $game['description'] }}</p>
                         <p class="text-gray-400 text-sm leading-7">{{ $game['long_description'] }}</p>
                     </div>
                 </section>
-
-                <section class="bg-surface p-6 rounded-xl border border-white/5">
-                    <h2 class="text-xl font-bold mb-6 text-brand">System Requirements</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm">
-                        <div>
-                            <h3 class="text-white font-bold mb-3 uppercase tracking-wider border-b border-white/10 pb-2">Minimum</h3>
-                            <ul class="space-y-2 text-gray-400">
-                                <li class="flex justify-between"><span class="text-gray-500">OS:</span> <span>Windows 10 (64-bit)</span></li>
-                                <li class="flex justify-between"><span class="text-gray-500">Processor:</span> <span>Intel Core i5 / AMD Ryzen 3</span></li>
-                                <li class="flex justify-between"><span class="text-gray-500">Memory:</span> <span>8 GB RAM</span></li>
-                                <li class="flex justify-between"><span class="text-gray-500">Graphics:</span> <span>NVIDIA GTX 1060</span></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h3 class="text-white font-bold mb-3 uppercase tracking-wider border-b border-white/10 pb-2">Recommended</h3>
-                            <ul class="space-y-2 text-gray-400">
-                                <li class="flex justify-between"><span class="text-gray-500">OS:</span> <span>Windows 11 (64-bit)</span></li>
-                                <li class="flex justify-between"><span class="text-gray-500">Processor:</span> <span>Intel Core i7 / AMD Ryzen 7</span></li>
-                                <li class="flex justify-between"><span class="text-gray-500">Memory:</span> <span>16 GB RAM</span></li>
-                                <li class="flex justify-between"><span class="text-gray-500">Graphics:</span> <span>NVIDIA RTX 3060</span></li>
-                            </ul>
-                        </div>
-                    </div>
-                </section>
-            </div>
+                
+                </div>
 
             <div class="relative">
                 <div class="sticky top-24 bg-surface p-6 rounded-xl border border-white/10 shadow-2xl">
                     <div class="flex justify-center mb-6 relative group">
                         <img src="{{ $game['img'] }}" class="rounded-lg shadow-lg w-full max-w-[240px] transition-transform transform group-hover:scale-105">
-                        
                         @if($game['discount'])
                             <div class="absolute top-2 right-10 bg-brand text-black font-bold px-2 py-1 rounded shadow-md animate-pulse">
                                 {{ $game['discount'] }}
@@ -119,19 +96,20 @@
                     
                     <div class="flex items-center justify-between mb-2">
                         <span class="bg-gray-700 text-xs px-2 py-1 rounded text-gray-300">Base Game</span>
+                        <span class="text-xs text-gray-400">ID: {{ $id }}</span>
                     </div>
 
                     <h2 class="text-2xl font-bold mb-4 text-center">{{ $game['title'] }}</h2>
                     
                     <div class="border-t border-b border-white/10 py-6 mb-6">
                         <div class="flex items-center justify-between mb-1">
-                            <span class="text-gray-400 text-sm">Үнэ</span>
+                            <span class="text-gray-400 text-sm">Price</span>
                             <div class="flex flex-col items-end">
                                 @if($game['sale_price'])
                                     <span class="text-sm text-gray-500 line-through">${{ $game['price'] }}</span>
                                     <span class="text-3xl font-black text-brand">${{ $game['sale_price'] }}</span>
                                 @elseif($game['price'] == 0)
-                                    <span class="text-2xl font-black text-brand">₮213353.7</span>
+                                    <span class="text-2xl font-black text-brand">COMING SOON</span>
                                 @else
                                     <span class="text-3xl font-black text-white">${{ $game['price'] }}</span>
                                 @endif
@@ -145,13 +123,13 @@
                         </button>
                     @else
                         <button class="w-full bg-white text-black font-black py-4 rounded hover:bg-gray-200 transition-colors uppercase tracking-wider mb-3">
-                            Урьдчилж захиалах
+                            Pre-Order
                         </button>
                     @endif
                     
                     <button class="w-full border border-white/20 text-white font-bold py-3 rounded hover:bg-white/5 transition-colors text-sm flex items-center justify-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                        Банк холбох
+                        Add to Cart
                     </button>
 
                     <div class="mt-6 text-xs text-gray-500 space-y-2 pt-4 border-t border-white/10">
@@ -162,16 +140,45 @@
                 </div>
             </div>
 
+            <div class="lg:col-span-3">
+                <section class="bg-surface p-6 rounded-xl border border-white/5 mt-8">
+                    <h2 class="text-xl font-bold mb-6 text-brand flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" /></svg>
+                        System Requirements
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm">
+                        <div>
+                            <h3 class="text-white font-bold mb-3 uppercase tracking-wider border-b border-white/10 pb-2">Minimum</h3>
+                            <ul class="space-y-3 text-gray-400">
+                                <li class="flex justify-between"><span class="text-gray-500">OS:</span> <span>Windows 10 (64-bit)</span></li>
+                                <li class="flex justify-between"><span class="text-gray-500">Processor:</span> <span>Intel Core i5-8400 / AMD Ryzen 3 3300X</span></li>
+                                <li class="flex justify-between"><span class="text-gray-500">Memory:</span> <span>12 GB RAM</span></li>
+                                <li class="flex justify-between"><span class="text-gray-500">Graphics:</span> <span>NVIDIA GTX 1060 3GB</span></li>
+                                <li class="flex justify-between"><span class="text-gray-500">Storage:</span> <span>70 GB available space</span></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-white font-bold mb-3 uppercase tracking-wider border-b border-white/10 pb-2">Recommended</h3>
+                            <ul class="space-y-3 text-gray-400">
+                                <li class="flex justify-between"><span class="text-gray-500">OS:</span> <span>Windows 11 (64-bit)</span></li>
+                                <li class="flex justify-between"><span class="text-gray-500">Processor:</span> <span>Intel Core i7-9700K / AMD Ryzen 7 3700X</span></li>
+                                <li class="flex justify-between"><span class="text-gray-500">Memory:</span> <span>16 GB RAM</span></li>
+                                <li class="flex justify-between"><span class="text-gray-500">Graphics:</span> <span>NVIDIA RTX 3060 / AMD RX 6700 XT</span></li>
+                                <li class="flex justify-between"><span class="text-gray-500">Storage:</span> <span>70 GB SSD</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
         </div>
     </main>
 
     <footer class="bg-surface border-t border-white/5 py-12 mt-12">
-        <div class="max-w-7xl mx-auto px-4 text-center text-gray-500">
+        <div class="max-w-7xl mx-auto px-4 text-center text-gray-500 text-sm">
             &copy; 2025 PlayVision. All rights reserved.
         </div>
     </footer>
 
 </body>
-</body>
-</html>
 </html>

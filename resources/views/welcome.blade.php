@@ -52,7 +52,6 @@
                     <a href="#" class="text-sm font-bold hover:text-brand transition-colors">GAMES</a>
                     <a href="#" class="text-sm font-bold hover:text-brand transition-colors">NEWS</a>
                     <a href="#" class="text-sm font-bold hover:text-brand transition-colors">STORE</a>
-                    <a href="#" class="text-sm font-bold hover:text-brand transition-colors">SUPPORT</a>
 
                     <div class="relative group z-50">
                         <input type="text" id="desktopSearchInput" placeholder="Search games..." class="bg-white/10 text-sm rounded-full py-2 px-4 pl-10 w-64 focus:outline-none focus:ring-2 focus:ring-brand focus:bg-black transition-all" autocomplete="off">
@@ -63,6 +62,30 @@
                             <div id="desktopNoResults" class="hidden p-4 text-center text-gray-400 text-sm">No games found.</div>
                         </div>
                     </div>
+
+                    <div class="relative group z-50">
+                        <button id="cartBtn" class="relative p-2 hover:text-brand transition-colors" onclick="toggleCart()">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                            <span id="cartCount" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center hidden">0</span>
+                        </button>
+
+                        <div id="cartDropdown" class="absolute right-0 mt-4 w-80 bg-[#1a1a1d] border border-white/10 rounded-xl shadow-2xl hidden transform origin-top-right transition-all">
+                            <div class="p-4 border-b border-white/10 font-bold text-sm">Shopping Cart</div>
+                            <div id="cartItemsContainer" class="max-h-64 overflow-y-auto custom-scroll p-2 space-y-2">
+                                <div class="text-center text-gray-500 text-xs py-4">Your cart is empty.</div>
+                            </div>
+                            <div class="p-4 border-t border-white/10 bg-black/20">
+                                <div class="flex justify-between items-center mb-4">
+                                    <span class="text-gray-400 text-sm">Total:</span>
+                                    <span id="cartTotal" class="text-brand font-bold text-lg">$0.00</span>
+                                </div>
+                                <button class="w-full bg-brand text-black font-bold py-2 rounded text-sm hover:bg-white transition-colors">CHECKOUT</button>
+                            </div>
+                        </div>
+                    </div>
+
                     <a href="{{ route('login') }}" class="hi font-bold text-sm">Нэвтрэх</a>
                 </div>
 
@@ -87,12 +110,12 @@
             </div>
 
             <div class="p-6 border-b border-white/5">
-                <div class="relative group">
-                    <input type="text" id="mobileSearchInput" placeholder="Search games..." class="w-full bg-white/10 text-sm rounded-full py-3 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-brand focus:bg-black transition-all text-white" autocomplete="off">
-                    <svg class="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <div class="relative">
+                    <input type="text" id="mobileSearchInput" placeholder="Search games..." class="w-full bg-white/10 text-white text-sm rounded-lg py-3 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-brand focus:bg-black transition-all placeholder-gray-500" autocomplete="off">
+                    <svg class="w-5 h-5 text-gray-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     
-                    <div id="mobileSearchResults" class="absolute top-full left-0 w-full mt-2 bg-surfaceHighlight border border-white/10 rounded-xl shadow-2xl overflow-hidden hidden z-50">
-                        <div id="mobileResultsContainer" class="max-h-60 overflow-y-auto custom-scroll"></div>
+                    <div id="mobileSearchResults" class="absolute top-full left-0 w-full mt-2 bg-[#1f1f23] border border-white/10 rounded-xl shadow-2xl overflow-hidden hidden z-50 max-h-60 overflow-y-auto custom-scroll">
+                        <div id="mobileResultsContainer"></div>
                         <div id="mobileNoResults" class="hidden p-4 text-center text-gray-400 text-sm">No games found.</div>
                     </div>
                 </div>
@@ -101,12 +124,11 @@
             <nav class="flex-1 overflow-y-auto py-6 px-6 flex flex-col gap-6">
                 <a href="#" class="text-2xl font-bold text-white hover:text-brand transition-colors">GAMES</a>
                 <a href="#" class="text-2xl font-bold text-white hover:text-brand transition-colors">NEWS</a>
-                <a href="#" class="text-2xl font-bold text-white hover:text-brand transition-colors">STORE</a>
-                <a href="#" class="text-2xl font-bold text-white hover:text-brand transition-colors">SUPPORT</a>
+                <a href="#" class="text-2xl font-bold text-white hover:text-brand transition-colors">STORE</a> 
             </nav>
 
             <div class="p-6 border-t border-white/5 bg-black/20">
-                <button class="w-full bg-brand text-black font-bold py-3 rounded uppercase tracking-wide hover:bg-white transition-colors">Sign In</button>
+                <a href="{{ route('login') }}">Sign In</a>
             </div>
         </div>
     </div>
@@ -136,6 +158,9 @@
                         </div>
                     </div>
                 </div>
+                <div class="swiper-pagination"></div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
             </div>
         </section>
 
@@ -152,8 +177,7 @@
                     </div>
                 </div>
                 <div class="swiper gameSwiper !overflow-visible">
-                    <div class="swiper-wrapper" id="game-slider-wrapper">
-                        </div>
+                    <div class="swiper-wrapper" id="game-slider-wrapper"></div>
                 </div>
             </div>
         </section>
@@ -167,65 +191,130 @@
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            
-            // ---------------------------------------------------------
-            // 1. DATA FROM PHP
-            // ---------------------------------------------------------
-            const games = @json($games); 
+        // Cart Logic
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-            // ---------------------------------------------------------
-            // 2. RENDER SLIDER (LINKED)
-            // ---------------------------------------------------------
+        window.addToCart = function(e, id) {
+            e.stopPropagation();
+            e.preventDefault();
+            const game = window.allGames.find(g => g.id === id);
+            if(game) {
+                const existingItem = cart.find(item => item.id === id);
+                if(existingItem) {
+                    alert("Item already in cart!");
+                } else {
+                    cart.push(game);
+                    saveCart();
+                    updateCartUI();
+                    const dropdown = document.getElementById('cartDropdown');
+                    dropdown.classList.remove('hidden');
+                }
+            }
+        }
+
+        window.removeFromCart = function(id) {
+            cart = cart.filter(item => item.id !== id);
+            saveCart();
+            updateCartUI();
+        }
+
+        function saveCart() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+
+        function updateCartUI() {
+            const cartCount = document.getElementById('cartCount');
+            const cartItemsContainer = document.getElementById('cartItemsContainer');
+            const cartTotal = document.getElementById('cartTotal');
+            
+            cartCount.innerText = cart.length;
+            if(cart.length > 0) cartCount.classList.remove('hidden');
+            else cartCount.classList.add('hidden');
+
+            if(cart.length === 0) {
+                cartItemsContainer.innerHTML = '<div class="text-center text-gray-500 text-xs py-4">Your cart is empty.</div>';
+                cartTotal.innerText = "$0.00";
+                return;
+            }
+
+            let html = '';
+            let total = 0;
+            cart.forEach(item => {
+                let finalPrice = item.sale_price ? item.sale_price : item.price;
+                total += parseFloat(finalPrice);
+                html += `
+                    <div class="flex gap-3 items-center bg-white/5 p-2 rounded group">
+                        <img src="${item.img}" class="w-10 h-14 object-cover rounded">
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-white text-sm font-bold truncate">${item.title}</h4>
+                            <span class="text-brand text-xs font-bold">$${finalPrice}</span>
+                        </div>
+                        <button onclick="removeFromCart(${item.id})" class="text-gray-500 hover:text-red-500 p-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+                `;
+            });
+            cartItemsContainer.innerHTML = html;
+            cartTotal.innerText = "$" + total.toFixed(2);
+        }
+
+        window.toggleCart = function() {
+            const dropdown = document.getElementById('cartDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            window.allGames = @json($games); 
+            updateCartUI();
+
+            // Render Slider
             const sliderWrapper = document.getElementById('game-slider-wrapper');
-            games.forEach(game => {
+            window.allGames.forEach(game => {
                 let priceHtml = '';
                 if (game.tag === "COMING SOON" || game.price === 0) {
                     priceHtml = `<span class="text-white font-bold">Pre-Order</span>`;
                 } else if (game.sale_price) {
-                    priceHtml = `
-                        <div class="flex flex-col text-right">
-                            <span class="text-xs text-gray-500 line-through font-medium">$${game.price}</span>
-                            <span class="text-white font-bold text-lg">$${game.sale_price}</span>
-                        </div>`;
+                    priceHtml = `<div class="flex flex-col text-right"><span class="text-xs text-gray-500 line-through font-medium">$${game.price}</span><span class="text-white font-bold text-lg">$${game.sale_price}</span></div>`;
                 } else {
                     priceHtml = `<span class="text-white font-bold text-lg">$${game.price}</span>`;
                 }
 
                 let badgeHtml = '';
-                if(game.discount) badgeHtml = `<div class="absolute top-3 right-3 bg-brand text-black text-xs font-black px-2 py-1 rounded shadow-lg">${game.discount}</div>`;
-                else if(game.tag) badgeHtml = `<div class="absolute top-3 right-3 bg-white text-black text-xs font-black px-2 py-1 rounded shadow-lg">${game.tag}</div>`;
+                if(game.discount) badgeHtml = `<div class="absolute top-3 right-3 bg-brand text-black text-xs font-black px-2 py-1 rounded shadow-lg z-10">${game.discount}</div>`;
+                else if(game.tag) badgeHtml = `<div class="absolute top-3 right-3 bg-white text-black text-xs font-black px-2 py-1 rounded shadow-lg z-10">${game.tag}</div>`;
 
                 const slide = `
                     <div class="swiper-slide">
-                        <div class="group relative aspect-[3/4] rounded-xl overflow-hidden cursor-pointer bg-surface border border-white/5 hover:border-brand/50 transition-all duration-300">
+                        <a href="/games/${game.id}" class="block group relative aspect-[3/4] rounded-xl overflow-hidden bg-surface border border-white/5 hover:border-brand/50 transition-all cursor-pointer">
                             <img src="${game.img}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy">
                             <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90"></div>
                             ${badgeHtml}
                             <div class="absolute bottom-0 p-4 w-full translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
                                 <span class="text-[10px] font-bold uppercase tracking-wider text-brand mb-1 block">${game.genre}</span>
-                                <h3 class="font-bold text-lg leading-tight text-white mb-2 line-clamp-1">${game.title}</h3>
+                                <h3 class="font-bold text-lg leading-tight text-white mb-2 line-clamp-1 group-hover:text-brand transition-colors">${game.title}</h3>
                                 <div class="flex items-center justify-between border-t border-white/10 pt-3">
-                                    <a href="/games/${game.id}" class="bg-white/10 hover:bg-brand hover:text-black text-white p-2 rounded-full transition-colors">
+                                    <div onclick="addToCart(event, ${game.id})" class="bg-white/10 hover:bg-brand hover:text-black text-white p-2 rounded-full transition-colors relative z-20 cursor-pointer">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
-                                    </a>
+                                    </div>
                                     ${priceHtml}
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
                 `;
                 sliderWrapper.innerHTML += slide;
             });
 
-            // ----------------------------------------------------
-            // 3. UNIVERSAL SEARCH FUNCTION (Desktop & Mobile)
-            // ----------------------------------------------------
+            // Universal Search Logic
             function setupSearch(inputId, resultsId, containerId, noResultsId) {
                 const searchInput = document.getElementById(inputId);
                 const searchResults = document.getElementById(resultsId);
                 const resultsContainer = document.getElementById(containerId);
                 const noResults = document.getElementById(noResultsId);
+
+                if(!searchInput) return; // Check if element exists
 
                 searchInput.addEventListener('input', function(e) {
                     const query = e.target.value.toLowerCase();
@@ -234,24 +323,16 @@
                         return;
                     }
 
-                    const filteredGames = games.filter(game => game.title.toLowerCase().includes(query));
+                    const filteredGames = window.allGames.filter(game => game.title.toLowerCase().includes(query));
                     resultsContainer.innerHTML = '';
 
                     if (filteredGames.length > 0) {
                         noResults.classList.add('hidden');
                         filteredGames.forEach(game => {
                             let priceDisplay = '';
-                            if (game.sale_price) {
-                                priceDisplay = `
-                                    <div class="text-right">
-                                        <span class="text-[10px] text-gray-500 line-through block leading-none">$${game.price}</span>
-                                        <span class="text-sm text-brand font-bold">$${game.sale_price}</span>
-                                    </div>`;
-                            } else if (game.price === 0) {
-                                priceDisplay = `<span class="text-sm text-white font-bold">Soon</span>`;
-                            } else {
-                                priceDisplay = `<span class="text-sm text-white font-bold">$${game.price}</span>`;
-                            }
+                            if (game.sale_price) priceDisplay = `<div class="text-right"><span class="text-[10px] text-gray-500 line-through block leading-none">$${game.price}</span><span class="text-sm text-brand font-bold">$${game.sale_price}</span></div>`;
+                            else if (game.price === 0) priceDisplay = `<span class="text-sm text-white font-bold">Soon</span>`;
+                            else priceDisplay = `<span class="text-sm text-white font-bold">$${game.price}</span>`;
 
                             const item = `
                                 <a href="/games/${game.id}" class="flex items-center justify-between p-3 hover:bg-white/10 rounded-lg cursor-pointer transition-colors border-b border-white/5 last:border-0 block">
@@ -273,24 +354,24 @@
                     searchResults.classList.remove('hidden');
                 });
 
-                // Close search on outside click
                 document.addEventListener('click', function(e) {
                     if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
                         searchResults.classList.add('hidden');
                     }
+                    // Close Cart dropdown too
+                    const cartBtn = document.getElementById('cartBtn');
+                    const cartDropdown = document.getElementById('cartDropdown');
+                    if (cartBtn && cartDropdown && !cartBtn.contains(e.target) && !cartDropdown.contains(e.target)) {
+                        cartDropdown.classList.add('hidden');
+                    }
                 });
             }
 
-            // Setup Desktop Search
             setupSearch('desktopSearchInput', 'desktopSearchResults', 'desktopResultsContainer', 'desktopNoResults');
-            
-            // Setup Mobile Search
             setupSearch('mobileSearchInput', 'mobileSearchResults', 'mobileResultsContainer', 'mobileNoResults');
 
 
-            // ----------------------------------------------------
-            // 4. MOBILE MENU & SWIPER
-            // ----------------------------------------------------
+            // Mobile Menu
             const menuBtn = document.getElementById('menu-btn');
             const closeBtn = document.getElementById('menu-close-btn');
             const mobileMenu = document.getElementById('mobile-menu');
@@ -301,36 +382,18 @@
                 const isHidden = mobileMenu.classList.contains('hidden');
                 if (isHidden) {
                     mobileMenu.classList.remove('hidden');
-                    setTimeout(() => {
-                        menuOverlay.classList.remove('opacity-0');
-                        menuPanel.classList.remove('translate-x-full');
-                    }, 10);
-                    document.body.style.overflow = 'hidden';
+                    setTimeout(() => { menuOverlay.classList.remove('opacity-0'); menuPanel.classList.remove('translate-x-full'); }, 10);
                 } else {
-                    menuOverlay.classList.add('opacity-0');
-                    menuPanel.classList.add('translate-x-full');
-                    setTimeout(() => {
-                        mobileMenu.classList.add('hidden');
-                        document.body.style.overflow = '';
-                    }, 300);
+                    menuOverlay.classList.add('opacity-0'); menuPanel.classList.add('translate-x-full');
+                    setTimeout(() => { mobileMenu.classList.add('hidden'); }, 300);
                 }
             }
-
             if (menuBtn) menuBtn.addEventListener('click', toggleMenu);
             if (closeBtn) closeBtn.addEventListener('click', toggleMenu);
             if (menuOverlay) menuOverlay.addEventListener('click', toggleMenu);
 
-            new Swiper('.heroSwiper', {
-                loop: true, effect: 'fade', autoplay: { delay: 5000 },
-                pagination: { el: '.swiper-pagination', clickable: true },
-                navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
-            });
-
-            new Swiper('.gameSwiper', {
-                slidesPerView: 2, spaceBetween: 12, loop: true,
-                navigation: { nextEl: '.game-next', prevEl: '.game-prev' },
-                breakpoints: { 640: { slidesPerView: 3, spaceBetween: 16 }, 1024: { slidesPerView: 4, spaceBetween: 20 }, 1280: { slidesPerView: 6, spaceBetween: 24 } }
-            });
+            new Swiper('.heroSwiper', { loop: true, effect: 'fade', autoplay: { delay: 5000 }, pagination: { clickable: true }, navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' } });
+            new Swiper('.gameSwiper', { slidesPerView: 2, spaceBetween: 12, loop: true, navigation: { nextEl: '.game-next', prevEl: '.game-prev' }, breakpoints: { 640: { slidesPerView: 3 }, 1024: { slidesPerView: 4 }, 1280: { slidesPerView: 6 } } });
         });
     </script>
 </body>

@@ -52,7 +52,7 @@ Route::get('/', function () {
             'price' => 0,
             'sale_price' => 0,
             'genre' => "Action",
-            'img' => "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2023/01/death-stranding-2-chvurches-motion-capture.jpg", 
+            'img' => " https://www.kojimaproductions.jp/sites/default/files/2025-03/ds2_keyimage_withoutreleasedate_16x9.jpg ",
             'discount' => null,
             'tag' => "COMING SOON"
         ],
@@ -113,7 +113,7 @@ Route::get('/games/{id}', function ($id) {
             'description' => "Endure and survive. Experience the emotional storytelling.",
             'long_description' => "In a ravaged civilization, where infected and hardened survivors run rampant, Joel, a weary protagonist, is hired to smuggle 14-year-old Ellie out of a military quarantine zone.",
             'img' => "https://upload.wikimedia.org/wikipedia/en/4/46/Video_Game_Cover_-_The_Last_of_Us.jpg",
-            'banner' => "https://images.wallpapersden.com/image/download/the-last-of-us-part-1-remake-4k_b2luaWmUmZqaraWkpJRmbmdlrWZlbWU.jpg",
+            'banner' => "https://www.gameaccessibilitynexus.com/wp-content/uploads/2024/01/The-Last-of-Us-Part-2-Remastered-Header.jpg",
             // ЗӨВ ЛИНК (embed)
             'trailer' => "https://www.youtube.com/embed/WxjeV10H1F0",
             'discount' => "-20%", 'tag' => null, 'developer' => "Naughty Dog", 'publisher' => "Sony"
@@ -147,8 +147,8 @@ Wikipedia
 +1
 
 Өмнөх нь Death Stranding — DS2 нь түүний үргэлжлэл бөгөөд олон талаараа шинэчлэгдсэн.",
-            'img' => "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2023/01/death-stranding-2-chvurches-motion-capture.jpg",
-            'banner' =>     "https://i.ytimg.com/vi/di51fb3ATng/maxresdefault.jpg",
+            'img' => "https://www.kojimaproductions.jp/sites/default/files/2025-03/ds2_keyimage_withoutreleasedate_16x9.jpg",
+            'banner' => "https://image.api.playstation.com/vulcan/ap/rnd/202503/0316/ba08d42ca97ad050e653b7eda937dca69e560a707eb03dd4.jpg",
             'trailer' =>  "https://www.youtube.com/embed/wbLstJHlC4U",
             'discount' => null, 'tag' => "COMING SOON", 'developer' => "Rockstar Games", 'publisher' => "Rockstar Games"
         ],
@@ -209,5 +209,6 @@ Wikipedia
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');    
+
 require __DIR__.'/admin-auth.php';
 require __DIR__.'/auth.php';
