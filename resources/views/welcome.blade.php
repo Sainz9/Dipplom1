@@ -27,7 +27,9 @@
 
     <style>
         .swiper-button-next, .swiper-button-prev { color: white !important; width: 3rem !important; height: 3rem !important; background: rgba(0,0,0,0.5); border-radius: 50%; backdrop-filter: blur(4px); }
-        .swiper-button-disabled { opacity: 0 !important; }
+        /* Товч идэвхгүй үед (Эхлэл/Төгсгөл) алга болгох */
+        .swiper-button-disabled { opacity: 0 !important; pointer-events: none; }
+        
         .mobile-menu-overlay { transition: opacity 0.3s ease; }
         .mobile-menu-panel { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .hi { transition: color 0.2s ease; }
@@ -52,11 +54,11 @@
                     <a href="#" class="text-sm font-bold hover:text-brand transition-colors">GAMES</a>
                     <a href="#" class="text-sm font-bold hover:text-brand transition-colors">NEWS</a>
                     <a href="#" class="text-sm font-bold hover:text-brand transition-colors">STORE</a>
+                    <a href="#" class="text-sm font-bold hover:text-brand transition-colors">SUPPORT</a>
 
                     <div class="relative group z-50">
                         <input type="text" id="desktopSearchInput" placeholder="Search games..." class="bg-white/10 text-sm rounded-full py-2 px-4 pl-10 w-64 focus:outline-none focus:ring-2 focus:ring-brand focus:bg-black transition-all" autocomplete="off">
                         <svg class="w-4 h-4 text-gray-400 absolute left-3.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                        
                         <div id="desktopSearchResults" class="absolute top-full left-0 w-80 mt-2 bg-surfaceHighlight border border-white/10 rounded-xl shadow-2xl overflow-hidden hidden transform origin-top transition-all">
                             <div id="desktopResultsContainer" class="max-h-80 overflow-y-auto custom-scroll"></div>
                             <div id="desktopNoResults" class="hidden p-4 text-center text-gray-400 text-sm">No games found.</div>
@@ -110,12 +112,12 @@
             </div>
 
             <div class="p-6 border-b border-white/5">
-                <div class="relative">
-                    <input type="text" id="mobileSearchInput" placeholder="Search games..." class="w-full bg-white/10 text-white text-sm rounded-lg py-3 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-brand focus:bg-black transition-all placeholder-gray-500" autocomplete="off">
-                    <svg class="w-5 h-5 text-gray-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <div class="relative group">
+                    <input type="text" id="mobileSearchInput" placeholder="Search games..." class="w-full bg-white/10 text-sm rounded-full py-3 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-brand focus:bg-black transition-all text-white" autocomplete="off">
+                    <svg class="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     
-                    <div id="mobileSearchResults" class="absolute top-full left-0 w-full mt-2 bg-[#1f1f23] border border-white/10 rounded-xl shadow-2xl overflow-hidden hidden z-50 max-h-60 overflow-y-auto custom-scroll">
-                        <div id="mobileResultsContainer"></div>
+                    <div id="mobileSearchResults" class="absolute top-full left-0 w-full mt-2 bg-surfaceHighlight border border-white/10 rounded-xl shadow-2xl overflow-hidden hidden z-50">
+                        <div id="mobileResultsContainer" class="max-h-60 overflow-y-auto custom-scroll"></div>
                         <div id="mobileNoResults" class="hidden p-4 text-center text-gray-400 text-sm">No games found.</div>
                     </div>
                 </div>
@@ -124,46 +126,76 @@
             <nav class="flex-1 overflow-y-auto py-6 px-6 flex flex-col gap-6">
                 <a href="#" class="text-2xl font-bold text-white hover:text-brand transition-colors">GAMES</a>
                 <a href="#" class="text-2xl font-bold text-white hover:text-brand transition-colors">NEWS</a>
-                <a href="#" class="text-2xl font-bold text-white hover:text-brand transition-colors">STORE</a> 
+                <a href="#" class="text-2xl font-bold text-white hover:text-brand transition-colors">STORE</a>
+                <a href="#" class="text-2xl font-bold text-white hover:text-brand transition-colors">SUPPORT</a>
             </nav>
 
             <div class="p-6 border-t border-white/5 bg-black/20">
-                <a href="{{ route('login') }}">Sign In</a>
+                <button class="w-full bg-brand text-black font-bold py-3 rounded uppercase tracking-wide hover:bg-white transition-colors">Sign In</button>
             </div>
         </div>
     </div>
 
     <main class="pt-16 md:pt-20">
-        <section class="relative h-[500px] md:h-[700px] w-full group">
+           <section class="relative h-[550px] md:h-[750px] w-full group">
             <div class="swiper heroSwiper h-full w-full">
                 <div class="swiper-wrapper">
+                    
                     <div class="swiper-slide relative">
                         <img src="https://images5.alphacoders.com/139/1397346.jpg" class="w-full h-full object-cover" alt="Banner">
                         <div class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent"></div>
                         <div class="absolute bottom-0 left-0 p-6 md:p-20 max-w-3xl">
-                            <span class="inline-block py-1 px-3 bg-brand text-black text-xs font-bold rounded mb-4 uppercase">New Release</span>
-                            <h1 class="text-4xl md:text-7xl font-black uppercase leading-none mb-6">Anno 117<br>Pax Romana</h1>
+                            <span class="inline-block py-1 px-3 bg-brand text-black text-xs font-bold rounded mb-4 uppercase animate-pulse-slow">New Release</span>
+                            <h1 class="text-4xl md:text-7xl font-black uppercase leading-none mb-6 text-shadow">Anno 117<br>Pax Romana</h1>
+                            <p class="text-gray-300 text-lg md:text-xl mb-8 line-clamp-2 md:line-clamp-none drop-shadow-md">Build your empire in the golden age. The strategy legend returns.</p>
                             <div class="flex gap-4">
-                                <button class="bg-brand text-black px-8 py-3 font-bold rounded hover:bg-white transition-colors">BUY NOW</button>
+                                <button class="btn-glow bg-brand text-black px-8 py-3 font-bold rounded hover:bg-white transition-colors">BUY NOW</button>
+                                <button class="border border-white/30 text-white px-8 py-3 font-bold rounded hover:bg-white/10 transition-colors backdrop-blur-sm">TRAILER</button>
                             </div>
                         </div>
                     </div>
+
                     <div class="swiper-slide relative">
                         <img src="https://wallpapercat.com/w/full/0/e/f/885-3840x2160-desktop-4k-the-last-of-us-game-background.jpg" class="w-full h-full object-cover" alt="Banner">
                         <div class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent"></div>
                         <div class="absolute bottom-0 left-0 p-6 md:p-20 max-w-3xl">
                             <span class="inline-block py-1 px-3 bg-red-600 text-white text-xs font-bold rounded mb-4 uppercase">Best Seller</span>
-                            <h1 class="text-4xl md:text-7xl font-black uppercase leading-none mb-6">The Last of Us</h1>
-                            <button class="bg-white text-black px-8 py-3 font-bold rounded hover:bg-brand transition-colors">PLAY NOW</button>
+                            <h1 class="text-4xl md:text-7xl font-black uppercase leading-none mb-6 text-shadow">The Last of Us</h1>
+                            <p class="text-gray-300 text-lg md:text-xl mb-8 drop-shadow-md">Endure and survive in a world changed forever.</p>
+                            <button class="btn-glow bg-white text-black px-8 py-3 font-bold rounded hover:bg-brand transition-colors">PLAY NOW</button>
                         </div>
                     </div>
+
+             
+
+                    <div class="swiper-slide relative">
+                        <img src="https://4kwallpapers.com/images/wallpapers/tekken-8-key-art-3840x1080-12715.jpg" class="w-full h-full object-cover" alt="Banner">
+                        <div class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent"></div>
+                        <div class="absolute bottom-0 left-0 p-6 md:p-20 max-w-3xl">
+                            <span class="inline-block py-1 px-3 bg-orange-600 text-white text-xs font-bold rounded mb-4 uppercase">Fighting</span>
+                            <h1 class="text-4xl md:text-7xl font-black uppercase leading-none mb-6 text-shadow text-white">Tekken 8</h1>
+                            <p class="text-gray-300 text-lg md:text-xl mb-8 drop-shadow-md">Fist Meets Fate. The longest-running video game storyline continues.</p>
+                            <button class="btn-glow bg-orange-600 text-white px-8 py-3 font-bold rounded hover:bg-white hover:text-black transition-colors">FIGHT</button>
+                        </div>
+                    </div>
+
+                    <div class="swiper-slide relative">
+                        <img src="https://i.redd.it/wallpapers-some-very-high-resolution-images-of-the-games-v0-dpzkcj127pxe1.png?width=3840&format=png&auto=webp&s=a85c347783cd7cf962ce51380d0352e2806c292c" class="w-full h-full object-cover" alt="Banner">
+                        <div class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent"></div>
+                        <div class="absolute bottom-0 left-0 p-6 md:p-20 max-w-3xl">
+                            <span class="inline-block py-1 px-3 bg-orange-600 text-white text-xs font-bold rounded mb-4 uppercase">Fighting</span>
+                            <h1 class="text-4xl md:text-7xl font-black uppercase leading-none mb-6 text-shadow text-white">Tekken 8</h1>
+                            <p class="text-gray-300 text-lg md:text-xl mb-8 drop-shadow-md">Fist Meets Fate. The longest-running video game storyline continues.</p>
+                            <button class="btn-glow bg-orange-600 text-white px-8 py-3 font-bold rounded hover:bg-white hover:text-black transition-colors">FIGHT</button>
+                        </div>
+                    </div>
+             
+
+
                 </div>
-                <div class="swiper-pagination"></div>
-                <div class="swiper-button-next"></div>
-                <div class="swiper-button-prev"></div>
+              
             </div>
         </section>
-
         <section class="py-12 md:py-20 relative overflow-hidden">
             <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-end mb-8">
@@ -177,7 +209,8 @@
                     </div>
                 </div>
                 <div class="swiper gameSwiper !overflow-visible">
-                    <div class="swiper-wrapper" id="game-slider-wrapper"></div>
+                    <div class="swiper-wrapper" id="game-slider-wrapper">
+                        </div>
                 </div>
             </div>
         </section>
@@ -264,7 +297,6 @@
             dropdown.classList.toggle('hidden');
         }
 
-
         document.addEventListener('DOMContentLoaded', function() {
             window.allGames = @json($games); 
             updateCartUI();
@@ -314,7 +346,7 @@
                 const resultsContainer = document.getElementById(containerId);
                 const noResults = document.getElementById(noResultsId);
 
-                if(!searchInput) return; // Check if element exists
+                if(!searchInput) return;
 
                 searchInput.addEventListener('input', function(e) {
                     const query = e.target.value.toLowerCase();
@@ -322,7 +354,6 @@
                         searchResults.classList.add('hidden');
                         return;
                     }
-
                     const filteredGames = window.allGames.filter(game => game.title.toLowerCase().includes(query));
                     resultsContainer.innerHTML = '';
 
@@ -334,18 +365,13 @@
                             else if (game.price === 0) priceDisplay = `<span class="text-sm text-white font-bold">Soon</span>`;
                             else priceDisplay = `<span class="text-sm text-white font-bold">$${game.price}</span>`;
 
-                            const item = `
-                                <a href="/games/${game.id}" class="flex items-center justify-between p-3 hover:bg-white/10 rounded-lg cursor-pointer transition-colors border-b border-white/5 last:border-0 block">
-                                    <div class="flex items-center gap-3">
-                                        <img src="${game.img}" class="w-10 h-14 object-cover rounded bg-gray-800">
-                                        <div>
-                                            <h4 class="font-bold text-sm text-white hover:text-brand transition-colors line-clamp-1">${game.title}</h4>
-                                            <span class="text-[10px] text-gray-400 uppercase">${game.genre}</span>
-                                        </div>
-                                    </div>
+                            const item = `<a href="/games/${game.id}" class="flex items-center gap-3 p-2 hover:bg-white/10 block border-b border-white/5">
+                                <img src="${game.img}" class="w-8 h-10 object-cover rounded">
+                                <div>
+                                    <div class="text-sm text-white font-bold">${game.title}</div>
                                     ${priceDisplay}
-                                </a>
-                            `;
+                                </div>
+                            </a>`;
                             resultsContainer.innerHTML += item;
                         });
                     } else {
@@ -353,12 +379,10 @@
                     }
                     searchResults.classList.remove('hidden');
                 });
-
                 document.addEventListener('click', function(e) {
                     if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
                         searchResults.classList.add('hidden');
                     }
-                    // Close Cart dropdown too
                     const cartBtn = document.getElementById('cartBtn');
                     const cartDropdown = document.getElementById('cartDropdown');
                     if (cartBtn && cartDropdown && !cartBtn.contains(e.target) && !cartDropdown.contains(e.target)) {
@@ -369,7 +393,6 @@
 
             setupSearch('desktopSearchInput', 'desktopSearchResults', 'desktopResultsContainer', 'desktopNoResults');
             setupSearch('mobileSearchInput', 'mobileSearchResults', 'mobileResultsContainer', 'mobileNoResults');
-
 
             // Mobile Menu
             const menuBtn = document.getElementById('menu-btn');
@@ -393,7 +416,22 @@
             if (menuOverlay) menuOverlay.addEventListener('click', toggleMenu);
 
             new Swiper('.heroSwiper', { loop: true, effect: 'fade', autoplay: { delay: 5000 }, pagination: { clickable: true }, navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' } });
-            new Swiper('.gameSwiper', { slidesPerView: 2, spaceBetween: 12, loop: true, navigation: { nextEl: '.game-next', prevEl: '.game-prev' }, breakpoints: { 640: { slidesPerView: 3 }, 1024: { slidesPerView: 4 }, 1280: { slidesPerView: 6 } } });
+
+            // ШИНЭЧЛЭЛТ: loop: false болгосон (Эхлэл төгсгөлд товч идэвхгүй болно)
+            new Swiper('.gameSwiper', { 
+                slidesPerView: 2, 
+                spaceBetween: 12, 
+                loop: false, // <--- ЭНД ӨӨРЧИЛСӨН
+                navigation: { 
+                    nextEl: '.game-next', 
+                    prevEl: '.game-prev' 
+                }, 
+                breakpoints: { 
+                    640: { slidesPerView: 3, spaceBetween: 16 }, 
+                    1024: { slidesPerView: 4, spaceBetween: 20 }, 
+                    1280: { slidesPerView: 6, spaceBetween: 24 } 
+                } 
+            });
         });
     </script>
 </body>
