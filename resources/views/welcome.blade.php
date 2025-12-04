@@ -88,7 +88,13 @@
                         </div>
                     </div>
 
-                    <a href="{{ route('login') }}" class="hi font-bold text-sm">Нэвтрэх</a>
+      @auth
+    <a href="{{ url('/admin/dashboard') }}" class="hi font-bold text-sm text-brand border border-brand px-4 py-2 rounded hover:bg-brand hover:text-black transition-all">
+        Admin Panel
+    </a>
+@else
+    <a href="{{ route('login') }}" class="hi font-bold text-sm">Нэвтрэх</a>
+@endauth
                 </div>
 
                 <button id="menu-btn" class="md:hidden p-2 text-white hover:text-brand focus:outline-none">
@@ -130,9 +136,17 @@
                 <a href="#" class="text-2xl font-bold text-white hover:text-brand transition-colors">SUPPORT</a>
             </nav>
 
-            <div class="p-6 border-t border-white/5 bg-black/20">
-                <button class="w-full bg-brand text-black font-bold py-3 rounded uppercase tracking-wide hover:bg-white transition-colors">Sign In</button>
-            </div>
+  <div class="p-6 border-t border-white/5 bg-black/20">
+    @auth
+        <a href="{{ url('/admin/dashboard') }}" class="block text-center w-full bg-brand text-black font-bold py-3 rounded uppercase tracking-wide hover:bg-white transition-colors">
+            Admin Dashboard
+        </a>
+    @else
+        <a href="{{ route('login') }}" class="block text-center w-full bg-brand text-black font-bold py-3 rounded uppercase tracking-wide hover:bg-white transition-colors">
+            Нэвтрэх
+        </a>
+    @endauth
+</div>
         </div>
     </div>
 
