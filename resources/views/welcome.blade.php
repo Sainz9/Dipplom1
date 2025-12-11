@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PlayVision - Ultimate Gaming Store</title>
+    <title>PlayVision - Home</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
@@ -15,10 +15,21 @@
                 fontFamily: { sans: ['Inter', 'sans-serif'] },
                 extend: {
                     colors: {
-                        brand: '#00D4FF',
-                        dark: '#0f0f0f',
-                        surface: '#18181b',
-                        surfaceHighlight: '#27272a'
+                        brand: '#00D4FF', 
+                        darkBG: '#0a0a0f', 
+                        darkSurface: '#121218',
+                    },
+                    boxShadow: {
+                        'neon': '0 0 15px rgba(0, 212, 255, 0.3)',
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
                     }
                 }
             }
@@ -26,427 +37,326 @@
     </script>
 
     <style>
-        .swiper-button-next, .swiper-button-prev { color: white !important; width: 3rem !important; height: 3rem !important; background: rgba(0,0,0,0.5); border-radius: 50%; backdrop-filter: blur(4px); }
-        /* Товч идэвхгүй үед (Эхлэл/Төгсгөл) алга болгох */
-        .swiper-button-disabled { opacity: 0 !important; pointer-events: none; }
+        body { background-color: #0a0a0f; color: #e5e7eb; }
         
-        .mobile-menu-overlay { transition: opacity 0.3s ease; }
-        .mobile-menu-panel { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .hi { transition: color 0.2s ease; }
-        .hi:hover { color: rgb(207, 205, 205); }
+        .swiper-button-next, .swiper-button-prev { 
+            color: #00D4FF !important; 
+            width: 40px !important; 
+            height: 40px !important; 
+            background: rgba(0,0,0,0.8); 
+            border-radius: 50%; 
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(4px);
+            transition: all 0.3s;
+        }
+        .swiper-button-next:hover, .swiper-button-prev:hover {
+            background: #00D4FF;
+            color: #000 !important;
+        }
+        .swiper-button-next:after, .swiper-button-prev:after { font-size: 16px !important; font-weight: bold; }
+        .swiper-button-disabled { opacity: 0; pointer-events: none; }
+        
         .custom-scroll::-webkit-scrollbar { width: 6px; }
-        .custom-scroll::-webkit-scrollbar-track { background: #18181b; }
+        .custom-scroll::-webkit-scrollbar-track { background: #121218; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
         .custom-scroll::-webkit-scrollbar-thumb:hover { background: #00D4FF; }
     </style>
 </head>
-<body class="bg-dark text-white antialiased selection:bg-brand selection:text-black">
+<body class="antialiased flex flex-col min-h-screen">
 
-    <nav class="fixed w-full z-50 top-0 bg-dark/90 backdrop-blur-xl border-b border-white/5">
-        <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16 md:h-20">
-
-                <a href="/" class="text-2xl font-black tracking-tighter uppercase italic">
+    <nav class="fixed w-full z-50 top-0 bg-darkBG/90 backdrop-blur-xl border-b border-white/[0.05]">
+        <div class="max-w-[1920px] mx-auto px-6 lg:px-12">
+            <div class="flex justify-between items-center h-20">
+                <a href="/" class="text-2xl font-black tracking-tighter uppercase italic text-white hover:text-brand transition-colors">
                     Play<span class="text-brand">Vision</span>
                 </a>
-
-                <div class="hidden md:flex items-center space-x-10">
-                    <a href="#" class="text-sm font-bold hover:text-brand transition-colors">GAMES</a>
-                    <a href="#" class="text-sm font-bold hover:text-brand transition-colors">NEWS</a>
-                    <a href="#" class="text-sm font-bold hover:text-brand transition-colors">STORE</a>
-                    <a href="#" class="text-sm font-bold hover:text-brand transition-colors">SUPPORT</a>
-
-                    <div class="relative group z-50">
-                        <input type="text" id="desktopSearchInput" placeholder="Search games..." class="bg-white/10 text-sm rounded-full py-2 px-4 pl-10 w-64 focus:outline-none focus:ring-2 focus:ring-brand focus:bg-black transition-all" autocomplete="off">
-                        <svg class="w-4 h-4 text-gray-400 absolute left-3.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                        <div id="desktopSearchResults" class="absolute top-full left-0 w-80 mt-2 bg-surfaceHighlight border border-white/10 rounded-xl shadow-2xl overflow-hidden hidden transform origin-top transition-all">
-                            <div id="desktopResultsContainer" class="max-h-80 overflow-y-auto custom-scroll"></div>
-                            <div id="desktopNoResults" class="hidden p-4 text-center text-gray-400 text-sm">No games found.</div>
-                        </div>
-                    </div>
-
-                    <div class="relative group z-50">
-                        <button id="cartBtn" class="relative p-2 hover:text-brand transition-colors" onclick="toggleCart()">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                
+                <div class="flex items-center space-x-6">
+                    <div class="relative hidden md:block group">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-4 w-4 text-gray-500 group-focus-within:text-brand transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                             </svg>
-                            <span id="cartCount" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center hidden">0</span>
-                        </button>
-
-                        <div id="cartDropdown" class="absolute right-0 mt-4 w-80 bg-[#1a1a1d] border border-white/10 rounded-xl shadow-2xl hidden transform origin-top-right transition-all">
-                            <div class="p-4 border-b border-white/10 font-bold text-sm">Shopping Cart</div>
-                            <div id="cartItemsContainer" class="max-h-64 overflow-y-auto custom-scroll p-2 space-y-2">
-                                <div class="text-center text-gray-500 text-xs py-4">Your cart is empty.</div>
-                            </div>
-                            <div class="p-4 border-t border-white/10 bg-black/20">
-                                <div class="flex justify-between items-center mb-4">
-                                    <span class="text-gray-400 text-sm">Total:</span>
-                                    <span id="cartTotal" class="text-brand font-bold text-lg">$0.00</span>
-                                </div>
-                                <button class="w-full bg-brand text-black font-bold py-2 rounded text-sm hover:bg-white transition-colors">CHECKOUT</button>
-                            </div>
+                        </div>
+                        <input type="text" id="globalSearch" placeholder="Search games..." class="bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm text-white focus:border-brand focus:bg-black/50 focus:outline-none w-64 transition-all placeholder-gray-500">
+                        
+                        <div id="searchResults" class="absolute top-full left-0 w-full mt-2 bg-[#1a1a20] border border-white/10 rounded-xl shadow-2xl hidden z-50 overflow-hidden">
+                            <div id="resultsContainer" class="max-h-80 overflow-y-auto custom-scroll"></div>
                         </div>
                     </div>
 
-      @auth
-    <a href="{{ url('/admin/dashboard') }}" class="hi font-bold text-sm text-brand border border-brand px-4 py-2 rounded hover:bg-brand hover:text-black transition-all">
-        Admin Panel
-    </a>
-@else
-    <a href="{{ route('login') }}" class="hi font-bold text-sm">Нэвтрэх</a>
-@endauth
+                    @auth
+                        <a href="{{ url('/admin/dashboard') }}" class="text-xs font-bold text-brand border border-brand px-5 py-2.5 rounded-full hover:bg-brand hover:text-black transition-all shadow-[0_0_10px_rgba(0,212,255,0.2)]">
+                            ADMIN PANEL
+                        </a>
+                    @else
+                        <a href="{{ route('login') }}" class="text-xs font-bold text-white hover:text-brand transition-colors uppercase tracking-wider">Log In</a>
+                    @endauth
                 </div>
-
-                <button id="menu-btn" class="md:hidden p-2 text-white hover:text-brand focus:outline-none">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
-                    </svg>
-                </button>
             </div>
         </div>
     </nav>
 
-    <div id="mobile-menu" class="fixed inset-0 z-[60] hidden">
-        <div id="menu-overlay" class="absolute inset-0 bg-black/80 backdrop-blur-sm opacity-0 mobile-menu-overlay" onclick="toggleMenu()"></div>
-
-        <div id="menu-panel" class="absolute right-0 top-0 h-full w-[85%] max-w-sm bg-surface border-l border-white/10 shadow-2xl transform translate-x-full mobile-menu-panel flex flex-col">
-            <div class="flex justify-between items-center p-6 border-b border-white/5">
-                <span class="text-xl font-bold text-white">Menu</span>
-                <button id="menu-close-btn" class="text-gray-400 hover:text-white">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-
-            <div class="p-6 border-b border-white/5">
-                <div class="relative group">
-                    <input type="text" id="mobileSearchInput" placeholder="Search games..." class="w-full bg-white/10 text-sm rounded-full py-3 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-brand focus:bg-black transition-all text-white" autocomplete="off">
-                    <svg class="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    
-                    <div id="mobileSearchResults" class="absolute top-full left-0 w-full mt-2 bg-surfaceHighlight border border-white/10 rounded-xl shadow-2xl overflow-hidden hidden z-50">
-                        <div id="mobileResultsContainer" class="max-h-60 overflow-y-auto custom-scroll"></div>
-                        <div id="mobileNoResults" class="hidden p-4 text-center text-gray-400 text-sm">No games found.</div>
-                    </div>
-                </div>
-            </div>
-
-            <nav class="flex-1 overflow-y-auto py-6 px-6 flex flex-col gap-6">
-                <a href="#" class="text-2xl font-bold text-white hover:text-brand transition-colors">GAMES</a>
-                <a href="#" class="text-2xl font-bold text-white hover:text-brand transition-colors">NEWS</a>
-                <a href="#" class="text-2xl font-bold text-white hover:text-brand transition-colors">STORE</a>
-                <a href="#" class="text-2xl font-bold text-white hover:text-brand transition-colors">SUPPORT</a>
-            </nav>
-
-  <div class="p-6 border-t border-white/5 bg-black/20">
-    @auth
-        <a href="{{ url('/admin/dashboard') }}" class="block text-center w-full bg-brand text-black font-bold py-3 rounded uppercase tracking-wide hover:bg-white transition-colors">
-            Admin Dashboard
-        </a>
-    @else
-        <a href="{{ route('login') }}" class="block text-center w-full bg-brand text-black font-bold py-3 rounded uppercase tracking-wide hover:bg-white transition-colors">
-            Нэвтрэх
-        </a>
-    @endauth
-</div>
-        </div>
-    </div>
-
-    <main class="pt-16 md:pt-20">
-           <section class="relative h-[550px] md:h-[750px] w-full group">
+    <main class="pt-20 flex-grow">
+        
+        <section class="relative h-[500px] md:h-[650px] w-full group overflow-hidden">
             <div class="swiper heroSwiper h-full w-full">
                 <div class="swiper-wrapper">
                     
-                    <div class="swiper-slide relative">
-                        <img src="https://images5.alphacoders.com/139/1397346.jpg" class="w-full h-full object-cover" alt="Banner">
-                        <div class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent"></div>
-                        <div class="absolute bottom-0 left-0 p-6 md:p-20 max-w-3xl">
-                            <span class="inline-block py-1 px-3 bg-brand text-black text-xs font-bold rounded mb-4 uppercase animate-pulse-slow">New Release</span>
-                            <h1 class="text-4xl md:text-7xl font-black uppercase leading-none mb-6 text-shadow">Anno 117<br>Pax Romana</h1>
-                            <p class="text-gray-300 text-lg md:text-xl mb-8 line-clamp-2 md:line-clamp-none drop-shadow-md">Build your empire in the golden age. The strategy legend returns.</p>
-                            <div class="flex gap-4">
-                                <button class="btn-glow bg-brand text-black px-8 py-3 font-bold rounded hover:bg-white transition-colors">BUY NOW</button>
-                                <button class="border border-white/30 text-white px-8 py-3 font-bold rounded hover:bg-white/10 transition-colors backdrop-blur-sm">TRAILER</button>
+                  @if(isset($sliderGames) && $sliderGames->count() > 0)
+    @foreach($sliderGames as $game)
+
+        @if($game->tag == 'Тун удахгүй')
+        <div class="swiper-slide relative">
+            <img src="{{ $game->banner ?? $game->img }}" 
+                 class="w-full h-full object-cover object-top">
+
+            <div class="absolute inset-0 bg-gradient-to-r from-darkBG via-darkBG/60 to-transparent"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-darkBG via-transparent to-transparent"></div>
+            
+            <div class="absolute bottom-0 left-0 p-8 md:p-16 lg:p-24 max-w-4xl animate-fade-in-up">
+
+                <span class="bg-brand text-black text-xs font-black px-3 py-1.5 rounded mb-4 inline-block uppercase tracking-wider shadow-neon">
+                    {{ $game->tag }}
+                </span>
+
+                <h1 class="text-4xl md:text-7xl font-black uppercase leading-none mb-6 text-white drop-shadow-2xl">
+                    {{ $game->title }}
+                </h1>
+
+                <p class="text-gray-300 text-sm md:text-lg mb-8 line-clamp-2 max-w-xl font-medium drop-shadow-md leading-relaxed">
+                    {{ $game->description }}
+                </p>
+
+                <div class="flex items-center gap-4">
+                    <a href="{{ route('game.show', $game->id) }}" 
+                       class="bg-brand text-black px-10 py-4 font-bold rounded hover:bg-white transition-all hover:scale-105 uppercase text-sm tracking-widest shadow-neon">
+                        View Details
+                    </a>
+                </div>
+            </div>
+        </div>
+        @endif
+
+    @endforeach
+@endif
+
+
+                
+                
+             
+            </div>
+        </section>
+
+        <div class="py-12 px-4 md:px-8 lg:px-12 space-y-16 -mt-10 relative z-10">
+            
+            {{-- 1. COMING SOON ROW (ТУСДАА) --}}
+            @php
+                // "Тун удахгүй" Tag-тай бүх тоглоомыг энд шүүж авна
+                $comingSoonList = $games->where('tag', 'Тун удахгүй');
+            @endphp
+
+            @if($comingSoonList->count() > 0)
+            <section class="relative group/section">
+                <div class="flex justify-between items-end mb-4 px-2">
+                    <h2 class="text-2xl md:text-3xl font-bold text-white uppercase italic tracking-wide flex items-center gap-3">
+                        <span class="w-1 h-8 bg-purple-600 rounded-full shadow-[0_0_15px_rgba(147,51,234,0.5)]"></span>
+                        Coming Soon (Тун удахгүй)
+                    </h2>
+                    
+                    <div class="flex gap-2 opacity-0 group-hover/section:opacity-100 transition-opacity duration-300">
+                        <button class="prev-coming w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:bg-purple-600 hover:text-white transition-all">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                        </button>
+                        <button class="next-coming w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:bg-purple-600 hover:text-white transition-all">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="swiper swiperComing !overflow-visible !pb-10">
+                    <div class="swiper-wrapper">
+                        @foreach($comingSoonList as $game)
+                        <div class="swiper-slide transition-transform duration-300 hover:z-20 hover:scale-105">
+                            <a href="{{ route('game.show', $game->id) }}" class="block relative aspect-[3/4] rounded-xl overflow-hidden bg-[#1a1a20] border border-purple-500/30 hover:border-purple-500 hover:shadow-[0_0_20px_rgba(147,51,234,0.3)] group">
+                                <img src="{{ $game->img }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy">
+                                <div class="absolute inset-0 bg-gradient-to-t from-darkBG via-transparent to-transparent opacity-90"></div>
+                                
+                                <div class="absolute top-2 right-2 bg-purple-600 text-white text-[10px] font-black px-2 py-1 rounded shadow-lg uppercase animate-pulse">Coming Soon</div>
+
+                                <div class="absolute bottom-0 p-4 w-full translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                                    <h3 class="font-bold text-white truncate text-base mb-1 group-hover:text-purple-400 transition-colors">{{ $game->title }}</h3>
+                                    
+                                    <div class="flex justify-between items-center mt-2">
+                                        <span class="text-gray-400 font-bold text-xs uppercase tracking-wider border border-gray-600 px-2 py-0.5 rounded">
+                                            {{ !empty($game->release_date) ? \Carbon\Carbon::parse($game->release_date)->format('Y-m-d') : 'TBA' }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+            </section>
+            @endif
+
+            {{-- 
+                2. БУСАД КАТЕГОРИУД (ЭНГИЙН ТОГЛООМУУД)
+                Эндээс "Тун удахгүй" тоглоомуудыг НУУНА (@if($game->tag != 'Тун удахгүй'))
+            --}}
+            @if(isset($categories) && count($categories) > 0)
+                @foreach($categories as $category)
+                    {{-- "Тун удахгүй" БИШ тоглоом байгаа эсэхийг шалгана. Байхгүй бол гарчгийг нь ч гаргахгүй --}}
+                    @php
+                        $regularGamesCount = $category->games->where('tag', '!=', 'Тун удахгүй')->count();
+                    @endphp
+
+                    @if($regularGamesCount > 0)
+                    <section class="relative group/section">
+                        <div class="flex justify-between items-end mb-4 px-2">
+                            <h2 class="text-2xl md:text-3xl font-bold text-white uppercase italic tracking-wide flex items-center gap-3">
+                                <span class="w-1 h-8 bg-brand rounded-full shadow-neon"></span>
+                                {{ $category->name }}
+                            </h2>
+                            
+                            <div class="flex gap-2 opacity-0 group-hover/section:opacity-100 transition-opacity duration-300">
+                                <button class="prev-{{ $category->id }} w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:bg-brand hover:text-black hover:border-brand transition-all">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                                </button>
+                                <button class="next-{{ $category->id }} w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:bg-brand hover:text-black hover:border-brand transition-all">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                </button>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="swiper-slide relative">
-                        <img src="https://wallpapercat.com/w/full/0/e/f/885-3840x2160-desktop-4k-the-last-of-us-game-background.jpg" class="w-full h-full object-cover" alt="Banner">
-                        <div class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent"></div>
-                        <div class="absolute bottom-0 left-0 p-6 md:p-20 max-w-3xl">
-                            <span class="inline-block py-1 px-3 bg-red-600 text-white text-xs font-bold rounded mb-4 uppercase">Best Seller</span>
-                            <h1 class="text-4xl md:text-7xl font-black uppercase leading-none mb-6 text-shadow">The Last of Us</h1>
-                            <p class="text-gray-300 text-lg md:text-xl mb-8 drop-shadow-md">Endure and survive in a world changed forever.</p>
-                            <button class="btn-glow bg-white text-black px-8 py-3 font-bold rounded hover:bg-brand transition-colors">PLAY NOW</button>
+                        <div class="swiper categorySwiper category-swiper-{{ $category->id }} !overflow-visible !pb-10">
+                            <div class="swiper-wrapper">
+                                @foreach($category->games as $game)
+                                
+                                {{-- 
+                                    ХАМГИЙН ЧУХАЛ ХЭСЭГ: 
+                                    Хэрэв 'Тун удахгүй' бол ЭНГИЙН ЖАГСААЛТАД ХАРУУЛАХГҮЙ 
+                                --}}
+                                @if($game->tag != 'Тун удахгүй')
+                                <div class="swiper-slide transition-transform duration-300 hover:z-20 hover:scale-105">
+                                    <a href="{{ route('game.show', $game->id) }}" class="block relative aspect-[3/4] rounded-xl overflow-hidden bg-[#1a1a20] border border-white/5 hover:border-brand/50 hover:shadow-neon group">
+                                        <img src="{{ $game->img }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-darkBG via-transparent to-transparent opacity-90"></div>
+                                        
+                                        @if($game->discount)
+                                            <div class="absolute top-2 right-2 bg-brand text-black text-[10px] font-black px-2 py-1 rounded shadow-lg uppercase">{{ $game->discount }}</div>
+                                        @elseif($game->tag)
+                                            <div class="absolute top-2 right-2 bg-black/60 border border-white/10 text-white text-[10px] font-bold px-2 py-1 rounded backdrop-blur-sm">{{ $game->tag }}</div>
+                                        @endif
+
+                                        <div class="absolute bottom-0 p-4 w-full translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                                            <h3 class="font-bold text-white truncate text-base mb-1 group-hover:text-brand transition-colors">{{ $game->title }}</h3>
+                                            
+                                            <div class="flex justify-between items-center mt-2">
+                                                @if(is_numeric($game->price) && $game->price == 0)
+                                                    <span class="text-brand font-bold text-sm tracking-wider">FREE</span>
+                                                @elseif(is_numeric($game->price))
+                                                    <span class="text-gray-300 font-bold text-sm">{{ number_format($game->price) }}₮</span>
+                                                @else
+                                                    <span class="text-xs text-gray-400 font-bold">{{ $game->price }}</span>
+                                                @endif
+                                                
+                                                <div class="bg-white/10 p-1.5 rounded-full hover:bg-brand hover:text-black transition-colors text-white">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                                @endif {{-- End If Check --}}
+                                @endforeach
+                            </div>
                         </div>
-                    </div>
+                    </section>
+                    @endif
+                @endforeach
+            @endif
 
-             
+        </div>
 
-                    <div class="swiper-slide relative">
-                        <img src="https://4kwallpapers.com/images/wallpapers/tekken-8-key-art-3840x1080-12715.jpg" class="w-full h-full object-cover" alt="Banner">
-                        <div class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent"></div>
-                        <div class="absolute bottom-0 left-0 p-6 md:p-20 max-w-3xl">
-                            <span class="inline-block py-1 px-3 bg-orange-600 text-white text-xs font-bold rounded mb-4 uppercase">Fighting</span>
-                            <h1 class="text-4xl md:text-7xl font-black uppercase leading-none mb-6 text-shadow text-white">Tekken 8</h1>
-                            <p class="text-gray-300 text-lg md:text-xl mb-8 drop-shadow-md">Fist Meets Fate. The longest-running video game storyline continues.</p>
-                            <button class="btn-glow bg-orange-600 text-white px-8 py-3 font-bold rounded hover:bg-white hover:text-black transition-colors">FIGHT</button>
-                        </div>
-                    </div>
-
-                    <div class="swiper-slide relative">
-                        <img src="https://i.redd.it/wallpapers-some-very-high-resolution-images-of-the-games-v0-dpzkcj127pxe1.png?width=3840&format=png&auto=webp&s=a85c347783cd7cf962ce51380d0352e2806c292c" class="w-full h-full object-cover" alt="Banner">
-                        <div class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent"></div>
-                        <div class="absolute bottom-0 left-0 p-6 md:p-20 max-w-3xl">
-                            <span class="inline-block py-1 px-3 bg-orange-600 text-white text-xs font-bold rounded mb-4 uppercase">Fighting</span>
-                            <h1 class="text-4xl md:text-7xl font-black uppercase leading-none mb-6 text-shadow text-white">Tekken 8</h1>
-                            <p class="text-gray-300 text-lg md:text-xl mb-8 drop-shadow-md">Fist Meets Fate. The longest-running video game storyline continues.</p>
-                            <button class="btn-glow bg-orange-600 text-white px-8 py-3 font-bold rounded hover:bg-white hover:text-black transition-colors">FIGHT</button>
-                        </div>
-                    </div>
-             
-
-
-                </div>
-              
-            </div>
-        </section>
-        <section class="py-12 md:py-20 relative overflow-hidden">
-            <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-end mb-8">
-                    <div>
-                        <h2 class="text-3xl font-bold text-white">Featured Games</h2>
-                        <p class="text-gray-400 text-sm mt-2">Top rated games curated for you</p>
-                    </div>
-                    <div class="flex gap-3">
-                        <button class="game-prev w-10 h-10 md:w-12 md:h-12 border border-white/10 rounded-full flex items-center justify-center hover:bg-brand hover:text-black hover:border-brand transition-all"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg></button>
-                        <button class="game-next w-10 h-10 md:w-12 md:h-12 border border-white/10 rounded-full flex items-center justify-center hover:bg-brand hover:text-black hover:border-brand transition-all"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></button>
-                    </div>
-                </div>
-                <div class="swiper gameSwiper !overflow-visible">
-                    <div class="swiper-wrapper" id="game-slider-wrapper">
-                        </div>
-                </div>
-            </div>
-        </section>
-
-        <footer class="bg-surface border-t border-white/5 pt-16 pb-8">
-            <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-500 text-xs">
-                &copy; 2025 PlayVision Entertainment. All Rights Reserved.
+        <footer class="bg-darkSurface border-t border-white/5 py-12 mt-auto">
+            <div class="max-w-[1920px] mx-auto px-6 text-center">
+                <a href="#" class="text-2xl font-black tracking-tighter uppercase italic inline-block mb-4 text-white">
+                    Play<span class="text-brand">Vision</span>
+                </a>
+                <p class="text-gray-500 text-xs">&copy; 2025 PlayVision Entertainment. All Rights Reserved.</p>
             </div>
         </footer>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        // Cart Logic
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
-
-        window.addToCart = function(e, id) {
-            e.stopPropagation();
-            e.preventDefault();
-            const game = window.allGames.find(g => g.id === id);
-            if(game) {
-                const existingItem = cart.find(item => item.id === id);
-                if(existingItem) {
-                    alert("Item already in cart!");
-                } else {
-                    cart.push(game);
-                    saveCart();
-                    updateCartUI();
-                    const dropdown = document.getElementById('cartDropdown');
-                    dropdown.classList.remove('hidden');
-                }
-            }
-        }
-
-        window.removeFromCart = function(id) {
-            cart = cart.filter(item => item.id !== id);
-            saveCart();
-            updateCartUI();
-        }
-
-        function saveCart() {
-            localStorage.setItem('cart', JSON.stringify(cart));
-        }
-
-        function updateCartUI() {
-            const cartCount = document.getElementById('cartCount');
-            const cartItemsContainer = document.getElementById('cartItemsContainer');
-            const cartTotal = document.getElementById('cartTotal');
-            
-            cartCount.innerText = cart.length;
-            if(cart.length > 0) cartCount.classList.remove('hidden');
-            else cartCount.classList.add('hidden');
-
-            if(cart.length === 0) {
-                cartItemsContainer.innerHTML = '<div class="text-center text-gray-500 text-xs py-4">Your cart is empty.</div>';
-                cartTotal.innerText = "$0.00";
-                return;
-            }
-
-            let html = '';
-            let total = 0;
-            cart.forEach(item => {
-                let finalPrice = item.sale_price ? item.sale_price : item.price;
-                total += parseFloat(finalPrice);
-                html += `
-                    <div class="flex gap-3 items-center bg-white/5 p-2 rounded group">
-                        <img src="${item.img}" class="w-10 h-14 object-cover rounded">
-                        <div class="flex-1 min-w-0">
-                            <h4 class="text-white text-sm font-bold truncate">${item.title}</h4>
-                            <span class="text-brand text-xs font-bold">$${finalPrice}</span>
-                        </div>
-                        <button onclick="removeFromCart(${item.id})" class="text-gray-500 hover:text-red-500 p-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                        </button>
-                    </div>
-                `;
-            });
-            cartItemsContainer.innerHTML = html;
-            cartTotal.innerText = "$" + total.toFixed(2);
-        }
-
-        window.toggleCart = function() {
-            const dropdown = document.getElementById('cartDropdown');
-            dropdown.classList.toggle('hidden');
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            window.allGames = @json($games); 
-            updateCartUI();
-
-            // Render Slider
-            const sliderWrapper = document.getElementById('game-slider-wrapper');
-            window.allGames.forEach(game => {
-                let priceHtml = '';
-                if (game.tag === "COMING SOON" || game.price === 0) {
-                    priceHtml = `<span class="text-white font-bold">Pre-Order</span>`;
-                } else if (game.sale_price) {
-                    priceHtml = `<div class="flex flex-col text-right"><span class="text-xs text-gray-500 line-through font-medium">$${game.price}</span><span class="text-white font-bold text-lg">$${game.sale_price}</span></div>`;
-                } else {
-                    priceHtml = `<span class="text-white font-bold text-lg">$${game.price}</span>`;
-                }
-
-                let badgeHtml = '';
-                if(game.discount) badgeHtml = `<div class="absolute top-3 right-3 bg-brand text-black text-xs font-black px-2 py-1 rounded shadow-lg z-10">${game.discount}</div>`;
-                else if(game.tag) badgeHtml = `<div class="absolute top-3 right-3 bg-white text-black text-xs font-black px-2 py-1 rounded shadow-lg z-10">${game.tag}</div>`;
-
-                const slide = `
-                    <div class="swiper-slide">
-                        <a href="/games/${game.id}" class="block group relative aspect-[3/4] rounded-xl overflow-hidden bg-surface border border-white/5 hover:border-brand/50 transition-all cursor-pointer">
-                            <img src="${game.img}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90"></div>
-                            ${badgeHtml}
-                            <div class="absolute bottom-0 p-4 w-full translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-brand mb-1 block">${game.genre}</span>
-                                <h3 class="font-bold text-lg leading-tight text-white mb-2 line-clamp-1 group-hover:text-brand transition-colors">${game.title}</h3>
-                                <div class="flex items-center justify-between border-t border-white/10 pt-3">
-                                    <div onclick="addToCart(event, ${game.id})" class="bg-white/10 hover:bg-brand hover:text-black text-white p-2 rounded-full transition-colors relative z-20 cursor-pointer">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
-                                    </div>
-                                    ${priceHtml}
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                `;
-                sliderWrapper.innerHTML += slide;
-            });
-
-            // Universal Search Logic
-            function setupSearch(inputId, resultsId, containerId, noResultsId) {
-                const searchInput = document.getElementById(inputId);
-                const searchResults = document.getElementById(resultsId);
-                const resultsContainer = document.getElementById(containerId);
-                const noResults = document.getElementById(noResultsId);
-
-                if(!searchInput) return;
-
-                searchInput.addEventListener('input', function(e) {
-                    const query = e.target.value.toLowerCase();
-                    if (query.length === 0) {
-                        searchResults.classList.add('hidden');
-                        return;
-                    }
-                    const filteredGames = window.allGames.filter(game => game.title.toLowerCase().includes(query));
-                    resultsContainer.innerHTML = '';
-
-                    if (filteredGames.length > 0) {
-                        noResults.classList.add('hidden');
-                        filteredGames.forEach(game => {
-                            let priceDisplay = '';
-                            if (game.sale_price) priceDisplay = `<div class="text-right"><span class="text-[10px] text-gray-500 line-through block leading-none">$${game.price}</span><span class="text-sm text-brand font-bold">$${game.sale_price}</span></div>`;
-                            else if (game.price === 0) priceDisplay = `<span class="text-sm text-white font-bold">Soon</span>`;
-                            else priceDisplay = `<span class="text-sm text-white font-bold">$${game.price}</span>`;
-
-                            const item = `<a href="/games/${game.id}" class="flex items-center gap-3 p-2 hover:bg-white/10 block border-b border-white/5">
-                                <img src="${game.img}" class="w-8 h-10 object-cover rounded">
-                                <div>
-                                    <div class="text-sm text-white font-bold">${game.title}</div>
-                                    ${priceDisplay}
-                                </div>
-                            </a>`;
-                            resultsContainer.innerHTML += item;
-                        });
-                    } else {
-                        noResults.classList.remove('hidden');
-                    }
-                    searchResults.classList.remove('hidden');
-                });
-                document.addEventListener('click', function(e) {
-                    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-                        searchResults.classList.add('hidden');
-                    }
-                    const cartBtn = document.getElementById('cartBtn');
-                    const cartDropdown = document.getElementById('cartDropdown');
-                    if (cartBtn && cartDropdown && !cartBtn.contains(e.target) && !cartDropdown.contains(e.target)) {
-                        cartDropdown.classList.add('hidden');
-                    }
-                });
-            }
-
-            setupSearch('desktopSearchInput', 'desktopSearchResults', 'desktopResultsContainer', 'desktopNoResults');
-            setupSearch('mobileSearchInput', 'mobileSearchResults', 'mobileResultsContainer', 'mobileNoResults');
-
-            // Mobile Menu
-            const menuBtn = document.getElementById('menu-btn');
-            const closeBtn = document.getElementById('menu-close-btn');
-            const mobileMenu = document.getElementById('mobile-menu');
-            const menuOverlay = document.getElementById('menu-overlay');
-            const menuPanel = document.getElementById('menu-panel');
-
-            function toggleMenu() {
-                const isHidden = mobileMenu.classList.contains('hidden');
-                if (isHidden) {
-                    mobileMenu.classList.remove('hidden');
-                    setTimeout(() => { menuOverlay.classList.remove('opacity-0'); menuPanel.classList.remove('translate-x-full'); }, 10);
-                } else {
-                    menuOverlay.classList.add('opacity-0'); menuPanel.classList.add('translate-x-full');
-                    setTimeout(() => { mobileMenu.classList.add('hidden'); }, 300);
-                }
-            }
-            if (menuBtn) menuBtn.addEventListener('click', toggleMenu);
-            if (closeBtn) closeBtn.addEventListener('click', toggleMenu);
-            if (menuOverlay) menuOverlay.addEventListener('click', toggleMenu);
-
-            new Swiper('.heroSwiper', { loop: true, effect: 'fade', autoplay: { delay: 5000 }, pagination: { clickable: true }, navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' } });
-
-            // ШИНЭЧЛЭЛТ: loop: false болгосон (Эхлэл төгсгөлд товч идэвхгүй болно)
-            new Swiper('.gameSwiper', { 
-                slidesPerView: 2, 
-                spaceBetween: 12, 
-                loop: false, // <--- ЭНД ӨӨРЧИЛСӨН
-                navigation: { 
-                    nextEl: '.game-next', 
-                    prevEl: '.game-prev' 
-                }, 
-                breakpoints: { 
-                    640: { slidesPerView: 3, spaceBetween: 16 }, 
-                    1024: { slidesPerView: 4, spaceBetween: 20 }, 
-                    1280: { slidesPerView: 6, spaceBetween: 24 } 
-                } 
-            });
+        // 1. Hero Slider
+        new Swiper('.heroSwiper', { 
+            loop: true, effect: 'fade', speed: 1000, 
+            autoplay: { delay: 6000, disableOnInteraction: false },
+            navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
         });
+
+        // 2. Coming Soon Swiper
+        new Swiper('.swiperComing', {
+            slidesPerView: 2, spaceBetween: 16,
+            navigation: { nextEl: '.next-coming', prevEl: '.prev-coming' },
+            breakpoints: {
+                640: { slidesPerView: 3, spaceBetween: 20 },
+                1024: { slidesPerView: 4, spaceBetween: 24 },
+                1280: { slidesPerView: 5, spaceBetween: 24 },
+                1536: { slidesPerView: 6, spaceBetween: 32 }
+            }
+        });
+
+        // 3. Category Swipers
+        @if(isset($categories))
+            @foreach($categories as $category)
+                new Swiper('.category-swiper-{{ $category->id }}', {
+                    slidesPerView: 2, spaceBetween: 16,
+                    navigation: { nextEl: '.next-{{ $category->id }}', prevEl: '.prev-{{ $category->id }}' },
+                    breakpoints: {
+                        640: { slidesPerView: 3, spaceBetween: 20 },
+                        1024: { slidesPerView: 4, spaceBetween: 24 },
+                        1280: { slidesPerView: 5, spaceBetween: 24 },
+                        1536: { slidesPerView: 6, spaceBetween: 32 }
+                    }
+                });
+            @endforeach
+        @endif
+
+        // 4. Search Logic
+        const searchInput = document.getElementById('globalSearch');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const searchResults = document.getElementById('searchResults');
+        const allGames = @json($games ?? []); 
+
+        if(searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                resultsContainer.innerHTML = '';
+                if(query.length === 0) { searchResults.classList.add('hidden'); return; }
+
+                const filtered = allGames.filter(g => g.title.toLowerCase().includes(query));
+                if(filtered.length > 0) {
+                    filtered.forEach(game => {
+                        const div = document.createElement('div');
+                        div.className = 'p-3 hover:bg-white/5 border-b border-white/5 flex gap-3 items-center cursor-pointer transition-colors group';
+                        div.onclick = () => window.location.href = `/games/${game.id}`;
+                        div.innerHTML = `<img src="${game.img}" class="w-10 h-14 object-cover rounded"><h4 class="text-sm font-bold text-white">${game.title}</h4>`;
+                        resultsContainer.appendChild(div);
+                    });
+                    searchResults.classList.remove('hidden');
+                } else { searchResults.classList.add('hidden'); }
+            });
+            document.addEventListener('click', (e) => {
+                if(!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                    searchResults.classList.add('hidden');
+                }
+            });
+        }
     </script>
 </body>
 </html>

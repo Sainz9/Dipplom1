@@ -6,44 +6,34 @@ use Illuminate\Http\Request;
 use App\Models\Game;
 use App\Models\Category;
 
-class GameController extends Controller
+class GamesController extends Controller
 {
-    // 1. PUBLIC HOME PAGE (Нүүр хуудас)
-    public function index()
-    {
-        // 1. БҮХ ТОГЛООМ
-        $games = Game::with('category')->latest()->get(); 
+    // 1. PUBLIC HOME PAGE
+public function index()
+{
+    $sliderGames = Game::latest()->take(5)->get();
 
-        // 2. SLIDER ХЭСЭГ
-        $sliderGames = Game::whereNotNull('banner')->latest()->take(5)->get();
-        if ($sliderGames->isEmpty()) {
-            $sliderGames = Game::latest()->take(5)->get();
-        }
+    return view('admin.dashboard', compact('sliderGames'));
+}
 
-        // 3. ТУН УДАХГҮЙ (Энийг нэмсэн тул нүүр хуудсанд харагдана)
-        $comingSoonGames = Game::where('tag', 'Тун удахгүй')->latest()->get();
-
-        // 4. КАТЕГОРИУД
-        $categories = Category::withCount('games')->get();
-
-        // Бүх хувьсагчийг View рүү дамжуулна
-        return view('welcome', compact('games', 'sliderGames', 'categories', 'comingSoonGames'));
-    }
 
     // 2. ADMIN DASHBOARD
     public function adminDashboard()
     {
         $games = Game::with('category')->latest()->get();
+        // Категорийг сүүлд нэмснээр нь эрэмбэлэх
         $categories = Category::orderBy('id', 'desc')->get(); 
+        
         return view('admin.dashboard', compact('games', 'categories'));
     }
 
     // 3. STORE (Шинэ тоглоом нэмэх)
     public function store(Request $request)
     {
+        // Validation - "numeric" гэдгийг авч хаясан тул Текст бичиж болно
         $request->validate([
             'title'       => 'required',
-            'price'       => 'required', // Текст байж болно (numeric хассан)
+            'price'       => 'required', 
             'img'         => 'required',
             'category_id' => 'required',
             'banner'      => 'nullable',
@@ -52,7 +42,7 @@ class GameController extends Controller
             'screenshot2' => 'nullable',
             'tag'         => 'nullable',
             'rating'      => 'nullable',
-            'release_date'=> 'nullable|date',
+            'release_date'=> 'nullable|date', // Огноо
             'min_os'      => 'nullable',
             'min_cpu'     => 'nullable',
             'min_gpu'     => 'nullable',
@@ -61,6 +51,7 @@ class GameController extends Controller
         ]);
 
         $data = $request->all();
+        // Checkbox handling
         $data['is_preorder'] = $request->has('is_preorder');
 
         Game::create($data);
@@ -81,7 +72,7 @@ class GameController extends Controller
     {
         $request->validate([
             'title'       => 'required',
-            'price'       => 'required', // Текст байж болно
+            'price'       => 'required', // numeric байхгүй
             'img'         => 'required',
             'category_id' => 'required',
             'banner'      => 'nullable',
@@ -109,18 +100,23 @@ class GameController extends Controller
     }
 
     // 6. SHOW SINGLE GAME
-   public function show($id)
+    public function show($id)
     {
-        $game = Game::findOrFail($id);
-        return view('game', ['game' => $game, 'id' => $id]);
+        $game = Game::with('category')->findOrFail($id);
+
+        $relatedGames = Game::where('category_id', $game->category_id)
+                            ->where('id', '!=', $id)
+                            ->inRandomOrder()
+                            ->take(4)
+                            ->get();
+
+        return view('game.show', compact('game', 'relatedGames'));
     }
 
     // 7. DELETE GAME
-    public function destroy($id)
-    {
-        $game = Game::findOrFail($id);
-        $game->delete();
-
-        return redirect()->back()->with('success', 'Game deleted successfully!');
-    }
+    public function destroyGame($id)
+{
+    Game::destroy($id);
+    return back()->with('success', 'Game deleted.');
+}
 }

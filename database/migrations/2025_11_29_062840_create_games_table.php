@@ -16,12 +16,13 @@ public function up(): void
         $table->string('title');
         $table->decimal('price', 10, 0)->default(0);
         $table->decimal('sale_price', 10, 0)->nullable();
-        $table->foreignId('category_id')->constrained()->onDelete('cascade');
-        $table->text('img'); // Cover Image (Босоо)
+        $table->foreignId('category_id')->constrained()->onDelete('cascade'); 
         
-        $table->string('banner')->nullable(); // <--- ЭНИЙГ НЭМЛЭЭ (Banner Image)
-        
+        $table->text('img');
+        $table->string('banner')->nullable();
         $table->string('trailer')->nullable();
+        $table->string('screenshot1')->nullable();
+        $table->string('screenshot2')->nullable();
         $table->string('min_os')->nullable();
         $table->string('min_cpu')->nullable();
         $table->string('min_gpu')->nullable();
@@ -29,15 +30,17 @@ public function up(): void
         $table->string('min_storage')->nullable();
         $table->text('description')->nullable();
         $table->string('tag')->nullable();
+        $table->decimal('rating', 2, 1)->nullable(); 
+      
+
         $table->timestamps();
     });
 }
-
     /**
      * Reverse the migrations.
      */
-    public function down(): void
+   public function down(): void
     {
-        //
+        Schema::dropIfExists('games'); // Энийг заавал нэмэх ёстой!
     }
 };
