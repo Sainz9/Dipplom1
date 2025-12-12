@@ -12,9 +12,11 @@ return new class extends Migration
     public function up()
 {
     Schema::table('games', function (Blueprint $table) {
-        // release_date баганыг нэмж байна (хоосон байж болно)
-        $table->date('release_date')->nullable()->after('tag');
+        if (!Schema::hasColumn('games', 'release_date')) {
+            $table->date('release_date')->nullable();
+        }
     });
+
 }
 
     /**
