@@ -5,7 +5,9 @@ use Illuminate\Database\Eloquent\Model;
 class Category extends Model {
     protected $fillable = ['name'];
     
-    public function games() {
-        return $this->hasMany(Game::class);
-    }
+   // withCount('games') ажиллахын тулд энэ хэрэгтэй
+public function games()
+{
+    return $this->belongsToMany(Game::class);
+}
 }

@@ -37,7 +37,12 @@
     </script>
 
     <style>
-        body { background-color: #0a0a0f; color: #e5e7eb; }
+        /* ЗАССАН: overflow-x-hidden нэмсэн тул баруун тийшээ scroll хийгдэхгүй */
+        body { 
+            background-color: #0a0a0f; 
+            color: #e5e7eb; 
+            overflow-x: hidden; 
+        }
         
         .swiper-button-next, .swiper-button-prev { 
             color: #00D4FF !important; 
@@ -62,7 +67,8 @@
         .custom-scroll::-webkit-scrollbar-thumb:hover { background: #00D4FF; }
     </style>
 </head>
-<body class="antialiased flex flex-col min-h-screen">
+{{-- ЗАССАН: overflow-x-hidden классыг энд бас нэмсэн --}}
+<body class="antialiased flex flex-col min-h-screen overflow-x-hidden">
 
     <nav class="fixed w-full z-50 top-0 bg-darkBG/90 backdrop-blur-xl border-b border-white/[0.05]">
         <div class="max-w-[1920px] mx-auto px-6 lg:px-12">
@@ -102,57 +108,52 @@
         <section class="relative h-[500px] md:h-[650px] w-full group overflow-hidden">
             <div class="swiper heroSwiper h-full w-full">
                 <div class="swiper-wrapper">
-                    
-                  @if(isset($sliderGames) && $sliderGames->count() > 0)
-    @foreach($sliderGames as $game)
+                    @if(isset($sliderGames) && $sliderGames->count() > 0)
+                        @foreach($sliderGames as $game)
+                            <div class="swiper-slide relative">
+                                <img src="{{ $game->banner ?? $game->img }}" class="w-full h-full object-cover object-top">
+                                <div class="absolute inset-0 bg-gradient-to-r from-darkBG via-darkBG/60 to-transparent"></div>
+                                <div class="absolute inset-0 bg-gradient-to-t from-darkBG via-transparent to-transparent"></div>
+                                
+                                <div class="absolute bottom-0 left-0 p-8 md:p-16 lg:p-24 max-w-4xl animate-fade-in-up">
+                                    
+                                    {{-- Зөвхөн 'Тун удахгүй' биш бол Tag-ийг харуулна --}}
+                                    @if($game->tag && $game->tag != 'Тун удахгүй')
+                                        <span class="bg-brand text-black text-xs font-black px-3 py-1.5 rounded mb-4 inline-block uppercase tracking-wider shadow-neon">
+                                            {{ $game->tag }}
+                                        </span>
+                                    @endif
 
-        @if($game->tag == 'Тун удахгүй')
-        <div class="swiper-slide relative">
-            <img src="{{ $game->banner ?? $game->img }}" 
-                 class="w-full h-full object-cover object-top">
+                                    <h1 class="text-4xl md:text-7xl font-black uppercase leading-none mb-6 text-white drop-shadow-2xl">
+                                        {{ $game->title }}
+                                    </h1>
 
-            <div class="absolute inset-0 bg-gradient-to-r from-darkBG via-darkBG/60 to-transparent"></div>
-            <div class="absolute inset-0 bg-gradient-to-t from-darkBG via-transparent to-transparent"></div>
-            
-            <div class="absolute bottom-0 left-0 p-8 md:p-16 lg:p-24 max-w-4xl animate-fade-in-up">
+                                    <p class="text-gray-300 text-sm md:text-lg mb-8 line-clamp-2 max-w-xl font-medium drop-shadow-md leading-relaxed">
+                                        {{ $game->description }}
+                                    </p>
 
-                <span class="bg-brand text-black text-xs font-black px-3 py-1.5 rounded mb-4 inline-block uppercase tracking-wider shadow-neon">
-                    {{ $game->tag }}
-                </span>
-
-                <h1 class="text-4xl md:text-7xl font-black uppercase leading-none mb-6 text-white drop-shadow-2xl">
-                    {{ $game->title }}
-                </h1>
-
-                <p class="text-gray-300 text-sm md:text-lg mb-8 line-clamp-2 max-w-xl font-medium drop-shadow-md leading-relaxed">
-                    {{ $game->description }}
-                </p>
-
-                <div class="flex items-center gap-4">
-                    <a href="{{ route('game.show', $game->id) }}" 
-                       class="bg-brand text-black px-10 py-4 font-bold rounded hover:bg-white transition-all hover:scale-105 uppercase text-sm tracking-widest shadow-neon">
-                        View Details
-                    </a>
-                </div>
-            </div>
-        </div>
-        @endif
-
-    @endforeach
-@endif
-
-
+                                    <div class="flex items-center gap-4">
+                                        @if($game->tag == 'Тун удахгүй')
+                                            <a href="{{ route('game.show', $game->id) }}" class="bg-purple-600 text-white px-10 py-4 font-bold rounded hover:bg-purple-500 transition-all hover:scale-105 uppercase text-sm tracking-widest shadow-[0_0_15px_rgba(147,51,234,0.5)]">
+                                                Тун удахгүй
+                                            </a>
+                                        @else
+                                            <a href="{{ route('game.show', $game->id) }}" class="bg-brand text-black px-10 py-4 font-bold rounded hover:bg-white transition-all hover:scale-105 uppercase text-sm tracking-widest shadow-neon">
+                                                View Details
+                                            </a>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    @endif
                 
-                
-             
-            </div>
         </section>
 
         <div class="py-12 px-4 md:px-8 lg:px-12 space-y-16 -mt-10 relative z-10">
             
-            {{-- 1. COMING SOON ROW (ТУСДАА) --}}
+            {{-- 1. COMING SOON ROW --}}
             @php
-                // "Тун удахгүй" Tag-тай бүх тоглоомыг энд шүүж авна
                 $comingSoonList = $games->where('tag', 'Тун удахгүй');
             @endphp
 
@@ -161,16 +162,16 @@
                 <div class="flex justify-between items-end mb-4 px-2">
                     <h2 class="text-2xl md:text-3xl font-bold text-white uppercase italic tracking-wide flex items-center gap-3">
                         <span class="w-1 h-8 bg-purple-600 rounded-full shadow-[0_0_15px_rgba(147,51,234,0.5)]"></span>
-                        Coming Soon (Тун удахгүй)
+                        Coming Soon
                     </h2>
-                    
-                    <div class="flex gap-2 opacity-0 group-hover/section:opacity-100 transition-opacity duration-300">
-                        <button class="prev-coming w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:bg-purple-600 hover:text-white transition-all">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                        </button>
-                        <button class="next-coming w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:bg-purple-600 hover:text-white transition-all">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                        </button>
+                    {{-- SVG Arrows (Байнга харагдана) --}}
+                    <div class="flex gap-2">
+<button class="prev-coming w-12 h-12 rounded-full border border-white/20 flex items-center justify-center hover:bg-purple-600 hover:text-white transition-all">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+</button>
+<button class="next-coming w-12 h-12 rounded-full border border-white/20 flex items-center justify-center hover:bg-purple-600 hover:text-white transition-all">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+</button>
                     </div>
                 </div>
 
@@ -182,11 +183,20 @@
                                 <img src="{{ $game->img }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy">
                                 <div class="absolute inset-0 bg-gradient-to-t from-darkBG via-transparent to-transparent opacity-90"></div>
                                 
+                                {{-- Coming Soon Badge --}}
                                 <div class="absolute top-2 right-2 bg-purple-600 text-white text-[10px] font-black px-2 py-1 rounded shadow-lg uppercase animate-pulse">Coming Soon</div>
-
+                                
                                 <div class="absolute bottom-0 p-4 w-full translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                                    {{-- Олон төрөл харуулах --}}
+                                    <div class="flex flex-wrap gap-1 mb-1">
+                                        @foreach($game->categories->take(3) as $c)
+                                            <span class="text-[9px] bg-purple-900/50 text-purple-200 border border-purple-500/30 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider backdrop-blur-md">
+                                                {{ Str::before($c->name, ' (') }}
+                                            </span>
+                                        @endforeach
+                                    </div>
+
                                     <h3 class="font-bold text-white truncate text-base mb-1 group-hover:text-purple-400 transition-colors">{{ $game->title }}</h3>
-                                    
                                     <div class="flex justify-between items-center mt-2">
                                         <span class="text-gray-400 font-bold text-xs uppercase tracking-wider border border-gray-600 px-2 py-0.5 rounded">
                                             {{ !empty($game->release_date) ? \Carbon\Carbon::parse($game->release_date)->format('Y-m-d') : 'TBA' }}
@@ -201,63 +211,67 @@
             </section>
             @endif
 
-            {{-- 
-                2. БУСАД КАТЕГОРИУД (ЭНГИЙН ТОГЛООМУУД)
-                Эндээс "Тун удахгүй" тоглоомуудыг НУУНА (@if($game->tag != 'Тун удахгүй'))
-            --}}
+            {{-- 2. CATEGORY LOOPS (Multi-Category Logic) --}}
             @if(isset($categories) && count($categories) > 0)
                 @foreach($categories as $category)
-                    {{-- "Тун удахгүй" БИШ тоглоом байгаа эсэхийг шалгана. Байхгүй бол гарчгийг нь ч гаргахгүй --}}
                     @php
-                        $regularGamesCount = $category->games->where('tag', '!=', 'Тун удахгүй')->count();
+                        // 'Тун удахгүй' tag-тай тоглоомуудыг эндээс хасна
+                        $catGames = $category->games->where('tag', '!=', 'Тун удахгүй');
                     @endphp
 
-                    @if($regularGamesCount > 0)
+                    @if($catGames->count() > 0)
                     <section class="relative group/section">
                         <div class="flex justify-between items-end mb-4 px-2">
                             <h2 class="text-2xl md:text-3xl font-bold text-white uppercase italic tracking-wide flex items-center gap-3">
                                 <span class="w-1 h-8 bg-brand rounded-full shadow-neon"></span>
                                 {{ $category->name }}
                             </h2>
-                            
-                            <div class="flex gap-2 opacity-0 group-hover/section:opacity-100 transition-opacity duration-300">
-                                <button class="prev-{{ $category->id }} w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:bg-brand hover:text-black hover:border-brand transition-all">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                                </button>
-                                <button class="next-{{ $category->id }} w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:bg-brand hover:text-black hover:border-brand transition-all">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                                </button>
+                            {{-- SVG Arrows (Байнга харагдана) --}}
+                            <div class="flex gap-2">
+                                <button class="prev-{{ $category->id }} w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:bg-brand hover:text-black hover:border-brand transition-all"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></button>
+                                <button class="next-{{ $category->id }} w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:bg-brand hover:text-black hover:border-brand transition-all"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>
                             </div>
                         </div>
 
                         <div class="swiper categorySwiper category-swiper-{{ $category->id }} !overflow-visible !pb-10">
                             <div class="swiper-wrapper">
-                                @foreach($category->games as $game)
-                                
-                                {{-- 
-                                    ХАМГИЙН ЧУХАЛ ХЭСЭГ: 
-                                    Хэрэв 'Тун удахгүй' бол ЭНГИЙН ЖАГСААЛТАД ХАРУУЛАХГҮЙ 
-                                --}}
-                                @if($game->tag != 'Тун удахгүй')
+                                @foreach($catGames as $game)
                                 <div class="swiper-slide transition-transform duration-300 hover:z-20 hover:scale-105">
                                     <a href="{{ route('game.show', $game->id) }}" class="block relative aspect-[3/4] rounded-xl overflow-hidden bg-[#1a1a20] border border-white/5 hover:border-brand/50 hover:shadow-neon group">
                                         <img src="{{ $game->img }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy">
                                         <div class="absolute inset-0 bg-gradient-to-t from-darkBG via-transparent to-transparent opacity-90"></div>
                                         
-                                        @if($game->discount)
-                                            <div class="absolute top-2 right-2 bg-brand text-black text-[10px] font-black px-2 py-1 rounded shadow-lg uppercase">{{ $game->discount }}</div>
+                                        @if($game->sale_price)
+                                            <div class="absolute top-2 right-2 bg-green-500 text-black text-[10px] font-black px-2 py-1 rounded shadow-lg uppercase">SALE</div>
                                         @elseif($game->tag)
                                             <div class="absolute top-2 right-2 bg-black/60 border border-white/10 text-white text-[10px] font-bold px-2 py-1 rounded backdrop-blur-sm">{{ $game->tag }}</div>
                                         @endif
 
                                         <div class="absolute bottom-0 p-4 w-full translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                                            
+                                            {{-- Олон төрөл харуулах --}}
+                                            <div class="flex flex-wrap gap-1 mb-1">
+                                                @foreach($game->categories->take(3) as $c)
+                                                    <span class="text-[9px] bg-brand/10 text-brand border border-brand/20 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider backdrop-blur-md">
+                                                        {{ Str::before($c->name, ' (') }}
+                                                    </span>
+                                                @endforeach
+                                            </div>
+
                                             <h3 class="font-bold text-white truncate text-base mb-1 group-hover:text-brand transition-colors">{{ $game->title }}</h3>
                                             
-                                            <div class="flex justify-between items-center mt-2">
+                                            <div class="flex justify-between items-center mt-1">
                                                 @if(is_numeric($game->price) && $game->price == 0)
                                                     <span class="text-brand font-bold text-sm tracking-wider">FREE</span>
                                                 @elseif(is_numeric($game->price))
-                                                    <span class="text-gray-300 font-bold text-sm">{{ number_format($game->price) }}₮</span>
+                                                    <div class="flex flex-col leading-none">
+                                                        @if($game->sale_price)
+                                                            <span class="text-[10px] text-gray-500 line-through">{{ number_format($game->price) }}₮</span>
+                                                            <span class="text-green-400 font-bold text-sm">{{ number_format($game->sale_price) }}₮</span>
+                                                        @else
+                                                            <span class="text-gray-300 font-bold text-sm">{{ number_format($game->price) }}₮</span>
+                                                        @endif
+                                                    </div>
                                                 @else
                                                     <span class="text-xs text-gray-400 font-bold">{{ $game->price }}</span>
                                                 @endif
@@ -269,7 +283,6 @@
                                         </div>
                                     </a>
                                 </div>
-                                @endif {{-- End If Check --}}
                                 @endforeach
                             </div>
                         </div>
@@ -311,7 +324,7 @@
             }
         });
 
-        // 3. Category Swipers
+        // 3. Category Swipers (Dynamic)
         @if(isset($categories))
             @foreach($categories as $category)
                 new Swiper('.category-swiper-{{ $category->id }}', {
@@ -358,5 +371,5 @@
             });
         }
     </script>
-</body>
+</body> 
 </html>

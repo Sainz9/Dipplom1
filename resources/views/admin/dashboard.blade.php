@@ -21,6 +21,10 @@
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #00D4FF; }
         input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #00D4FF; }
     </style>
 </head>
 <body class="bg-dark text-gray-300 font-sans antialiased text-sm min-h-screen flex flex-col">
@@ -46,7 +50,7 @@
         <div class="xl:col-span-12 flex items-end justify-between border-b border-white/5 pb-4 mb-2">
             <div>
                 <h1 class="text-3xl font-bold text-white tracking-tight">Game Management</h1>
-                <p class="text-gray-500 text-sm mt-1">Add new titles, edit prices, and manage categories.</p>
+                <p class="text-gray-500 text-sm mt-1">Create games, manage categories, and update prices.</p>
             </div>
             <div class="text-right">
                 <div class="text-2xl font-mono text-brand font-bold">{{ count($games) }}</div>
@@ -62,29 +66,6 @@
                     <div class="text-xs opacity-80">{{ session('success') }}</div>
                 </div>
             @endif
-
-            <div class="bg-card p-5 rounded-2xl border border-white/5 shadow-xl">
-                <h3 class="text-xs font-bold text-gray-400 uppercase mb-3">Manage Categories</h3>
-                <form action="{{ route('admin.category.store') }}" method="POST" class="flex gap-3 mb-4">
-                    @csrf
-                    <input type="text" name="name" placeholder="New Category Name" class="flex-1 bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm focus:border-brand focus:outline-none text-white transition-all">
-                    <button type="submit" class="bg-brand text-black px-4 py-2 rounded-lg font-bold text-xs uppercase hover:bg-white transition">Add</button>
-                </form>
-                <div class="flex flex-wrap gap-2 max-h-40 overflow-y-auto scrollbar-thin pr-1">
-                    @foreach($categories as $cat)
-                        <div class="group flex items-center bg-white/5 border border-white/5 rounded-lg px-3 py-1.5 hover:border-red-500/50 transition-colors">
-                            <span class="text-xs text-gray-300 font-medium mr-2">{{ $cat->name }}</span>
-                            <form action="{{ route('admin.category.destroy', $cat->id) }}" method="POST" onsubmit="return confirm('Delete {{ $cat->name }} category?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-gray-600 hover:text-red-500 transition-colors pt-1" title="Delete">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                </button>
-                            </form>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
 
             <div class="bg-card rounded-2xl border border-white/5 shadow-2xl overflow-hidden relative group">
                 <div class="h-1 w-full bg-gradient-to-r from-brand to-purple-600"></div>
@@ -104,8 +85,17 @@
                         </div>
                     @endif
 
+                    <form action="{{ route('admin.category.store') }}" method="POST" class="mb-6 pb-6 border-b border-white/5">
+                        @csrf
+                        <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Create New Category</label>
+                        <div class="flex gap-2">
+                            <input type="text" name="name" placeholder="e.g. RPG, FPS..." class="flex-1 bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm focus:border-brand focus:outline-none text-white">
+                            <button type="submit" class="bg-white/10 text-white px-3 py-2 rounded-lg font-bold text-xs uppercase hover:bg-brand hover:text-black transition">Add</button>
+                        </div>
+                    </form>
                     <form action="{{ route('admin.game.store') }}" method="POST" class="space-y-5">
                         @csrf
+                        
                         <div>
                             <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Game Title <span class="text-red-500">*</span></label>
                             <input type="text" name="title" placeholder="Enter game title..." class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand focus:ring-1 focus:ring-brand focus:outline-none text-white placeholder-gray-600 transition-all shadow-inner" required>
@@ -127,18 +117,29 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-4">
                             <div>
-                                <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Category</label>
-                                <div class="relative">
-                                    <select name="category_id" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand focus:outline-none text-white appearance-none cursor-pointer">
+                                <label class="block text-xs text-gray-400 font-semibold mb-2 ml-1">Select Categories <span class="text-red-500">*</span></label>
+                                <div class="bg-black/40 border border-white/10 rounded-xl p-3 max-h-40 overflow-y-auto custom-scrollbar">
+                                    <div class="grid grid-cols-2 gap-2">
                                         @foreach($categories as $cat)
-                                            <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                                            <div class="flex items-center justify-between group p-1 rounded hover:bg-white/5 transition">
+                                                <label class="flex items-center space-x-2 cursor-pointer w-full">
+                                                    <input type="checkbox" name="categories[]" value="{{ $cat->id }}" class="w-4 h-4 rounded border-gray-600 text-brand focus:ring-brand bg-gray-700">
+                                                    <span class="text-xs text-gray-300 group-hover:text-white">{{ $cat->name }}</span>
+                                                </label>
+                                                
+                                                {{-- DELETE CATEGORY BUTTON (Small 'x') --}}
+                                                <button form="delete-cat-{{ $cat->id }}" class="text-gray-600 hover:text-red-500 px-1 opacity-0 group-hover:opacity-100 transition">
+                                                    ×
+                                                </button>
+                                            </div>
                                         @endforeach
-                                    </select>
-                                    <div class="absolute right-4 top-3.5 pointer-events-none text-gray-500"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
+                                    </div>
                                 </div>
+                                <p class="text-[10px] text-gray-600 mt-1 ml-1">Check multiple categories.</p>
                             </div>
+
                             <div>
                                 <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Badge Tag</label>
                                 <div class="relative">
@@ -177,14 +178,23 @@
                                 <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">YouTube Trailer</label>
                                 <input type="text" name="trailer" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-xs focus:border-brand focus:outline-none text-gray-400 truncate font-mono" placeholder="https://youtube.com/...">
                             </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Screenshot 1 URL</label>
-                                    <input type="text" name="screenshot1" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-xs focus:border-brand focus:outline-none text-gray-400 truncate font-mono" placeholder="https://...">
-                                </div>
-                                <div>
-                                    <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Screenshot 2 URL</label>
-                                    <input type="text" name="screenshot2" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-xs focus:border-brand focus:outline-none text-gray-400 truncate font-mono" placeholder="https://...">
+
+                            <div class="border-t border-white/5 pt-4 mt-2">
+                                <label class="block text-xs text-gray-400 font-semibold mb-2 ml-1 flex justify-between items-center">
+                                    <span>Game Screenshots (Max 15)</span>
+                                    <span class="text-[10px] text-gray-600 font-normal">Scroll to see all</span>
+                                </label>
+                                
+                                <div class="grid grid-cols-1 gap-3 max-h-[200px] overflow-y-auto pr-2 custom-scrollbar bg-black/20 p-2 rounded-lg border border-white/5">
+                                    @for($i = 1; $i <= 15; $i++)
+                                        <div class="relative group">
+                                            <span class="absolute left-3 top-2.5 text-[10px] text-gray-600 font-mono font-bold select-none">#{{ $i }}</span>
+                                            <input type="text" 
+                                                   name="screenshots[]" 
+                                                   class="w-full bg-black/40 border border-white/10 rounded-lg pl-8 pr-3 py-2 text-xs focus:border-brand focus:outline-none text-gray-300 placeholder-gray-700 font-mono transition-colors hover:border-white/20 focus:bg-black/60" 
+                                                   placeholder="https://... image link">
+                                        </div>
+                                    @endfor
                                 </div>
                             </div>
                         </div>
@@ -209,6 +219,14 @@
                             Publish Game
                         </button>
                     </form>
+
+                    @foreach($categories as $cat)
+                        <form id="delete-cat-{{ $cat->id }}" action="{{ route('admin.category.destroy', $cat->id) }}" method="POST" onsubmit="return confirm('Delete {{ $cat->name }}?');" class="hidden">
+                            @csrf
+                            @method('DELETE')
+                        </form>
+                    @endforeach
+
                 </div>
             </div>
         </div>
@@ -233,7 +251,7 @@
                         <thead>
                             <tr class="bg-black/40 border-b border-white/5">
                                 <th class="py-4 px-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest w-[45%]">Game Details</th>
-                                <th class="py-4 px-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Category</th>
+                                <th class="py-4 px-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Categories</th>
                                 <th class="py-4 px-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Price</th>
                                 <th class="py-4 px-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest text-right">Actions</th>
                             </tr>
@@ -257,11 +275,21 @@
                                         </div>
                                     </div>
                                 </td>
+                                
                                 <td class="py-4 px-6 align-middle">
-                                    <span class="inline-block bg-white/5 hover:bg-white/10 px-3 py-1 rounded-full text-xs font-medium text-gray-300 border border-white/5 transition-colors">
-                                        {{ $game->category->name ?? 'None' }}
-                                    </span>
+                                    <div class="flex flex-wrap gap-1">
+                                        @foreach($game->categories as $category)
+                                            <span class="inline-block bg-white/5 hover:bg-white/10 px-2 py-0.5 rounded text-[10px] font-medium text-gray-300 border border-white/5 transition-colors">
+                                                {{ $category->name }}
+                                            </span>
+                                        @endforeach
+                                        
+                                        @if($game->categories->isEmpty())
+                                            <span class="text-gray-600 text-xs italic">No Category</span>
+                                        @endif
+                                    </div>
                                 </td>
+
                                 <td class="py-4 px-6 align-middle">
                                     <div class="flex flex-col">
                                         @if(is_numeric($game->price) && $game->price == 0)

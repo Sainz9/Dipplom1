@@ -11,7 +11,9 @@ return new class extends Migration
      */
 public function up(): void
 {
-    Schema::create('games', function (Blueprint $table) {
+Schema::table('games', function (Blueprint $table) {
+        $table->unsignedBigInteger('category_id')->nullable()->change();
+   
         $table->id();
         $table->string('title');
         $table->decimal('price', 10, 0)->default(0);
@@ -21,8 +23,7 @@ public function up(): void
         $table->text('img');
         $table->string('banner')->nullable();
         $table->string('trailer')->nullable();
-        $table->string('screenshot1')->nullable();
-        $table->string('screenshot2')->nullable();
+       $table->json('screenshots')->nullable();;
         $table->string('min_os')->nullable();
         $table->string('min_cpu')->nullable();
         $table->string('min_gpu')->nullable();

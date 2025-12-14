@@ -9,92 +9,110 @@ use App\Models\Category;
 class GamesController extends Controller
 {
     // 1. PUBLIC HOME PAGE
-public function index()
-{
-    $sliderGames = Game::latest()->take(5)->get();
+    public function index()
+    {
+        $games = Game::with('categories')->latest()->get(); 
+        $sliderGames = Game::whereNotNull('banner')->latest()->take(5)->get();
+        if ($sliderGames->isEmpty()) {
+            $sliderGames = Game::latest()->take(5)->get();
+        }
 
-    return view('admin.dashboard', compact('sliderGames'));
-}
+        $comingSoonGames = Game::where('tag', 'Тун удахгүй')->latest()->get();
+        $categories = Category::with('games')->get();
 
+        return view('welcome', compact('games', 'sliderGames', 'categories', 'comingSoonGames'));
+    }
 
     // 2. ADMIN DASHBOARD
     public function adminDashboard()
     {
-        $games = Game::with('category')->latest()->get();
-        // Категорийг сүүлд нэмснээр нь эрэмбэлэх
-        $categories = Category::orderBy('id', 'desc')->get(); 
-        
+        $games = Game::with('categories')->latest()->get();
+        $categories = Category::orderBy('name', 'asc')->get(); 
         return view('admin.dashboard', compact('games', 'categories'));
     }
 
-    // 3. STORE (Шинэ тоглоом нэмэх)
+    // 3. STORE NEW GAME
     public function store(Request $request)
     {
-        // Validation - "numeric" гэдгийг авч хаясан тул Текст бичиж болно
         $request->validate([
-            'title'       => 'required',
-            'price'       => 'required', 
-            'img'         => 'required',
-            'category_id' => 'required',
-            'banner'      => 'nullable',
-            'trailer'     => 'nullable',
-            'screenshot1' => 'nullable',
-            'screenshot2' => 'nullable',
-            'tag'         => 'nullable',
-            'rating'      => 'nullable',
-            'release_date'=> 'nullable|date', // Огноо
-            'min_os'      => 'nullable',
-            'min_cpu'     => 'nullable',
-            'min_gpu'     => 'nullable',
-            'min_ram'     => 'nullable',
-            'min_storage' => 'nullable',
+            'title'       => 'required|string|max:255',
+            'price'       => 'required',
+            'img'         => 'required|string|max:255',
+            'categories'  => 'required|array',
+            'categories.*'=> 'exists:categories,id',
+            'banner'      => 'nullable|string|max:65535',
+            'trailer'     => 'nullable|string|max:255',
+            'screenshots' => 'nullable|array',
+            'tag'         => 'nullable|string|max:100',
+            'release_date'=> 'nullable|date',
+            'min_os'      => 'nullable|string|max:100',
+            'min_cpu'     => 'nullable|string|max:255',
+            'min_gpu'     => 'nullable|string|max:255',
+            'min_ram'     => 'nullable|string|max:100',
+            'min_storage' => 'nullable|string|max:100',
+            'description' => 'nullable|string',
         ]);
 
-        $data = $request->all();
-        // Checkbox handling
-        $data['is_preorder'] = $request->has('is_preorder');
+        $data = $request->except(['categories', 'screenshots']);
 
-        Game::create($data);
+        // Screenshots array-ийг хадгалах
+        $data['screenshots'] = $request->input('screenshots') 
+            ? array_values(array_filter($request->input('screenshots'), fn($v) => $v !== null && $v !== ''))
+            : null;
+
+        $game = Game::create($data);
+
+        // Pivot table-д category холболт
+        if ($request->has('categories')) {
+            $game->categories()->attach($request->input('categories'));
+        }
 
         return redirect()->back()->with('success', 'Game added successfully!');
     }
 
-    // 4. SHOW EDIT FORM
+    // 4. EDIT FORM
     public function edit($id)
     {
-        $game = Game::findOrFail($id);
-        $categories = Category::orderBy('id', 'desc')->get();
+        $game = Game::with('categories')->findOrFail($id);
+        $categories = Category::orderBy('name', 'asc')->get();
         return view('admin.game.edit', compact('game', 'categories'));
     }
 
     // 5. UPDATE GAME
     public function update(Request $request, $id)
     {
+        $game = Game::findOrFail($id);
+
         $request->validate([
-            'title'       => 'required',
-            'price'       => 'required', // numeric байхгүй
-            'img'         => 'required',
-            'category_id' => 'required',
-            'banner'      => 'nullable',
-            'trailer'     => 'nullable',
-            'screenshot1' => 'nullable',
-            'screenshot2' => 'nullable',
-            'tag'         => 'nullable',
-            'rating'      => 'nullable',
+            'title'       => 'required|string|max:255',
+            'price'       => 'required',
+            'img'         => 'required|string|max:255',
+            'categories'  => 'nullable|array',
+            'categories.*'=> 'exists:categories,id',
+            'banner'      => 'nullable|string|max:65535',
+            'trailer'     => 'nullable|string|max:255',
+            'screenshots' => 'nullable|array',
+            'tag'         => 'nullable|string|max:100',
             'release_date'=> 'nullable|date',
-            'min_os'      => 'nullable',
-            'min_cpu'     => 'nullable',
-            'min_gpu'     => 'nullable',
-            'min_ram'     => 'nullable',
-            'min_storage' => 'nullable',
+            'min_os'      => 'nullable|string|max:100',
+            'min_cpu'     => 'nullable|string|max:255',
+            'min_gpu'     => 'nullable|string|max:255',
+            'min_ram'     => 'nullable|string|max:100',
+            'min_storage' => 'nullable|string|max:100',
+            'description' => 'nullable|string',
         ]);
 
-        $game = Game::findOrFail($id);
-        
-        $data = $request->all();
-        $data['is_preorder'] = $request->has('is_preorder');
-        
+        $data = $request->except(['categories', 'screenshots']);
+
+        $data['screenshots'] = $request->input('screenshots') 
+            ? array_values(array_filter($request->input('screenshots'), fn($v) => $v !== null && $v !== ''))
+            : null;
+
         $game->update($data);
+
+        if ($request->has('categories')) {
+            $game->categories()->sync($request->input('categories'));
+        }
 
         return redirect()->route('admin.dashboard')->with('success', 'Game updated successfully!');
     }
@@ -102,19 +120,21 @@ public function index()
     // 6. SHOW SINGLE GAME
     public function show($id)
     {
-        $game = Game::with('category')->findOrFail($id);
+        $game = Game::with('categories')->findOrFail($id);
 
-        $relatedGames = Game::where('category_id', $game->category_id)
+        $relatedGames = Game::whereHas('categories', function($query) use ($game) {
+                                $query->whereIn('categories.id', $game->categories->pluck('id'));
+                            })
                             ->where('id', '!=', $id)
                             ->inRandomOrder()
                             ->take(4)
                             ->get();
 
-        return view('game.show', compact('game', 'relatedGames'));
+        return view('game', compact('game', 'relatedGames'));
     }
 
     // 7. DELETE GAME
-    public function destroyGame($id)
+     public function destroyGame($id)
 {
     Game::destroy($id);
     return back()->with('success', 'Game deleted.');

@@ -11,10 +11,14 @@ return new class extends Migration
      */
    public function up(): void
 {
-    Schema::create('category_game', function (Blueprint $table) {
+  Schema::create('category_game', function (Blueprint $table) {
         $table->id();
+        // Тоглоомын ID
         $table->foreignId('game_id')->constrained()->onDelete('cascade');
+        // Категорийн ID
         $table->foreignId('category_id')->constrained()->onDelete('cascade');
+        
+        $table->timestamps();
     });
     Schema::table('games', function (Blueprint $table) {
         $table->date('release_date')->nullable(); // Огноо багана нэмж байна
