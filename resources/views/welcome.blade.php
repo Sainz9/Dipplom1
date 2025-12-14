@@ -109,43 +109,36 @@
             <div class="swiper heroSwiper h-full w-full">
                 <div class="swiper-wrapper">
                     @if(isset($sliderGames) && $sliderGames->count() > 0)
-                        @foreach($sliderGames as $game)
-                            <div class="swiper-slide relative">
-                                <img src="{{ $game->banner ?? $game->img }}" class="w-full h-full object-cover object-top">
-                                <div class="absolute inset-0 bg-gradient-to-r from-darkBG via-darkBG/60 to-transparent"></div>
-                                <div class="absolute inset-0 bg-gradient-to-t from-darkBG via-transparent to-transparent"></div>
-                                
-                                <div class="absolute bottom-0 left-0 p-8 md:p-16 lg:p-24 max-w-4xl animate-fade-in-up">
-                                    
-                                    {{-- Зөвхөн 'Тун удахгүй' биш бол Tag-ийг харуулна --}}
-                                    @if($game->tag && $game->tag != 'Тун удахгүй')
-                                        <span class="bg-brand text-black text-xs font-black px-3 py-1.5 rounded mb-4 inline-block uppercase tracking-wider shadow-neon">
-                                            {{ $game->tag }}
-                                        </span>
-                                    @endif
+                   @foreach($sliderGames->where('tag', 'Тун удахгүй') as $game)
+    <div class="swiper-slide relative">
+        <img src="{{ $game->banner ?? $game->img }}" class="w-full h-full object-cover object-top">
+        <div class="absolute inset-0 bg-gradient-to-r from-darkBG via-darkBG/60 to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-darkBG via-transparent to-transparent"></div>
+        
+        <div class="absolute bottom-0 left-0 p-8 md:p-16 lg:p-24 max-w-4xl animate-fade-in-up">
 
-                                    <h1 class="text-4xl md:text-7xl font-black uppercase leading-none mb-6 text-white drop-shadow-2xl">
-                                        {{ $game->title }}
-                                    </h1>
+            {{-- Coming Soon badge --}}
+            <span class="bg-purple-600 text-white text-xs font-black px-3 py-1.5 rounded mb-4 inline-block uppercase tracking-widest shadow-[0_0_15px_rgba(147,51,234,0.5)]">
+                Тун удахгүй
+            </span>
 
-                                    <p class="text-gray-300 text-sm md:text-lg mb-8 line-clamp-2 max-w-xl font-medium drop-shadow-md leading-relaxed">
-                                        {{ $game->description }}
-                                    </p>
+            <h1 class="text-4xl md:text-7xl font-black uppercase leading-none mb-6 text-white drop-shadow-2xl">
+                {{ $game->title }}
+            </h1>
 
-                                    <div class="flex items-center gap-4">
-                                        @if($game->tag == 'Тун удахгүй')
-                                            <a href="{{ route('game.show', $game->id) }}" class="bg-purple-600 text-white px-10 py-4 font-bold rounded hover:bg-purple-500 transition-all hover:scale-105 uppercase text-sm tracking-widest shadow-[0_0_15px_rgba(147,51,234,0.5)]">
-                                                Тун удахгүй
-                                            </a>
-                                        @else
-                                            <a href="{{ route('game.show', $game->id) }}" class="bg-brand text-black px-10 py-4 font-bold rounded hover:bg-white transition-all hover:scale-105 uppercase text-sm tracking-widest shadow-neon">
-                                                View Details
-                                            </a>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
+            <p class="text-gray-300 text-sm md:text-lg mb-8 line-clamp-2 max-w-xl font-medium drop-shadow-md leading-relaxed">
+                {{ $game->description }}
+            </p>
+
+            <div class="flex items-center gap-4">
+                <a href="{{ route('game.show', $game->id) }}" class="bg-purple-600 text-white px-10 py-4 font-bold rounded hover:bg-purple-500 transition-all hover:scale-105 uppercase text-sm tracking-widest shadow-[0_0_15px_rgba(147,51,234,0.5)]">
+                    Тун удахгүй
+                </a>
+            </div>
+        </div>
+    </div>
+@endforeach
+
                     @endif
                 
         </section>
