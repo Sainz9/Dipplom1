@@ -12,7 +12,7 @@ class GameController extends Controller
     public function index()
     {
         // Олон категоритой болсон тул 'categories' гэж дуудна
-        $games = Game::with('categories')->latest()->get(); 
+        $games = Game::with('categories')->latest()->get();
 
         $sliderGames = Game::whereNotNull('banner')->latest()->take(5)->get();
         if ($sliderGames->isEmpty()) {
@@ -31,7 +31,7 @@ class GameController extends Controller
     public function adminDashboard()
     {
         $games = Game::with('categories')->latest()->get();
-        $categories = Category::orderBy('name', 'asc')->get(); 
+        $categories = Category::orderBy('name', 'asc')->get();
         return view('admin.dashboard', compact('games', 'categories'));
     }
 
@@ -112,9 +112,9 @@ class GameController extends Controller
             'min_storage' => 'nullable',
             'description' => 'nullable',
         ]);
-        
+
         $data = $request->except(['categories', 'screenshots']);
-        
+
         // Screenshots шинэчлэх
         if ($request->has('screenshots')) {
             $screenshots = array_filter($request->input('screenshots'), function($value) {
@@ -122,7 +122,7 @@ class GameController extends Controller
             });
             $data['screenshots'] = array_values($screenshots);
         } else {
-            $data['screenshots'] = null; 
+            $data['screenshots'] = null;
         }
 
         // Үндсэн мэдээллийг шинэчлэх
@@ -140,7 +140,7 @@ class GameController extends Controller
     public function show($id)
     {
         $game = Game::with('categories')->findOrFail($id);
-        
+
         // Related Games (Олон төрлөөр шүүх)
         $relatedGames = Game::whereHas('categories', function($query) use ($game) {
             $query->whereIn('categories.id', $game->categories->pluck('id'));
