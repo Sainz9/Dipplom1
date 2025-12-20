@@ -11,11 +11,7 @@ class GameController extends Controller
 {
    
 
- public function index()
-{
-    // 1. Бүх тоглоомыг категоритай нь дуудна
-    $games = Game::with('categories')->latest()->get(); 
-    
+
     public function index()
     {
       
@@ -28,7 +24,7 @@ class GameController extends Controller
         $sliderGames = Game::latest()->take(5)->get();
     }
 
-}
+
     $comingSoonGames = Game::where('tag', 'Тун удахгүй')->latest()->get();
 
  
@@ -165,21 +161,7 @@ class GameController extends Controller
     }
 
 
-    // 6. SHOW SINGLE GAME
-    public function show($id)
-    {
-        $game = Game::with('categories')->findOrFail($id);
-
-        // Related Games (Олон төрлөөр шүүх)
-        $relatedGames = Game::whereHas('categories', function($query) use ($game) {
-            $query->whereIn('categories.id', $game->categories->pluck('id'));
-        })
-        ->where('id', '!=', $id)
-        ->inRandomOrder()
-        ->take(4)
-        ->get();
->>>>>>> 2d56e543f76639e5ece05418fe45ae9589a65f8c
-
+   
 
 public function show($id)
 {
@@ -241,5 +223,5 @@ public function download($id)
 
 }
 
-}
+
 
