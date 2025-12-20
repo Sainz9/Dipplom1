@@ -9,27 +9,28 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-  public function up()
+    public function up(): void
     {
-       Schema::table('reviews', function (Blueprint $table) {
-        $table->integer('rating')->nullable()->change();
-    
+        // Хэрэв reviews хүснэгт байхгүй бол шинээр үүсгэнэ
+        Schema::create('reviews', function (Blueprint $table) {
             $table->id();
+            
             // Хэрэглэгчийн ID (Хэн бичсэн бэ?)
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             
             // Тоглоомын ID (Ямар тоглоом бэ?)
             $table->foreignId('game_id')->constrained()->onDelete('cascade');
             
-            // Үнэлгээ (1-5 од)
-            $table->integer('rating');
+            // Үнэлгээ (1-5 од) - nullable болгосон тул од дарахгүй зөвхөн сэтгэгдэл бичиж болно
+            $table->integer('rating')->nullable();
             
-            // Сэтгэгдэл (Заавал биш)
+            // Сэтгэгдэл
             $table->text('comment')->nullable();
             
-            $table->timestamps(); // Created_at, Updated_at
+            $table->timestamps();
         });
     }
+
     /**
      * Reverse the migrations.
      */
