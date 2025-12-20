@@ -10,6 +10,9 @@ class PaymentController extends Controller
 {
     public function process(Request $request)
     {
+        if (!auth()->check()) {
+        return redirect()->back()->with('auth_error', 'Та эхлээд системд нэвтрэх шаардлагатай.');
+    }
         $request->validate([
             'payment_method_ui' => 'required',
             'game_id' => 'required',
@@ -82,4 +85,5 @@ class PaymentController extends Controller
     {
         return view('payment-success');
     }
+    
 }

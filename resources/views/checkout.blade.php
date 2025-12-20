@@ -42,6 +42,7 @@
         label:hover .bank-logo { filter: grayscale(0%) opacity(1); }
     </style>
 </head>
+
 <body class="antialiased min-h-screen flex flex-col relative selection:bg-brand selection:text-black">
 
     <div class="fixed inset-0 pointer-events-none z-0">
@@ -81,26 +82,21 @@
                 <span class="w-1.5 h-8 bg-gradient-to-b from-brand to-purple-600 rounded-full"></span>
                 Төлбөрийн мэдээлэл
             </h1>
-
-            @guest
-            <div class="bg-darkSurface/50 border border-white/10 rounded-2xl p-6 mb-8 hover:border-brand/30 transition-colors">
-                <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
-                    <span class="bg-white/10 text-xs w-6 h-6 rounded flex items-center justify-center text-gray-400">1</span>
-                    Хувийн мэдээлэл
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-2">
-                        <label class="block text-[10px] text-gray-500 uppercase font-bold tracking-wider">Имэйл хаяг</label>
-                        <input type="email" class="w-full bg-[#050507] border border-white/10 rounded-xl p-3 text-white focus:border-brand focus:ring-1 focus:ring-brand focus:outline-none placeholder-gray-700 transition-all text-sm" placeholder="name@example.com">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="block text-[10px] text-gray-500 uppercase font-bold tracking-wider">Утасны дугаар</label>
-                        <input type="text" class="w-full bg-[#050507] border border-white/10 rounded-xl p-3 text-white focus:border-brand focus:ring-1 focus:ring-brand focus:outline-none placeholder-gray-700 transition-all text-sm" placeholder="9911....">
-                    </div>
-                </div>
+@if(session('auth_error'))
+    <div class="mb-6 animate-bounce">
+        <div class="bg-red-500/10 border border-red-500/50 rounded-2xl p-4 flex items-center gap-4 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
+            <div class="bg-red-500 rounded-full p-2">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
             </div>
-            @endguest
-
+            <div class="flex-1">
+                <p class="text-white font-bold text-sm">{{ session('auth_error') }}</p>
+                <a href="{{ route('login') }}" class="text-brand text-xs font-black uppercase tracking-widest hover:underline mt-1 inline-block">Одоо нэвтрэх →</a>
+            </div>
+        </div>
+    </div>
+@endif
             <div class="bg-darkSurface/50 border border-white/10 rounded-2xl p-6 hover:border-brand/30 transition-colors">
                 <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
                     <span class="bg-white/10 text-xs w-6 h-6 rounded flex items-center justify-center text-gray-400">
@@ -257,12 +253,12 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="mt-6 group relative w-full overflow-hidden rounded-xl bg-brand p-4 text-center font-black uppercase italic tracking-widest text-black shadow-[0_0_20px_rgba(0,212,255,0.4)] transition-all hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(0,212,255,0.6)]">
-                        <span class="absolute inset-0 h-full w-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full transition-transform duration-700 group-hover:translate-x-full"></span>
-                        <span class="relative flex items-center justify-center gap-2">
+                  <button type="submit" class="mt-6 w-full rounded-xl bg-brand p-4 text-center font-black uppercase italic tracking-widest text-black shadow-[0_0_20px_rgba(0,212,255,0.4)] transition-all hover:scale-[1.02]">
+                        @auth
                             Төлбөр төлөх
-                            <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                        </span>
+                        @else
+                            Нэвтэрч үргэлжлүүлэх
+                        @endauth
                     </button>
                     
                     <div class="mt-4 text-center">
