@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Game;
 use App\Models\Category;
-
+use App\Models\Order; // !!! ЗАХИАЛГА ШАЛГАХАД ХЭРЭГТЭЙ
+use Illuminate\Support\Facades\Auth;
 class GamesController extends Controller
 {
-    // 1. PUBLIC HOME PAGE
+    
     public function index()
     {
         $games = Game::with('categories')->latest()->get(); 
@@ -23,7 +24,6 @@ class GamesController extends Controller
         return view('welcome', compact('games', 'sliderGames', 'categories', 'comingSoonGames'));
     }
 
-    // 2. ADMIN DASHBOARD
     public function adminDashboard()
     {
         $games = Game::with('categories')->latest()->get();
@@ -31,7 +31,6 @@ class GamesController extends Controller
         return view('admin.dashboard', compact('games', 'categories'));
     }
 
-    // 3. STORE NEW GAME
     public function store(Request $request)
     {
         $request->validate([
@@ -55,14 +54,13 @@ class GamesController extends Controller
 
         $data = $request->except(['categories', 'screenshots']);
 
-        // Screenshots array-ийг хадгалах
+     
         $data['screenshots'] = $request->input('screenshots') 
             ? array_values(array_filter($request->input('screenshots'), fn($v) => $v !== null && $v !== ''))
             : null;
 
         $game = Game::create($data);
 
-        // Pivot table-д category холболт
         if ($request->has('categories')) {
             $game->categories()->attach($request->input('categories'));
         }
@@ -70,7 +68,7 @@ class GamesController extends Controller
         return redirect()->back()->with('success', 'Game added successfully!');
     }
 
-    // 4. EDIT FORM
+
     public function edit($id)
     {
         $game = Game::with('categories')->findOrFail($id);
@@ -78,7 +76,6 @@ class GamesController extends Controller
         return view('admin.game.edit', compact('game', 'categories'));
     }
 
-    // 5. UPDATE GAME
     public function update(Request $request, $id)
     {
         $game = Game::findOrFail($id);
@@ -117,7 +114,7 @@ class GamesController extends Controller
         return redirect()->route('admin.dashboard')->with('success', 'Game updated successfully!');
     }
 
-    // 6. SHOW SINGLE GAME
+
     public function show($id)
     {
         $game = Game::with('categories')->findOrFail($id);
@@ -133,10 +130,14 @@ class GamesController extends Controller
         return view('game', compact('game', 'relatedGames'));
     }
 
-    // 7. DELETE GAME
+  
      public function destroyGame($id)
 {
     Game::destroy($id);
     return back()->with('success', 'Game deleted.');
+}
+public function about()
+{
+    return view('profile.about');
 }
 }

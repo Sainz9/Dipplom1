@@ -9,24 +9,26 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-   public function up(): void
-{
-  Schema::create('category_game', function (Blueprint $table) {
-        $table->id();
-        // Тоглоомын ID
-        $table->foreignId('game_id')->constrained()->onDelete('cascade');
-        // Категорийн ID
-        $table->foreignId('category_id')->constrained()->onDelete('cascade');
-        
-        $table->timestamps();
-    });
-    Schema::table('games', function (Blueprint $table) {
-        $table->date('release_date')->nullable(); // Огноо багана нэмж байна
-    });
-}
+    public function up(): void
+    {
+        // Хэрэв хүснэгт аль хэдийн байвал алдаа өгөхгүйн тулд эхлээд шалгана
+        if (!Schema::hasTable('category_game')) {
+            Schema::create('category_game', function (Blueprint $table) {
+                $table->id();
+                
+                // Game ID (Гадаад түлхүүр)
+                $table->foreignId('game_id')->constrained()->onDelete('cascade');
+                
+                // Category ID (Гадаад түлхүүр)
+                $table->foreignId('category_id')->constrained()->onDelete('cascade');
+                
+                $table->timestamps();
+            });
+        }
+    }
 
     /**
-     * Reverse the migrations.
+     * Reverse the migrations.we
      */
     public function down(): void
     {

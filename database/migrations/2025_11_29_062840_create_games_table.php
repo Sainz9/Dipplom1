@@ -9,39 +9,53 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-public function up(): void
-{
-Schema::table('games', function (Blueprint $table) {
-        $table->unsignedBigInteger('category_id')->nullable()->change();
-   
-        $table->id();
-        $table->string('title');
-        $table->decimal('price', 10, 0)->default(0);
-        $table->decimal('sale_price', 10, 0)->nullable();
-        $table->foreignId('category_id')->constrained()->onDelete('cascade'); 
-        
-        $table->text('img');
-        $table->string('banner')->nullable();
-        $table->string('trailer')->nullable();
-       $table->json('screenshots')->nullable();;
-        $table->string('min_os')->nullable();
-        $table->string('min_cpu')->nullable();
-        $table->string('min_gpu')->nullable();
-        $table->string('min_ram')->nullable();
-        $table->string('min_storage')->nullable();
-        $table->text('description')->nullable();
-        $table->string('tag')->nullable();
-        $table->decimal('rating', 2, 1)->nullable(); 
-      
+    public function up(): void
+    {
+        Schema::create('games', function (Blueprint $table) {
+            $table->id();
+            
+            // Foreign Key (Category) - change() гэдгийг хассан
+            $table->foreignId('category_id')->nullable()->constrained()->onDelete('cascade'); 
+            
+            $table->string('title');
+            
+            // Үнэ (String эсвэл Decimal, таны сонголтоор. Би String болголоо учир нь та "Тун удахгүй" гэж бичнэ гэсэн)
+            $table->string('price'); 
+            $table->decimal('sale_price', 10, 0)->nullable();
+            
+            $table->text('img');
+            $table->string('banner')->nullable();
+            $table->string('trailer')->nullable();
+            $table->json('screenshots')->nullable();
+            
+            // Recommended Requirements (Зөвлөмжит)
+            $table->string('rec_os')->nullable();
+            $table->string('rec_cpu')->nullable();
+            $table->string('rec_gpu')->nullable();
+            $table->string('rec_ram')->nullable();
+            $table->string('rec_storage')->nullable();
 
-        $table->timestamps();
-    });
-}
+            // Minimum Requirements (Хамгийн бага) - ЭДГЭЭРИЙГ НЭМЭХ ХЭРЭГТЭЙ
+            $table->string('min_os')->nullable();     // <-- Энэ дутуу байсан
+            $table->string('min_cpu')->nullable();    // <-- Энэ дутуу байсан
+            $table->string('min_gpu')->nullable();    // <-- Энэ дутуу байсан
+            $table->string('min_ram')->nullable();    // <-- Энэ дутуу байсан
+            $table->string('min_storage')->nullable();
+
+            $table->text('description')->nullable();
+            $table->string('tag')->nullable();
+            $table->decimal('rating', 2, 1)->nullable(); 
+            $table->date('release_date')->nullable(); // Release date нэмэв
+
+            $table->timestamps();
+        });
+    }
+
     /**
      * Reverse the migrations.
      */
-   public function down(): void
+    public function down(): void
     {
-        Schema::dropIfExists('games'); // Энийг заавал нэмэх ёстой!
+        Schema::dropIfExists('games');
     }
 };

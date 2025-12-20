@@ -9,16 +9,14 @@ class CategoryController extends Controller
 {
     public function index()
 {
-    // 1. БҮХ ТОГЛООМ (Category-г нь хамт дуудна - ЭНЭ ЧУХАЛ)
+  
     $games = Game::with('category')->latest()->get(); 
 
-    // 2. SLIDER
     $sliderGames = Game::whereNotNull('banner')->latest()->take(3)->get();
     if ($sliderGames->isEmpty()) {
         $sliderGames = Game::latest()->take(3)->get();
     }
 
-    // 3. КАТЕГОРИУД (Хоосон байсан ч харуулна)
     $categories = Category::withCount('games')->get();
 
     return view('welcome', [
@@ -40,7 +38,7 @@ class CategoryController extends Controller
         return redirect()->back()->with('success', 'Category added successfully!');
     }
 
-    // Төрөл устгах
+
     public function destroy($id)
     {
         $category = Category::findOrFail($id);

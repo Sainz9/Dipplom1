@@ -31,15 +31,26 @@
 
     <nav class="border-b border-white/5 bg-surface/80 backdrop-blur-md sticky top-0 z-50">
         <div class="max-w-[1600px] mx-auto px-6 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-4">
-                <div class="text-2xl font-black italic text-white tracking-tighter">Play<span class="text-brand">Vision</span></div>
-                <span class="bg-white/5 border border-white/5 text-gray-400 text-xs px-2 py-0.5 rounded uppercase tracking-widest font-bold">Admin</span>
+            <div class="flex items-center gap-8">
+                <div class="flex items-center gap-4">
+                    <div class="text-2xl font-black italic text-white tracking-tighter">Play<span class="text-brand">Vision</span></div>
+                    <span class="bg-white/5 border border-white/5 text-gray-400 text-xs px-2 py-0.5 rounded uppercase tracking-widest font-bold">Admin</span>
+                </div>
+                
+                <div class="hidden md:flex gap-1 bg-white/5 p-1 rounded-lg">
+                    <a href="{{ route('admin.dashboard') }}" class="px-4 py-1.5 rounded-md bg-brand text-black font-bold text-xs uppercase shadow-lg">Games</a>
+                    <a href="{{ route('admin.orders.index') }}" class="px-4 py-1.5 rounded-md text-gray-400 hover:text-white font-bold text-xs uppercase hover:bg-white/5 transition-all">Orders</a>
+                </div>
             </div>
+
             <div class="flex items-center gap-6">
-                <a href="/" class="text-xs font-medium text-gray-400 hover:text-white transition-colors">Open Website</a>
+                <a href="/" class="text-xs font-medium text-gray-400 hover:text-white transition-colors flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    Open Website
+                </a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button class="text-xs font-bold text-red-500 hover:text-red-400 transition uppercase tracking-wide">Log Out</button>
+                    <button class="text-xs font-bold text-red-500 hover:text-red-400 transition uppercase tracking-wide border border-red-500/20 hover:border-red-500/50 px-3 py-1.5 rounded-lg">Log Out</button>
                 </form>
             </div>
         </div>
@@ -52,16 +63,28 @@
                 <h1 class="text-3xl font-bold text-white tracking-tight">Game Management</h1>
                 <p class="text-gray-500 text-sm mt-1">Create games, manage categories, and update prices.</p>
             </div>
-            <div class="text-right">
-                <div class="text-2xl font-mono text-brand font-bold">{{ count($games) }}</div>
-                <div class="text-xs text-gray-500 uppercase font-bold tracking-wider">Total Games</div>
+            <div class="text-right flex gap-6">
+                <div class="text-right">
+                    <div class="text-2xl font-mono text-green-500 font-bold">
+                        {{ $games->filter(fn($g) => is_numeric($g->price) && $g->price == 0)->count() }}
+                    </div>
+                    <div class="text-xs text-gray-500 uppercase font-bold tracking-wider">Free Games</div>
+                </div>
+                <div class="text-right">
+                    <div class="text-2xl font-mono text-brand font-bold">{{ count($games) }}</div>
+                    <div class="text-xs text-gray-500 uppercase font-bold tracking-wider">Total Games</div>
+                </div>
+                <div class="text-right">
+                    <div class="text-2xl font-mono text-purple-500 font-bold">{{ count($categories) }}</div>
+                    <div class="text-xs text-gray-500 uppercase font-bold tracking-wider">Categories</div>
+                </div>
             </div>
         </div>
         
         <div class="xl:col-span-4 space-y-6">
             
             @if(session('success'))
-                <div class="bg-green-500/10 border-l-4 border-green-500 text-green-400 p-4 rounded-r shadow-lg relative overflow-hidden">
+                <div class="bg-green-500/10 border-l-4 border-green-500 text-green-400 p-4 rounded-r shadow-lg relative overflow-hidden animate-pulse">
                     <div class="font-bold text-sm">Success</div>
                     <div class="text-xs opacity-80">{{ session('success') }}</div>
                 </div>
@@ -93,6 +116,7 @@
                             <button type="submit" class="bg-white/10 text-white px-3 py-2 rounded-lg font-bold text-xs uppercase hover:bg-brand hover:text-black transition">Add</button>
                         </div>
                     </form>
+
                     <form action="{{ route('admin.game.store') }}" method="POST" class="space-y-5">
                         @csrf
                         
@@ -103,7 +127,7 @@
 
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Price (Text Allowed) <span class="text-red-500">*</span></label>
+                                <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Price <span class="text-red-500">*</span></label>
                                 <div class="relative">
                                     <input type="text" name="price" placeholder="0 or Тун удахгүй" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand focus:outline-none text-white font-mono" required>
                                 </div>
@@ -128,11 +152,7 @@
                                                     <input type="checkbox" name="categories[]" value="{{ $cat->id }}" class="w-4 h-4 rounded border-gray-600 text-brand focus:ring-brand bg-gray-700">
                                                     <span class="text-xs text-gray-300 group-hover:text-white">{{ $cat->name }}</span>
                                                 </label>
-                                                
-                                                {{-- DELETE CATEGORY BUTTON (Small 'x') --}}
-                                                <button form="delete-cat-{{ $cat->id }}" class="text-gray-600 hover:text-red-500 px-1 opacity-0 group-hover:opacity-100 transition">
-                                                    ×
-                                                </button>
+                                                <button form="delete-cat-{{ $cat->id }}" class="text-gray-600 hover:text-red-500 px-1 opacity-0 group-hover:opacity-100 transition" title="Delete Category">×</button>
                                             </div>
                                         @endforeach
                                     </div>
@@ -141,14 +161,17 @@
                             </div>
 
                             <div>
-                                <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Badge Tag</label>
+                                <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Game Status / Award</label>
                                 <div class="relative">
                                     <select name="tag" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand focus:outline-none text-white appearance-none cursor-pointer">
-                                        <option value="">No Badge</option>
-                                        <option value="Тун удахгүй" class="text-brand font-bold">★ Тун удахгүй (Slider)</option>
-                                        <option value="Шинэ" class="text-green-400">Шинэ</option>
-                                        <option value="Захиалах" class="text-orange-500">Захиалах</option>
-                                        <option value="Дуусж байгаа" class="text-red-400">Дуусж байгаа</option>
+                                        <option value="">Тэмдэглэгээгүй (No Badge)</option>
+                                        <option value="FreeGame" class="text-green-500 font-bold">🎁 Free Game (Үнэгүй)</option> <option value="GOTY" class="text-yellow-400 font-black">🏆 Game of the Year (Оны шилдэг)</option>
+                                        <option value="BestSelling" class="text-blue-400 font-bold">💎 Best Selling (Их зарагдсан)</option>
+                                        <option value="EditorsChoice" class="text-purple-400 font-bold">🎖️ Editor's Choice (Онцлох)</option>
+                                        <option value="Шинэ" class="text-green-400">🔥 Шинэ (New)</option>
+                                        <option value="Эрэлттэй" class="text-orange-400">⚡ Эрэлттэй (Trending)</option>
+                                        <option value="Тун удахгүй" class="text-gray-400">🚀 Тун удахгүй (Coming Soon)</option>
+                                        <option value="Хямдралтай" class="text-pink-400">🏷️ Хямдралтай (Sale)</option>
                                     </select>
                                     <div class="absolute right-4 top-3.5 pointer-events-none text-gray-500"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
                                 </div>
@@ -157,9 +180,7 @@
 
                         <div>
                             <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Release Date</label>
-                            <div class="relative">
-                                <input type="date" name="release_date" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand focus:outline-none text-white appearance-none">
-                            </div>
+                            <input type="date" name="release_date" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand focus:outline-none text-white appearance-none">
                         </div>
 
                         <div class="space-y-4 pt-2">
@@ -179,20 +200,20 @@
                                 <input type="text" name="trailer" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-xs focus:border-brand focus:outline-none text-gray-400 truncate font-mono" placeholder="https://youtube.com/...">
                             </div>
 
+                            <div>
+                                <label class="block text-xs text-green-400 font-semibold mb-1.5 ml-1">Download Link (Татах холбоос)</label>
+                                <input type="text" name="download_link" class="w-full bg-black/40 border border-green-500/30 rounded-xl px-4 py-3 text-xs focus:border-green-500 focus:outline-none text-green-300 truncate font-mono" placeholder="https://drive.google.com/...">
+                            </div>
                             <div class="border-t border-white/5 pt-4 mt-2">
                                 <label class="block text-xs text-gray-400 font-semibold mb-2 ml-1 flex justify-between items-center">
                                     <span>Game Screenshots (Max 15)</span>
                                     <span class="text-[10px] text-gray-600 font-normal">Scroll to see all</span>
                                 </label>
-                                
                                 <div class="grid grid-cols-1 gap-3 max-h-[200px] overflow-y-auto pr-2 custom-scrollbar bg-black/20 p-2 rounded-lg border border-white/5">
                                     @for($i = 1; $i <= 15; $i++)
                                         <div class="relative group">
                                             <span class="absolute left-3 top-2.5 text-[10px] text-gray-600 font-mono font-bold select-none">#{{ $i }}</span>
-                                            <input type="text" 
-                                                   name="screenshots[]" 
-                                                   class="w-full bg-black/40 border border-white/10 rounded-lg pl-8 pr-3 py-2 text-xs focus:border-brand focus:outline-none text-gray-300 placeholder-gray-700 font-mono transition-colors hover:border-white/20 focus:bg-black/60" 
-                                                   placeholder="https://... image link">
+                                            <input type="text" name="screenshots[]" class="w-full bg-black/40 border border-white/10 rounded-lg pl-8 pr-3 py-2 text-xs focus:border-brand focus:outline-none text-gray-300 placeholder-gray-700 font-mono transition-colors hover:border-white/20 focus:bg-black/60" placeholder="https://... image link">
                                         </div>
                                     @endfor
                                 </div>
@@ -200,21 +221,40 @@
                         </div>
 
                         <div>
-                             <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Description</label>
-                             <textarea name="description" rows="3" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand focus:outline-none text-white resize-none placeholder-gray-700"></textarea>
+                            <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Description</label>
+                            <textarea name="description" rows="3" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand focus:outline-none text-white resize-none placeholder-gray-700"></textarea>
                         </div>
 
-                        <div class="bg-black/20 p-4 rounded-xl border border-white/5">
-                            <h3 class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3">System Requirements</h3>
-                            <div class="grid grid-cols-2 gap-3">
-                                <input type="text" name="min_os" placeholder="OS" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none">
-                                <input type="text" name="min_cpu" placeholder="CPU" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none">
-                                <input type="text" name="min_gpu" placeholder="GPU" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none">
-                                <input type="text" name="min_ram" placeholder="RAM" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none">
-                                <input type="text" name="min_storage" placeholder="Storage" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none col-span-2">
+                        <div class="space-y-3">
+                            <div class="bg-black/20 p-4 rounded-xl border border-white/5 relative group">
+                                <div class="absolute top-0 left-0 w-1 h-full bg-red-500/50 rounded-l-xl"></div>
+                                <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 flex justify-between">
+                                    <span>Хамгийн бага (Minimum)</span>
+                                </h3>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <input type="text" name="min_os" placeholder="OS" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none placeholder-gray-600">
+                                    <input type="text" name="min_cpu" placeholder="CPU" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none placeholder-gray-600">
+                                    <input type="text" name="min_gpu" placeholder="GPU" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none placeholder-gray-600">
+                                    <input type="text" name="min_ram" placeholder="RAM" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none placeholder-gray-600">
+                                    <input type="text" name="min_storage" placeholder="Storage" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none col-span-2 placeholder-gray-600">
+                                </div>
+                            </div>
+
+                            <div class="bg-black/20 p-4 rounded-xl border border-white/5 relative group">
+                                <div class="absolute top-0 left-0 w-1 h-full bg-green-500/50 rounded-l-xl"></div>
+                                <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 flex justify-between">
+                                    <span>Зөвлөмжит (Recommended)</span>
+                                </h3>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <input type="text" name="rec_os" placeholder="OS" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none placeholder-gray-600">
+                                    <input type="text" name="rec_cpu" placeholder="CPU" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none placeholder-gray-600">
+                                    <input type="text" name="rec_gpu" placeholder="GPU" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none placeholder-gray-600">
+                                    <input type="text" name="rec_ram" placeholder="RAM" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none placeholder-gray-600">
+                                    <input type="text" name="rec_storage" placeholder="Storage" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none col-span-2 placeholder-gray-600">
+                                </div>
                             </div>
                         </div>
-
+                        
                         <button type="submit" class="w-full bg-gradient-to-r from-brand to-cyan-600 text-black py-4 rounded-xl font-black text-sm uppercase tracking-widest shadow-[0_0_20px_rgba(0,212,255,0.2)] hover:shadow-[0_0_30px_rgba(0,212,255,0.4)] hover:scale-[1.02] active:scale-[0.98] transition-all">
                             Publish Game
                         </button>
@@ -238,16 +278,16 @@
                     <div class="flex items-center gap-3">
                         <h2 class="text-lg font-bold text-white">Library</h2>
                         <div class="h-4 w-[1px] bg-gray-700"></div>
-                        <input type="text" placeholder="Search games..." class="bg-transparent border-none text-sm focus:ring-0 text-white placeholder-gray-600 w-64">
+                        <input type="text" id="gameSearch" placeholder="Search games..." class="bg-transparent border-none text-sm focus:ring-0 text-white placeholder-gray-600 w-64" onkeyup="filterGames()">
                     </div>
                     <div class="flex gap-2">
-                        <button class="bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg text-xs font-bold text-gray-400 hover:text-white transition">All</button>
-                        <button class="bg-transparent hover:bg-white/5 px-3 py-1.5 rounded-lg text-xs font-bold text-gray-500 hover:text-white transition">On Sale</button>
+                        <button onclick="filterType('all')" class="filter-btn bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg text-xs font-bold text-gray-400 hover:text-white transition active">All</button>
+                        <button onclick="filterType('free')" class="filter-btn bg-green-500/10 hover:bg-green-500/20 px-3 py-1.5 rounded-lg text-xs font-bold text-green-500 transition">Free Games</button>
                     </div>
                 </div>
                 
                 <div class="overflow-x-auto flex-1">
-                    <table class="w-full text-left border-collapse">
+                    <table class="w-full text-left border-collapse" id="gamesTable">
                         <thead>
                             <tr class="bg-black/40 border-b border-white/5">
                                 <th class="py-4 px-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest w-[45%]">Game Details</th>
@@ -258,18 +298,40 @@
                         </thead>
                         <tbody class="divide-y divide-white/5">
                             @foreach($games as $game)
-                            <tr class="hover:bg-white/[0.02] transition-colors group">
+                            <tr class="hover:bg-white/[0.02] transition-colors group game-row" data-price="{{ $game->price }}">
                                 <td class="py-4 px-6">
                                     <div class="flex items-start gap-5">
                                         <div class="relative w-12 h-16 shrink-0 rounded-lg overflow-hidden shadow-lg border border-white/10 group-hover:border-brand/50 transition-colors">
                                             <img src="{{ $game->img }}" class="w-full h-full object-cover">
                                         </div>
                                         <div class="pt-1">
-                                            <div class="font-bold text-base text-gray-200 group-hover:text-brand transition-colors leading-tight">{{ $game->title }}</div>
+                                            <div class="font-bold text-base text-gray-200 group-hover:text-brand transition-colors leading-tight game-title">{{ $game->title }}</div>
                                             
                                             <div class="flex flex-wrap items-center gap-2 mt-2">
-                                                @if($game->tag)
-                                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded border text-gray-400 bg-gray-500/10 border-gray-500/20">{{ $game->tag }}</span>
+                                                @php
+                                                    $currentTag = $game->tag;
+                                                    if(empty($currentTag) && $game->sale_price) {
+                                                        $currentTag = 'Хямдралтай';
+                                                    }
+                                                @endphp
+
+                                                @if(!empty($currentTag))
+                                                    @php
+                                                        $badgeStyle = match($currentTag) {
+                                                            'FreeGame'      => 'bg-green-500/20 text-green-400 border-green-500/50',
+                                                            'GOTY'          => 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50',
+                                                            'BestSelling'   => 'bg-blue-500/20 text-blue-400 border-blue-500/50',
+                                                            'EditorsChoice' => 'bg-purple-500/20 text-purple-400 border-purple-500/50',
+                                                            'Шинэ'          => 'bg-green-500/20 text-green-400 border-green-500/20',
+                                                            'Эрэлттэй'      => 'bg-orange-500/20 text-orange-400 border-orange-500/20',
+                                                            'Тун удахгүй'   => 'bg-gray-500/20 text-gray-300 border-gray-500/20',
+                                                            'Хямдралтай'    => 'bg-red-500/20 text-red-400 border-red-500/50 animate-pulse',
+                                                            default         => 'bg-white/10 text-white border-white/20'
+                                                        };
+                                                    @endphp
+                                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded border {{ $badgeStyle }} flex items-center gap-1 uppercase tracking-wide">
+                                                        {{ $currentTag }}
+                                                    </span>
                                                 @endif
                                             </div>
                                         </div>
@@ -283,7 +345,6 @@
                                                 {{ $category->name }}
                                             </span>
                                         @endforeach
-                                        
                                         @if($game->categories->isEmpty())
                                             <span class="text-gray-600 text-xs italic">No Category</span>
                                         @endif
@@ -293,7 +354,7 @@
                                 <td class="py-4 px-6 align-middle">
                                     <div class="flex flex-col">
                                         @if(is_numeric($game->price) && $game->price == 0)
-                                            <span class="text-brand font-bold text-sm tracking-wide">FREE</span>
+                                            <span class="text-green-500 font-bold text-sm tracking-wide">FREE</span>
                                         @elseif(is_numeric($game->price))
                                             <span class="font-mono text-sm text-gray-200">{{ number_format($game->price) }}₮</span>
                                             @if($game->sale_price)
@@ -336,5 +397,55 @@
         </div>
 
     </div>
+
+    <script>
+        function filterGames() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("gameSearch");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("gamesTable");
+            tr = table.getElementsByTagName("tr");
+
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].querySelector(".game-title");
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }       
+            }
+        }
+
+        function filterType(type) {
+            // Button style toggle
+            const btns = document.querySelectorAll('.filter-btn');
+            btns.forEach(btn => {
+                if(btn.innerText.toLowerCase().includes(type == 'all' ? 'all' : 'free')) {
+                    btn.classList.add('bg-white/10', 'text-white');
+                    btn.classList.remove('bg-white/5', 'text-gray-400');
+                } else {
+                    btn.classList.remove('bg-white/10', 'text-white');
+                    btn.classList.add('bg-white/5', 'text-gray-400');
+                }
+            });
+
+            const rows = document.querySelectorAll('.game-row');
+            rows.forEach(row => {
+                const price = row.getAttribute('data-price');
+                if (type === 'all') {
+                    row.style.display = '';
+                } else if (type === 'free') {
+                    if (price == 0) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                }
+            });
+        }
+    </script>
 </body>
 </html>
