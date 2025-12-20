@@ -9,11 +9,18 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Order;
 class GameController extends Controller
 {
-    // 1. PUBLIC HOME PAGE
+   
+
  public function index()
 {
     // 1. Бүх тоглоомыг категоритай нь дуудна
     $games = Game::with('categories')->latest()->get(); 
+    
+    public function index()
+    {
+      
+        $games = Game::with('categories')->latest()->get();
+
 
 
     $sliderGames = Game::whereNotNull('banner')->latest()->take(5)->get();
@@ -21,7 +28,7 @@ class GameController extends Controller
         $sliderGames = Game::latest()->take(5)->get();
     }
 
-    
+}
     $comingSoonGames = Game::where('tag', 'Тун удахгүй')->latest()->get();
 
  
@@ -36,7 +43,7 @@ class GameController extends Controller
     public function adminDashboard()
     {
         $games = Game::with('categories')->latest()->get();
-        $categories = Category::orderBy('name', 'asc')->get(); 
+        $categories = Category::orderBy('name', 'asc')->get();
         return view('admin.dashboard', compact('games', 'categories'));
     }
 
@@ -134,17 +141,16 @@ class GameController extends Controller
             'rec_ram'     => 'nullable',
             'rec_storage' => 'nullable',
         ]);
-        
+
         $data = $request->except(['categories', 'screenshots']);
-        
-  
+
         if ($request->has('screenshots')) {
             $screenshots = array_filter($request->input('screenshots'), function($value) {
                 return !is_null($value) && $value !== '';
             });
             $data['screenshots'] = array_values($screenshots);
         } else {
-            $data['screenshots'] = null; 
+            $data['screenshots'] = null;
         }
 
     
@@ -158,6 +164,21 @@ class GameController extends Controller
         return redirect()->route('admin.dashboard')->with('success', 'Game updated successfully!');
     }
 
+
+    // 6. SHOW SINGLE GAME
+    public function show($id)
+    {
+        $game = Game::with('categories')->findOrFail($id);
+
+        // Related Games (Олон төрлөөр шүүх)
+        $relatedGames = Game::whereHas('categories', function($query) use ($game) {
+            $query->whereIn('categories.id', $game->categories->pluck('id'));
+        })
+        ->where('id', '!=', $id)
+        ->inRandomOrder()
+        ->take(4)
+        ->get();
+>>>>>>> 2d56e543f76639e5ece05418fe45ae9589a65f8c
 
 
 public function show($id)
@@ -185,6 +206,7 @@ public function show($id)
 
         return redirect()->back()->with('success', 'Game deleted successfully!');
     }
+
 public function download($id)
     {
         $game = Game::findOrFail($id);
@@ -218,3 +240,6 @@ public function download($id)
     }
 
 }
+
+}
+
