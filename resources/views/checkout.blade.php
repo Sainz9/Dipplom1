@@ -12,18 +12,9 @@
                 fontFamily: { sans: ['Inter', 'sans-serif'] },
                 extend: {
                     colors: { 
-                        brand: '#00D4FF', 
-                        darkBG: '#050507', 
-                        darkSurface: '#0f0f13',
-                        // Bank Colors
-                        khan: '#005541',
-                        golomt: '#A68846',
-                        tdb: '#1F2B5B',
-                        state: '#E31E24',
-                        xac: '#F0B323',
-                        mbank: '#5925DC',
-                        bogd: '#8B2332',
-                        capitron: '#0047BB'
+                        brand: '#00D4FF', darkBG: '#050507', darkSurface: '#0f0f13',
+                        khan: '#005541', golomt: '#A68846', tdb: '#1F2B5B',
+                        state: '#E31E24', xac: '#F0B323', mbank: '#5925DC'
                     }
                 }
             }
@@ -36,10 +27,14 @@
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #00D4FF; }
         
-        /* Bank Logo Filters */
-        .bank-logo { filter: grayscale(100%) opacity(0.7); transition: all 0.3s; }
-        input:checked ~ div .bank-logo, 
-        label:hover .bank-logo { filter: grayscale(0%) opacity(1); }
+        /* Bank Logo Filters & Transitions */
+        .bank-logo { filter: grayscale(100%) opacity(0.5); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        input:checked ~ div .bank-logo { filter: grayscale(0%) opacity(1); transform: scale(1.1); }
+        label:hover .bank-logo { filter: grayscale(0%) opacity(0.9); }
+        
+        .bank-card { transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.03); position: relative; overflow: hidden; }
+        .bank-card::before { content: ''; position: absolute; inset: 0; background: currentColor; opacity: 0; transition: opacity 0.3s; }
+        label:hover .bank-card { border-color: rgba(255,255,255,0.1); transform: translateY(-2px); }
     </style>
 </head>
 
@@ -51,11 +46,10 @@
     </div>
 
     <div class="border-b border-white/5 bg-darkSurface/50 backdrop-blur-md sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="/" class="text-xl font-black tracking-tighter uppercase italic text-white group">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center text-white">
+            <a href="/" class="text-xl font-black tracking-tighter uppercase italic group">
                 Play<span class="text-brand group-hover:text-white transition-colors">Vision</span>
             </a>
-            
             <div class="flex items-center gap-4">
                 @auth
                     <div class="hidden md:flex items-center gap-2 text-xs font-medium text-gray-400 border border-white/10 px-3 py-1.5 rounded-full bg-white/5">
@@ -63,11 +57,7 @@
                         {{ auth()->user()->email }}
                     </div>
                 @endauth
-
-                <a href="javascript:history.back()" class="flex items-center gap-2 text-xs font-bold text-gray-400 hover:text-white transition-colors uppercase tracking-widest">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                    Буцах
-                </a>
+                <a href="javascript:history.back()" class="text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors italic">Буцах</a>
             </div>
         </div>
     </div>
@@ -77,117 +67,121 @@
         <input type="hidden" name="game_id" value="{{ $game->id }}">
         <input type="hidden" name="amount" value="{{ $game->sale_price ?? $game->price }}">
 
-        <div class="flex-1 order-2 lg:order-1 animate-fade-in-up">
+        <div class="flex-1 order-2 lg:order-1">
             <h1 class="text-3xl font-black italic uppercase text-white mb-8 flex items-center gap-3">
-                <span class="w-1.5 h-8 bg-gradient-to-b from-brand to-purple-600 rounded-full"></span>
+                <span class="w-1.5 h-8 bg-gradient-to-b from-brand to-purple-600 rounded-full shadow-[0_0_15px_rgba(0,212,255,0.5)]"></span>
                 Төлбөрийн мэдээлэл
             </h1>
-@if(session('auth_error'))
-    <div class="mb-6 animate-bounce">
-        <div class="bg-red-500/10 border border-red-500/50 rounded-2xl p-4 flex items-center gap-4 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
-            <div class="bg-red-500 rounded-full p-2">
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                </svg>
-            </div>
-            <div class="flex-1">
-                <p class="text-white font-bold text-sm">{{ session('auth_error') }}</p>
-                <a href="{{ route('login') }}" class="text-brand text-xs font-black uppercase tracking-widest hover:underline mt-1 inline-block">Одоо нэвтрэх →</a>
-            </div>
-        </div>
-    </div>
-@endif
-            <div class="bg-darkSurface/50 border border-white/10 rounded-2xl p-6 hover:border-brand/30 transition-colors">
-                <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
-                    <span class="bg-white/10 text-xs w-6 h-6 rounded flex items-center justify-center text-gray-400">
-                        @auth 1 @else 2 @endauth
-                    </span>
-                    Төлбөрийн хэрэгсэл
+
+            @if(session('auth_error'))
+                <div class="mb-6 bg-red-500/10 border border-red-500/50 rounded-2xl p-4 flex items-center gap-4 shadow-[0_0_20px_rgba(239,68,68,0.2)] animate-bounce">
+                    <div class="bg-red-500 rounded-full p-2 text-white font-black">!</div>
+                    <div class="flex-1">
+                        <p class="text-white font-bold text-sm italic">{{ session('auth_error') }}</p>
+                        @guest <a href="{{ route('login') }}" class="text-brand text-xs font-black uppercase hover:underline mt-1 inline-block">Нэвтрэх →</a> @endguest
+                    </div>
+                </div>
+            @endif
+
+            @if(auth()->check() && isset($existingOrder) && $existingOrder)
+                @if($existingOrder->status == 'checking')
+                    <div class="mb-8 bg-yellow-500/10 border border-yellow-500/30 rounded-2xl p-5 flex items-start gap-4 animate-pulse shadow-[0_0_30px_rgba(234,179,8,0.1)]">
+                        <div class="bg-yellow-500 rounded-full p-2 text-black shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <div class="flex-1 leading-tight">
+                            <p class="text-white font-black text-sm uppercase italic">Захиалга шалгагдаж байна</p>
+                            <p class="text-gray-400 text-[10px] mt-2 font-medium uppercase tracking-widest leading-relaxed">Таны төлбөрийг админ баталгаажуулж байна. Түр хүлээнэ үү.</p>
+                        </div>
+                    </div>
+                @elseif($existingOrder->status == 'paid')
+                    <div class="mb-8 bg-green-500/10 border border-green-500/30 rounded-2xl p-5 flex items-start gap-4 shadow-[0_0_30px_rgba(34,197,94,0.1)]">
+                        <div class="bg-green-500 rounded-full p-2 text-white shrink-0">✓</div>
+                        <div class="flex-1 leading-tight text-left">
+                            <p class="text-white font-black text-sm uppercase italic">Энэ тоглоом чамд байна</p>
+                            <p class="text-green-400 text-[10px] mt-2 font-black italic uppercase tracking-widest">Таны худалдан авалт амжилттай баталгаажсан байна.</p>
+                        </div>
+                    </div>
+                    <a href="/dashboard" class="mb-8 block text-center py-4 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black text-brand uppercase tracking-[0.2em] hover:bg-brand hover:text-black transition-all italic">Миний тоглоомууд руу очих →</a>
+                @endif
+            @endif
+
+            <div class="bg-darkSurface/50 border border-white/10 rounded-3xl p-8 hover:border-brand/20 transition-all shadow-2xl">
+                <h3 class="text-lg font-black text-white mb-8 flex items-center gap-3 uppercase italic">
+                    <span class="bg-white/10 text-[10px] w-7 h-7 rounded-lg flex items-center justify-center text-gray-400 not-italic border border-white/5">01</span>
+                    Төлбөрийн хэрэгсэл сонгох
                 </h3>
                 
-                <div class="space-y-8">
-                    
+                <div class="space-y-10">
                     <div>
-                        <p class="text-[10px] uppercase text-gray-500 font-bold mb-3 tracking-widest pl-1">Түрийвч & Апп</p>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                            <label class="cursor-pointer group relative">
+                        <p class="text-[10px] uppercase text-gray-500 font-black mb-4 tracking-[0.2em] pl-1 flex items-center gap-2">
+                            <span class="w-1 h-1 bg-brand rounded-full"></span> Дижитал түрийвч
+                        </p>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <label class="cursor-pointer group">
                                 <input type="radio" name="payment_method_ui" value="qpay" class="peer hidden" checked>
-                                <div class="h-24 border border-white/10 rounded-xl bg-[#050507] flex flex-col items-center justify-center gap-2 peer-checked:border-brand peer-checked:bg-brand/5 peer-checked:shadow-[0_0_15px_rgba(0,212,255,0.1)] transition-all group-hover:border-white/30 p-2 overflow-hidden">
-                                    <img src="https://solongo.medsoft.care:3001/static/media/qpay-logo.96d8ccc6ff2a2c3a0010.png" class="h-8 object-contain invert brightness-0 filter contrast-200" alt="QPay">
-                                    <span class="font-bold text-[10px] text-gray-400 peer-checked:text-white">QPay</span>
+                                <div class="bank-card h-28 rounded-2xl bg-darkBG flex flex-col items-center justify-center gap-3 peer-checked:border-brand peer-checked:bg-brand/5 peer-checked:shadow-[0_0_25px_rgba(0,212,255,0.2)]">
+                                    <img src="https://solongo.medsoft.care:3001/static/media/qpay-logo.96d8ccc6ff2a2c3a0010.png" class="h-9 object-contain invert brightness-0 filter contrast-200 bank-logo">
+                                    <span class="font-black text-[10px] text-gray-500 peer-checked:text-white uppercase italic tracking-tighter transition-colors">QPay QR</span>
                                 </div>
-                                <div class="absolute top-2 right-2 w-2 h-2 bg-brand rounded-full opacity-0 peer-checked:opacity-100 transition-opacity"></div>
                             </label>
-                            
-                       
                         </div>
                     </div>
 
                     <div>
-                        <p class="text-[10px] uppercase text-gray-500 font-bold mb-3 tracking-widest pl-1">Банкууд</p>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                            
-                            <label class="cursor-pointer group relative">
+                        <p class="text-[10px] uppercase text-gray-500 font-black mb-4 tracking-[0.2em] pl-1 flex items-center gap-2">
+                            <span class="w-1 h-1 bg-brand rounded-full"></span> Банкаар шилжүүлэх
+                        </p>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <label class="cursor-pointer group">
                                 <input type="radio" name="payment_method_ui" value="khanbank" class="peer hidden">
-                                <div class="h-20 border border-white/10 rounded-xl bg-[#050507] flex flex-col items-center justify-center gap-1 peer-checked:border-khan peer-checked:bg-khan/10 transition-all group-hover:border-white/30 overflow-hidden relative">
-                                    <img src="https://www.servicenow.com/content/dam/servicenow-assets/public/en-us/digital-graphics/ds-logos/logo-khan-bank-2.png" class="h-6 object-contain bank-logo" alt="Khan Bank">
-                                    <span class="font-bold text-[10px] text-gray-400 peer-checked:text-white mt-1">Хаан Банк</span>
+                                <div class="bank-card h-24 rounded-2xl bg-darkBG flex flex-col items-center justify-center gap-2 peer-checked:border-khan peer-checked:bg-khan/10 peer-checked:shadow-[0_0_20px_rgba(0,85,65,0.4)]">
+                                    <img src="https://www.servicenow.com/content/dam/servicenow-assets/public/en-us/digital-graphics/ds-logos/logo-khan-bank-2.png" class="h-6 object-contain bank-logo">
+                                    <span class="font-black text-[9px] text-gray-500 peer-checked:text-white uppercase italic tracking-tighter transition-colors">Хаан Банк</span>
                                 </div>
-                                <div class="absolute inset-0 border-2 border-khan rounded-xl opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"></div>
                             </label>
-
-                            <label class="cursor-pointer group relative">
+                            <label class="cursor-pointer group text-center">
                                 <input type="radio" name="payment_method_ui" value="golomt" class="peer hidden">
-                                <div class="h-20 border border-white/10 rounded-xl bg-[#050507] flex flex-col items-center justify-center gap-1 peer-checked:border-golomt peer-checked:bg-golomt/10 transition-all group-hover:border-white/30 overflow-hidden">
-                                    <img src="https://anket.golomtbank.com/assets/Golomt%20logo.3af46c9d23bd6aae231d12227071b38c.png" class="h-6 object-contain bank-logo" alt="Golomt">
-                                    <span class="font-bold text-[10px] text-gray-400 peer-checked:text-white mt-1">Голомт</span>
+                                <div class="bank-card h-24 rounded-2xl bg-darkBG flex flex-col items-center justify-center gap-2 peer-checked:border-golomt peer-checked:bg-golomt/10 peer-checked:shadow-[0_0_20px_rgba(166,136,70,0.4)]">
+                                    <img src="https://anket.golomtbank.com/assets/Golomt%20logo.3af46c9d23bd6aae231d12227071b38c.png" class="h-6 object-contain bank-logo">
+                                    <span class="font-black text-[9px] text-gray-500 peer-checked:text-white uppercase italic tracking-tighter">Голомт</span>
                                 </div>
-                                 <div class="absolute inset-0 border-2 border-golomt rounded-xl opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"></div>
                             </label>
-
-                            <label class="cursor-pointer group relative">
-                                <input type="radio" name="payment_method_ui" value="tdb" class="peer hidden">
-                                <div class="h-20 border border-white/10 rounded-xl bg-[#050507] flex flex-col items-center justify-center gap-1 peer-checked:border-tdb peer-checked:bg-tdb/10 transition-all group-hover:border-white/30 overflow-hidden">
-                                    <img src="https://www.tdbm.mn/sites/default/files/2024-11/logo_eng%20%282%29.png" class="h-8 w-full object-contain bank-logo" alt="TDB">
-                                </div>
-                                <div class="absolute inset-0 border-2 border-tdb rounded-xl opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"></div>
-                            </label>
-
-                            <label class="cursor-pointer group relative">
+                            <label class="cursor-pointer group text-center">
                                 <input type="radio" name="payment_method_ui" value="statebank" class="peer hidden">
-                                <div class="h-20 border border-white/10 rounded-xl bg-[#050507] flex flex-col items-center justify-center gap-1 peer-checked:border-state peer-checked:bg-state/10 transition-all group-hover:border-white/30 overflow-hidden">
-                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBCEuWnamoyP22Qe1Snf9LKEEwVjuK93k_KA&s" class="h-6 object-contain bank-logo" alt="State Bank">
-                                    <span class="font-bold text-[10px] text-gray-400 peer-checked:text-white mt-1">Төрийн Банк</span>
+                                <div class="bank-card h-24 rounded-2xl bg-darkBG flex flex-col items-center justify-center gap-2 peer-checked:border-state peer-checked:bg-state/10 peer-checked:shadow-[0_0_20px_rgba(227,30,36,0.4)]">
+                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBCEuWnamoyP22Qe1Snf9LKEEwVjuK93k_KA&s" class="h-6 object-contain bank-logo">
+                                    <span class="font-black text-[9px] text-gray-500 peer-checked:text-white uppercase italic tracking-tighter leading-none">Төрийн Банк</span>
                                 </div>
-                                <div class="absolute inset-0 border-2 border-state rounded-xl opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"></div>
                             </label>
-
-                            <label class="cursor-pointer group relative">
+                            <label class="cursor-pointer group text-center">
                                 <input type="radio" name="payment_method_ui" value="xacbank" class="peer hidden">
-                                <div class="h-20 border border-white/10 rounded-xl bg-[#050507] flex flex-col items-center justify-center gap-1 peer-checked:border-xac peer-checked:bg-xac/10 transition-all group-hover:border-white/30 overflow-hidden">
-                                    <img src="https://cdn.aptoide.com/imgs/e/a/6/ea6a9f10683d3c5f0c4469911dfa987a_fgraphic.png" class="h-6 object-contain bank-logo" alt="XacBank">
-                                    <span class="font-bold text-[10px] text-gray-400 peer-checked:text-white mt-1">Хас Банк</span>
+                                <div class="bank-card h-24 rounded-2xl bg-darkBG flex flex-col items-center justify-center gap-2 peer-checked:border-xac peer-checked:bg-xac/10 peer-checked:shadow-[0_0_20px_rgba(240,179,35,0.4)]">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/XacBank_logo.png" class="h-6 object-contain bank-logo brightness-200">
+                                    <span class="font-black text-[9px] text-gray-500 peer-checked:text-white uppercase italic tracking-tighter">Хас Банк</span>
                                 </div>
-                                <div class="absolute inset-0 border-2 border-xac rounded-xl opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"></div>
                             </label>
-
-                            <label class="cursor-pointer group relative">
-                                <input type="radio" name="payment_method_ui" value="m_bank" class="peer hidden">
-                                <div class="h-20 border border-white/10 rounded-xl bg-[#050507] flex flex-col items-center justify-center gap-1 peer-checked:border-mbank peer-checked:bg-mbank/10 transition-all group-hover:border-white/30 overflow-hidden">
-                                    <img src="https://www.mongolchamber.mn/resource/mongolchamber/image/2024/03/18/rairwvn30xn9ch9r/M%20%D0%91%D0%90%D0%9D%D0%9A_l.png" class="h-6 object-contain bank-logo" alt="M Bank">
-                                    <span class="font-bold text-[10px] text-gray-400 peer-checked:text-white mt-1">M Банк</span>
+                            <label class="cursor-pointer group">
+                                <input type="radio" name="payment_method_ui" value="tdb" class="peer hidden">
+                                <div class="bank-card h-24 rounded-2xl bg-darkBG flex flex-col items-center justify-center gap-2 peer-checked:border-tdb peer-checked:bg-tdb/10 peer-checked:shadow-[0_0_20px_rgba(31,43,91,0.4)]">
+                                    <img src="https://www.tdbm.mn/sites/default/files/2024-11/logo_eng%20%282%29.png" class="h-8 w-full object-contain bank-logo">
                                 </div>
-                                <div class="absolute inset-0 border-2 border-mbank rounded-xl opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"></div>
                             </label>
-
+                            <label class="cursor-pointer group text-center">
+                                <input type="radio" name="payment_method_ui" value="mbank" class="peer hidden">
+                                <div class="bank-card h-24 rounded-2xl bg-darkBG flex flex-col items-center justify-center gap-2 peer-checked:border-mbank peer-checked:bg-mbank/10 peer-checked:shadow-[0_0_20px_rgba(89,37,220,0.4)]">
+                                    <img src="https://www.mongolchamber.mn/resource/mongolchamber/image/2024/03/18/rairwvn30xn9ch9r/M%20%D0%91%D0%90%D0%9D%D0%9A.png" class="h-6 object-contain bank-logo">
+                                    <span class="font-black text-[9px] text-gray-500 peer-checked:text-white uppercase italic tracking-tighter">М Банк</span>
+                                </div>
+                            </label>
                         </div>
                     </div>
                 </div>
 
-                <div class="mt-8 p-4 bg-blue-500/5 rounded-xl border border-blue-500/10 flex gap-3 items-start">
-                    <svg class="w-5 h-5 text-brand shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <p class="text-xs text-gray-400 leading-relaxed">
-                        Сонгосон банкны аппликейшн рүү шилжих эсвэл QR код үүснэ. Гүйлгээний утга дээр захиалгын дугаарыг бичнэ үү.
+                <div class="mt-12 p-5 bg-brand/5 rounded-2xl border border-brand/10 flex gap-4 items-start">
+                    <svg class="w-6 h-6 text-brand shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <p class="text-[11px] text-gray-400 leading-relaxed uppercase italic tracking-widest font-medium">
+                        Сонгосон банкны апп руу автоматаар үсрэх эсвэл QR код харагдана. Гүйлгээний утга дээр захиалгын дугаарыг ЗААВАЛ бичээрэй.
                     </p>
                 </div>
             </div>
@@ -195,77 +189,67 @@
 
         <div class="w-full lg:w-96 order-1 lg:order-2">
             <div class="sticky top-24 relative group">
-                
-                <div class="absolute -inset-0.5 bg-gradient-to-r from-brand to-purple-600 rounded-2xl blur opacity-30 group-hover:opacity-60 transition duration-1000 group-hover:duration-200"></div>
-
-                <div class="relative bg-[#0a0a0f]/90 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl overflow-hidden">
+                <div class="absolute -inset-1 bg-gradient-to-r from-brand/20 to-purple-600/20 rounded-3xl blur-xl opacity-50 group-hover:opacity-100 transition duration-1000"></div>
+                <div class="relative bg-darkSurface/90 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 shadow-2xl overflow-hidden">
                     
-                    <div class="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
-                        <svg class="w-24 h-24 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                    </div>
-
-                    <h3 class="text-xl font-black uppercase italic text-white mb-6 flex items-center gap-2">
-                        <span class="w-1 h-6 bg-brand rounded-full shadow-[0_0_10px_rgba(0,212,255,0.8)]"></span>
-                        Захиалга
+                    <h3 class="text-xl font-black uppercase italic text-white mb-8 flex items-center gap-3">
+                        <span class="w-1.5 h-6 bg-brand rounded-full"></span> Захиалга
                     </h3>
 
-                    <div class="flex gap-4 mb-6 relative z-10">
-                        <div class="w-20 h-28 bg-gray-800 rounded-lg overflow-hidden border border-white/10 shrink-0 shadow-lg group-hover:border-brand/50 transition-colors">
-                            <img src="{{ $game->img ?? $game->banner }}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
+                    <div class="flex gap-5 mb-8">
+                        <div class="w-24 h-32 bg-gray-800 rounded-xl overflow-hidden border border-white/10 shrink-0 shadow-xl">
+                            <img src="{{ $game->img ?? $game->banner }}" class="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700">
                         </div>
                         <div class="flex flex-col justify-center">
-                            <h4 class="font-bold text-white leading-tight mb-2 text-sm line-clamp-2">{{ $game->title }}</h4>
-                            <div class="flex items-center gap-2">
-                                <span class="text-[10px] font-bold bg-white/10 text-gray-300 px-2 py-0.5 rounded border border-white/5 uppercase tracking-wide">Key</span>
-                                @if($game->sale_price)
-                                    <span class="text-[10px] font-bold bg-green-500/20 text-green-400 px-2 py-0.5 rounded border border-green-500/20">SALE</span>
-                                @endif
-                            </div>
+                            <h4 class="font-black text-white text-base line-clamp-2 uppercase italic leading-tight mb-3">{{ $game->title }}</h4>
+                            <span class="text-[10px] font-black bg-brand/10 text-brand px-3 py-1 rounded-lg border border-brand/20 uppercase tracking-[0.2em] italic w-fit">Digital Key</span>
                         </div>
                     </div>
 
-                    <div class="space-y-3 pt-4 border-t border-dashed border-white/10 text-sm relative z-10">
-                        <div class="flex justify-between text-gray-400">
-                            <span>Үндсэн үнэ</span>
-                            <span class="font-medium">{{ number_format($game->price) }}₮</span>
-                        </div>
-                        <div class="flex justify-between text-gray-400">
-                            <span>Хөнгөлөлт</span>
-                            <span class="{{ $game->sale_price ? 'text-green-400' : '' }}">
-                                @if($game->sale_price)
-                                    -{{ number_format($game->price - $game->sale_price) }}₮
-                                @else
-                                    0₮
-                                @endif
-                            </span>
-                        </div>
-
-                        <div class="flex justify-between items-end pt-4 mt-2 border-t border-white/10">
-                            <span class="text-gray-300 font-bold uppercase text-xs tracking-widest pb-1">Нийт дүн</span>
-                            <span class="text-3xl font-black text-brand drop-shadow-[0_0_10px_rgba(0,212,255,0.4)]">
-                                @if($game->sale_price)
-                                    {{ number_format($game->sale_price) }}
-                                @else
-                                    {{ number_format($game->price) }}
-                                @endif
-                                <span class="text-sm font-medium text-gray-400">₮</span>
+                    <div class="space-y-4 pt-6 border-t border-dashed border-white/10">
+                        <div class="flex justify-between items-end italic">
+                            <span class="text-gray-400 font-bold uppercase text-[10px] tracking-widest pb-1">Нийт төлөх дүн</span>
+                            <span class="text-4xl font-black text-brand drop-shadow-[0_0_20px_rgba(0,212,255,0.4)]">
+                                {{ number_format($game->sale_price ?? $game->price) }} <span class="text-sm font-medium text-gray-500 not-italic uppercase">₮</span>
                             </span>
                         </div>
                     </div>
 
-                  <button type="submit" class="mt-6 w-full rounded-xl bg-brand p-4 text-center font-black uppercase italic tracking-widest text-black shadow-[0_0_20px_rgba(0,212,255,0.4)] transition-all hover:scale-[1.02]">
-                        @auth
-                            Төлбөр төлөх
-                        @else
-                            Нэвтэрч үргэлжлүүлэх
-                        @endauth
+                    @php
+                        $isDisabled = false;
+                        if(auth()->check() && isset($existingOrder) && $existingOrder) {
+                            if (in_array($existingOrder->status, ['checking', 'paid'])) {
+                                $isDisabled = true;
+                            }
+                        }
+                    @endphp
+
+                    <button type="submit" 
+                        @if($isDisabled) disabled @endif
+                        class="w-full rounded-2xl p-5 font-black uppercase italic tracking-[0.2em] transition-all mt-10 shadow-2xl text-sm
+                        {{ $isDisabled 
+                            ? 'bg-gray-800 text-gray-500 cursor-not-allowed border border-white/5 opacity-80' 
+                            : 'bg-brand text-black hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(0,212,255,0.5)] active:scale-95' }}">
+                        
+                        <span class="flex items-center justify-center gap-3">
+                            @if(!auth()->check())
+                                Нэвтэрч үргэлжлүүлэх
+                            @elseif(isset($existingOrder) && $existingOrder->status == 'checking')
+                                Шалгагдаж байна...
+                            @elseif(isset($existingOrder) && $existingOrder->status == 'paid')
+                                Эзэмшсэн байна
+                            @else
+                                Төлбөр төлөх
+                            @endif
+                        </span>
                     </button>
                     
-                    <div class="mt-4 text-center">
-                        <p class="text-[10px] text-gray-500 leading-tight">Сонгосон банкны сайт руу шилжиж гүйлгээ хийгдэнэ.</p>
+                    <div class="mt-6 text-center">
+                        <p class="text-[9px] text-gray-500 font-bold uppercase tracking-[0.3em] italic opacity-50">PlayVision Secure Checkout</p>
                     </div>
                 </div>
             </div>
         </div>
-    </form> </body>
+    </form>
+</body>
 </html>

@@ -91,3 +91,9 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
 });
 
+Route::get('/checkout/{id}', [GameController::class, 'checkout'])->name('checkout');
+Route::get('/order-success', function () {
+    return view('order_success'); // resources/views/order_success.blade.php файл байх ёстой
+})->name('order.success');
+
+Route::delete('/payment/cancel/{orderId}', [PaymentController::class, 'cancel'])->name('payment.cancel');

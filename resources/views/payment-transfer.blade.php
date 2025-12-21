@@ -87,7 +87,7 @@
             <svg class="w-5 h-5 text-yellow-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
             <div class="text-[10px] text-gray-400 leading-relaxed">
                 <strong class="text-yellow-500 block mb-1">Гүйлгээний утга:</strong>
-                Төлбөр хийхдээ гүйлгээний утга дээр <span class="text-white font-mono bg-white/10 px-1 rounded">Order #{{ $order->id }}</span> гэж заавал бичээрэй.
+                Төлбөр хийхдээ гүйлгээний утга дээр <hr>  <span class="text-white font-mono bg-white/10 px-1 rounded">Утас дугаараа бичээрэй </span> 
             </div>
         </div>
 
@@ -98,7 +98,9 @@
             </button>
         </form>
         
-        <a href="/" class="block text-center text-xs text-gray-600 mt-4 hover:text-white transition">Буцах</a>
+       <a href="{{ url()->previous() }}" class="block text-center text-xs text-gray-600 mt-4 hover:text-white transition font-bold uppercase tracking-widest italic">
+    ← Төлбөр сонгох руу буцах
+</a>
 
     </div>
 
