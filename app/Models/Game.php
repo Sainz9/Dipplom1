@@ -36,6 +36,12 @@ class Game extends Model
         'rec_gpu', 
         'rec_ram', 
         'rec_storage',
+
+
+
+        'developer', 
+        'publisher',
+        'platform'
     ];
 
     protected $casts = [

@@ -97,3 +97,4 @@ Route::get('/order-success', function () {
 })->name('order.success');
 
 Route::delete('/payment/cancel/{orderId}', [PaymentController::class, 'cancel'])->name('payment.cancel');
+Route::post('/admin/categories', [GameController::class, 'storeCategory'])->name('categories.store');

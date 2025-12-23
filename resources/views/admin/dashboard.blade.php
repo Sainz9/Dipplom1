@@ -93,6 +93,7 @@
             <div class="bg-card rounded-2xl border border-white/5 shadow-2xl overflow-hidden relative group">
                 <div class="h-1 w-full bg-gradient-to-r from-brand to-purple-600"></div>
                 <div class="p-6">
+                    
                     <h2 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
                         <span class="flex items-center justify-center w-6 h-6 rounded bg-brand text-black text-xs font-black">+</span>
                         Add New Game
@@ -108,7 +109,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('admin.category.store') }}" method="POST" class="mb-6 pb-6 border-b border-white/5">
+                    <form action="{{ route('categories.store') }}" method="POST" class="mb-6 pb-6 border-b border-white/5">
                         @csrf
                         <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Create New Category</label>
                         <div class="flex gap-2">
@@ -129,7 +130,7 @@
                             <div>
                                 <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Price <span class="text-red-500">*</span></label>
                                 <div class="relative">
-                                    <input type="text" name="price" placeholder="0 or Тун удахгүй" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand focus:outline-none text-white font-mono" required>
+                                    <input type="text" name="price" placeholder="0 or Free" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand focus:outline-none text-white font-mono" required>
                                 </div>
                             </div>
                             <div>
@@ -141,46 +142,83 @@
                             </div>
                         </div>
 
+                        <div class="grid grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Developer</label>
+                                <input type="text" name="developer" value="PlayVision" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-3 text-xs focus:border-brand focus:outline-none text-brand/80 font-bold placeholder-gray-600">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Publisher</label>
+                                <input type="text" name="publisher" value="PlayVision" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-3 text-xs focus:border-brand focus:outline-none text-brand/80 font-bold placeholder-gray-600">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Release Date</label>
+                                <input type="date" name="release_date" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-3 text-xs focus:border-brand focus:outline-none text-white uppercase tracking-wider">
+                            </div>
+                        </div>
+
                         <div class="space-y-4">
                             <div>
                                 <label class="block text-xs text-gray-400 font-semibold mb-2 ml-1">Select Categories <span class="text-red-500">*</span></label>
+                                
+                                <div class="relative mb-2">
+                                    <input type="text" id="catSearch" placeholder="Search categories..." class="w-full bg-black/40 border border-white/10 rounded-lg pl-8 pr-3 py-2 text-xs text-white focus:border-brand outline-none placeholder-gray-600 transition-colors focus:bg-black/60">
+                                    <div class="absolute left-2.5 top-2 text-gray-600">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                    </div>
+                                </div>
+
                                 <div class="bg-black/40 border border-white/10 rounded-xl p-3 max-h-40 overflow-y-auto custom-scrollbar">
-                                    <div class="grid grid-cols-2 gap-2">
-                                        @foreach($categories as $cat)
-                                            <div class="flex items-center justify-between group p-1 rounded hover:bg-white/5 transition">
-                                                <label class="flex items-center space-x-2 cursor-pointer w-full">
-                                                    <input type="checkbox" name="categories[]" value="{{ $cat->id }}" class="w-4 h-4 rounded border-gray-600 text-brand focus:ring-brand bg-gray-700">
-                                                    <span class="text-xs text-gray-300 group-hover:text-white">{{ $cat->name }}</span>
-                                                </label>
-                                                <button form="delete-cat-{{ $cat->id }}" class="text-gray-600 hover:text-red-500 px-1 opacity-0 group-hover:opacity-100 transition" title="Delete Category">×</button>
-                                            </div>
-                                        @endforeach
+                                    <div class="grid grid-cols-2 gap-2" id="categoryList">
+                                        {{-- Энд категориуд байгаа эсэхийг шалгаарай --}}
+                                        @if(isset($categories) && count($categories) > 0)
+                                            @foreach($categories as $cat)
+                                                <div class="flex items-center justify-between group p-1 rounded hover:bg-white/5 transition cat-item">
+                                                    <label class="flex items-center space-x-2 cursor-pointer w-full select-none">
+                                                        <input type="checkbox" name="categories[]" value="{{ $cat->id }}" class="w-4 h-4 rounded border-gray-600 text-brand focus:ring-brand bg-gray-700 cursor-pointer">
+                                                        <span class="text-xs text-gray-300 group-hover:text-white cat-name">{{ $cat->name }}</span>
+                                                    </label>
+                                                    <button form="delete-cat-{{ $cat->id }}" class="text-gray-600 hover:text-red-500 px-1 opacity-0 group-hover:opacity-100 transition" title="Delete Category">×</button>
+                                                </div>
+                                            @endforeach
+                                        @else
+                                            <p class="text-gray-500 text-xs italic text-center col-span-2 py-4">No categories found. Add one above.</p>
+                                        @endif
                                     </div>
                                 </div>
                                 <p class="text-[10px] text-gray-600 mt-1 ml-1">Check multiple categories.</p>
                             </div>
 
                             <div>
-                                <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Game Status / Award</label>
-                                <div class="relative">
-                                    <select name="tag" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand focus:outline-none text-white appearance-none cursor-pointer">
-                                        <option value="">Тэмдэглэгээгүй (No Badge)</option>
-                                        <option value="FreeGame" class="text-green-500 font-bold">🎁 Free Game (Үнэгүй)</option> <option value="GOTY" class="text-yellow-400 font-black">🏆 Game of the Year (Оны шилдэг)</option>
-                                        <option value="BestSelling" class="text-blue-400 font-bold">💎 Best Selling (Их зарагдсан)</option>
-                                        <option value="EditorsChoice" class="text-purple-400 font-bold">🎖️ Editor's Choice (Онцлох)</option>
-                                        <option value="Шинэ" class="text-green-400">🔥 Шинэ (New)</option>
-                                        <option value="Эрэлттэй" class="text-orange-400">⚡ Эрэлттэй (Trending)</option>
-                                        <option value="Тун удахгүй" class="text-gray-400">🚀 Тун удахгүй (Coming Soon)</option>
-                                        <option value="Хямдралтай" class="text-pink-400">🏷️ Хямдралтай (Sale)</option>
-                                    </select>
-                                    <div class="absolute right-4 top-3.5 pointer-events-none text-gray-500"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
-                                </div>
-                            </div>
-                        </div>
+    <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Game Status / Badge</label>
+    <div class="relative">
+        <select name="tag" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand focus:outline-none text-white appearance-none cursor-pointer">
+            <option value="">Сонгоогүй (No Badge)</option>
+            
+            <optgroup label="Үндсэн төлөв">
+                <option value="New" class="text-green-400">🔥 Шинэ (New Release)</option>
+                <option value="Тун удахгүй" class="text-gray-400">🚀 Тун удахгүй (Coming Soon)</option>
+                <option value="FreeGame" class="text-green-500 font-bold">🎁 Үнэгүй (Free to Play)</option>
+                <option value="Хямдралтай" class="text-red-400">🏷️ Хямдралтай (On Sale)</option>
+            </optgroup>
 
-                        <div>
-                            <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Release Date</label>
-                            <input type="date" name="release_date" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand focus:outline-none text-white appearance-none">
+            <optgroup label="Эрэлт & Шагнал">
+                <option value="Trending" class="text-orange-400">⚡ Эрэлттэй (Trending)</option>
+                <option value="BestSelling" class="text-blue-400">💎 Шилдэг борлуулалт (Top Seller)</option>
+                <option value="GOTY" class="text-yellow-400 font-bold">🏆 Оны шилдэг (Game of the Year)</option>
+                <option value="EditorsChoice" class="text-purple-400">🎖️ Редакторын онцлох (Editor's Choice)</option>
+            </optgroup>
+
+            <optgroup label="Бусад">
+                <option value="EarlyAccess" class="text-teal-400">🛠️ Туршилтын хувилбар (Early Access)</option>
+                <option value="PreOrder" class="text-indigo-400">📦 Урьдчилсан захиалга (Pre-Order)</option>
+            </optgroup>
+        </select>
+        <div class="absolute right-4 top-3.5 pointer-events-none text-gray-500">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+        </div>
+    </div>
+</div>
                         </div>
 
                         <div class="space-y-4 pt-2">
@@ -189,34 +227,31 @@
                                 <input type="text" name="img" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-xs focus:border-brand focus:outline-none text-brand/80 truncate font-mono" placeholder="https://..." required>
                             </div>
                             <div>
-                                <label class="block text-xs text-brand font-semibold mb-1.5 ml-1 flex justify-between">
-                                    <span>Banner Image URL (Wide)</span>
-                                    <span class="text-[10px] opacity-60 font-normal">Optional</span>
-                                </label>
+                                <label class="block text-xs text-brand font-semibold mb-1.5 ml-1">Banner Image URL (Wide)</label>
                                 <input type="text" name="banner" class="w-full bg-black/40 border border-brand/20 rounded-xl px-4 py-3 text-xs focus:border-brand focus:outline-none text-brand/80 truncate font-mono" placeholder="https://...">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Download Link</label>
+                                <input type="text" name="download_link" class="w-full bg-black/40 border border-green-500/30 rounded-xl px-4 py-3 text-xs focus:border-green-500 focus:outline-none text-green-300 truncate font-mono" placeholder="https://drive.google.com/...">
                             </div>
                             <div>
                                 <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">YouTube Trailer</label>
                                 <input type="text" name="trailer" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-xs focus:border-brand focus:outline-none text-gray-400 truncate font-mono" placeholder="https://youtube.com/...">
                             </div>
+                        </div>
 
-                            <div>
-                                <label class="block text-xs text-green-400 font-semibold mb-1.5 ml-1">Download Link (Татах холбоос)</label>
-                                <input type="text" name="download_link" class="w-full bg-black/40 border border-green-500/30 rounded-xl px-4 py-3 text-xs focus:border-green-500 focus:outline-none text-green-300 truncate font-mono" placeholder="https://drive.google.com/...">
-                            </div>
-                            <div class="border-t border-white/5 pt-4 mt-2">
-                                <label class="block text-xs text-gray-400 font-semibold mb-2 ml-1 flex justify-between items-center">
-                                    <span>Game Screenshots (Max 15)</span>
-                                    <span class="text-[10px] text-gray-600 font-normal">Scroll to see all</span>
-                                </label>
-                                <div class="grid grid-cols-1 gap-3 max-h-[200px] overflow-y-auto pr-2 custom-scrollbar bg-black/20 p-2 rounded-lg border border-white/5">
-                                    @for($i = 1; $i <= 15; $i++)
-                                        <div class="relative group">
-                                            <span class="absolute left-3 top-2.5 text-[10px] text-gray-600 font-mono font-bold select-none">#{{ $i }}</span>
-                                            <input type="text" name="screenshots[]" class="w-full bg-black/40 border border-white/10 rounded-lg pl-8 pr-3 py-2 text-xs focus:border-brand focus:outline-none text-gray-300 placeholder-gray-700 font-mono transition-colors hover:border-white/20 focus:bg-black/60" placeholder="https://... image link">
-                                        </div>
-                                    @endfor
-                                </div>
+                        <div class="border-t border-white/5 pt-4 mt-2">
+                            <label class="block text-xs text-gray-400 font-semibold mb-2 ml-1 flex justify-between items-center">
+                                <span>Game Screenshots (Max 15)</span>
+                                <span class="text-[10px] text-gray-600 font-normal">Scroll to see all</span>
+                            </label>
+                            <div class="grid grid-cols-1 gap-3 max-h-[200px] overflow-y-auto pr-2 custom-scrollbar bg-black/20 p-2 rounded-lg border border-white/5">
+                                @for($i = 1; $i <= 15; $i++)
+                                    <div class="relative group">
+                                        <span class="absolute left-3 top-2.5 text-[10px] text-gray-600 font-mono font-bold select-none">#{{ $i }}</span>
+                                        <input type="text" name="screenshots[]" class="w-full bg-black/40 border border-white/10 rounded-lg pl-8 pr-3 py-2 text-xs focus:border-brand focus:outline-none text-gray-300 placeholder-gray-700 font-mono transition-colors hover:border-white/20 focus:bg-black/60" placeholder="https://... image link">
+                                    </div>
+                                @endfor
                             </div>
                         </div>
 
@@ -228,9 +263,7 @@
                         <div class="space-y-3">
                             <div class="bg-black/20 p-4 rounded-xl border border-white/5 relative group">
                                 <div class="absolute top-0 left-0 w-1 h-full bg-red-500/50 rounded-l-xl"></div>
-                                <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 flex justify-between">
-                                    <span>Хамгийн бага (Minimum)</span>
-                                </h3>
+                                <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Хамгийн бага (Minimum)</h3>
                                 <div class="grid grid-cols-2 gap-3">
                                     <input type="text" name="min_os" placeholder="OS" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none placeholder-gray-600">
                                     <input type="text" name="min_cpu" placeholder="CPU" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none placeholder-gray-600">
@@ -242,9 +275,7 @@
 
                             <div class="bg-black/20 p-4 rounded-xl border border-white/5 relative group">
                                 <div class="absolute top-0 left-0 w-1 h-full bg-green-500/50 rounded-l-xl"></div>
-                                <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 flex justify-between">
-                                    <span>Зөвлөмжит (Recommended)</span>
-                                </h3>
+                                <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Зөвлөмжит (Recommended)</h3>
                                 <div class="grid grid-cols-2 gap-3">
                                     <input type="text" name="rec_os" placeholder="OS" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none placeholder-gray-600">
                                     <input type="text" name="rec_cpu" placeholder="CPU" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none placeholder-gray-600">
@@ -260,12 +291,14 @@
                         </button>
                     </form>
 
-                    @foreach($categories as $cat)
-                        <form id="delete-cat-{{ $cat->id }}" action="{{ route('admin.category.destroy', $cat->id) }}" method="POST" onsubmit="return confirm('Delete {{ $cat->name }}?');" class="hidden">
-                            @csrf
-                            @method('DELETE')
-                        </form>
-                    @endforeach
+                    @if(isset($categories) && count($categories) > 0)
+                        @foreach($categories as $cat)
+                            <form id="delete-cat-{{ $cat->id }}" action="{{ route('admin.category.destroy', $cat->id) }}" method="POST" onsubmit="return confirm('Delete {{ $cat->name }}?');" class="hidden">
+                                @csrf
+                                @method('DELETE')
+                            </form>
+                        @endforeach
+                    @endif
 
                 </div>
             </div>
@@ -306,62 +339,30 @@
                                         </div>
                                         <div class="pt-1">
                                             <div class="font-bold text-base text-gray-200 group-hover:text-brand transition-colors leading-tight game-title">{{ $game->title }}</div>
-                                            
                                             <div class="flex flex-wrap items-center gap-2 mt-2">
-                                                @php
-                                                    $currentTag = $game->tag;
-                                                    if(empty($currentTag) && $game->sale_price) {
-                                                        $currentTag = 'Хямдралтай';
-                                                    }
-                                                @endphp
-
-                                                @if(!empty($currentTag))
-                                                    @php
-                                                        $badgeStyle = match($currentTag) {
-                                                            'FreeGame'      => 'bg-green-500/20 text-green-400 border-green-500/50',
-                                                            'GOTY'          => 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50',
-                                                            'BestSelling'   => 'bg-blue-500/20 text-blue-400 border-blue-500/50',
-                                                            'EditorsChoice' => 'bg-purple-500/20 text-purple-400 border-purple-500/50',
-                                                            'Шинэ'          => 'bg-green-500/20 text-green-400 border-green-500/20',
-                                                            'Эрэлттэй'      => 'bg-orange-500/20 text-orange-400 border-orange-500/20',
-                                                            'Тун удахгүй'   => 'bg-gray-500/20 text-gray-300 border-gray-500/20',
-                                                            'Хямдралтай'    => 'bg-red-500/20 text-red-400 border-red-500/50 animate-pulse',
-                                                            default         => 'bg-white/10 text-white border-white/20'
-                                                        };
-                                                    @endphp
-                                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded border {{ $badgeStyle }} flex items-center gap-1 uppercase tracking-wide">
-                                                        {{ $currentTag }}
-                                                    </span>
+                                                @if($game->tag)
+                                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded border bg-white/5 text-gray-400 border-white/10 uppercase">{{ $game->tag }}</span>
                                                 @endif
                                             </div>
                                         </div>
                                     </div>
                                 </td>
-                                
                                 <td class="py-4 px-6 align-middle">
                                     <div class="flex flex-wrap gap-1">
                                         @foreach($game->categories as $category)
-                                            <span class="inline-block bg-white/5 hover:bg-white/10 px-2 py-0.5 rounded text-[10px] font-medium text-gray-300 border border-white/5 transition-colors">
-                                                {{ $category->name }}
-                                            </span>
+                                            <span class="inline-block bg-white/5 hover:bg-white/10 px-2 py-0.5 rounded text-[10px] font-medium text-gray-300 border border-white/5 transition-colors">{{ $category->name }}</span>
                                         @endforeach
-                                        @if($game->categories->isEmpty())
-                                            <span class="text-gray-600 text-xs italic">No Category</span>
-                                        @endif
                                     </div>
                                 </td>
-
                                 <td class="py-4 px-6 align-middle">
                                     <div class="flex flex-col">
                                         @if(is_numeric($game->price) && $game->price == 0)
                                             <span class="text-green-500 font-bold text-sm tracking-wide">FREE</span>
-                                        @elseif(is_numeric($game->price))
-                                            <span class="font-mono text-sm text-gray-200">{{ number_format($game->price) }}₮</span>
-                                            @if($game->sale_price)
-                                                <span class="text-gray-600 line-through text-xs font-mono">{{ number_format($game->sale_price) }}₮</span>
-                                            @endif
                                         @else
-                                            <span class="font-bold text-sm text-gray-400 uppercase tracking-wide">{{ $game->price }}</span>
+                                            <span class="font-mono text-sm text-gray-200">{{ number_format((float)$game->price) }}₮</span>
+                                            @if($game->sale_price)
+                                                <span class="text-gray-600 line-through text-xs font-mono">{{ number_format((float)$game->sale_price) }}₮</span>
+                                            @endif
                                         @endif
                                     </div>
                                 </td>
@@ -371,9 +372,8 @@
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                                         </a>
                                         <form action="{{ route('admin.game.destroy', $game->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete {{ $game->title }}?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="p-2 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all border border-red-500/20" title="Delete">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" class="p-2 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all border border-red-500/20">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                             </button>
                                         </form>
@@ -381,15 +381,6 @@
                                 </td>
                             </tr>
                             @endforeach
-                            
-                            @if(count($games) == 0)
-                            <tr>
-                                <td colspan="4" class="py-20 text-center text-gray-600">
-                                    <div class="text-4xl mb-4 opacity-20">🎮</div>
-                                    <p>No games added yet.</p>
-                                </td>
-                            </tr>
-                            @endif
                         </tbody>
                     </table>
                 </div>
@@ -405,7 +396,6 @@
             filter = input.value.toUpperCase();
             table = document.getElementById("gamesTable");
             tr = table.getElementsByTagName("tr");
-
             for (i = 0; i < tr.length; i++) {
                 td = tr[i].querySelector(".game-title");
                 if (td) {
@@ -420,7 +410,6 @@
         }
 
         function filterType(type) {
-            // Button style toggle
             const btns = document.querySelectorAll('.filter-btn');
             btns.forEach(btn => {
                 if(btn.innerText.toLowerCase().includes(type == 'all' ? 'all' : 'free')) {
@@ -444,6 +433,24 @@
                         row.style.display = 'none';
                     }
                 }
+            });
+        }
+
+        // --- CATEGORY SEARCH SCRIPT (UPDATED) ---
+        const catSearch = document.getElementById('catSearch');
+        if(catSearch) {
+            catSearch.addEventListener('keyup', function() {
+                let filter = this.value.toLowerCase();
+                let items = document.querySelectorAll('.cat-item');
+
+                items.forEach(item => {
+                    let text = item.querySelector('.cat-name').textContent.toLowerCase();
+                    if(text.includes(filter)) {
+                        item.style.display = "flex"; // Use flex to maintain layout
+                    } else {
+                        item.style.display = "none";
+                    }
+                });
             });
         }
     </script>

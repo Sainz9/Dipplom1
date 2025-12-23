@@ -215,8 +215,8 @@
                         <div id="thumbnails-track" class="flex gap-2 md:gap-3 overflow-x-auto px-4 py-2 scroll-smooth custom-scroll snap-x snap-mandatory pb-4">
                             @foreach($mediaList as $index => $media)
                                 <button onclick="setMedia({{ $index }})" 
-                                        id="thumb-{{ $index }}"
-                                        class="thumb-item snap-center w-20 h-12 md:w-36 md:h-20 flex-shrink-0 rounded-lg md:rounded-xl overflow-hidden border-2 {{ $index == 0 ? 'border-brand active-thumb' : 'border-transparent' }} bg-surface relative cursor-pointer hover:border-white/50 transition-all duration-300 transform hover:scale-105 group/thumb">
+                                    id="thumb-{{ $index }}"
+                                    class="thumb-item snap-center w-20 h-12 md:w-36 md:h-20 flex-shrink-0 rounded-lg md:rounded-xl overflow-hidden border-2 {{ $index == 0 ? 'border-brand active-thumb' : 'border-transparent' }} bg-surface relative cursor-pointer hover:border-white/50 transition-all duration-300 transform hover:scale-105 group/thumb">
                                     <img src="{{ $media['thumb'] }}" class="w-full h-full object-cover opacity-60 hover:opacity-100 transition-opacity">
                                     
                                     @if($media['type'] == 'video')
@@ -552,10 +552,22 @@
                             @endif
                         </div>
 
+                        {{-- DYNAMIC DEVELOPER & PUBLISHER & RELEASE DATE --}}
                         <div class="border-t border-white/10 pt-4 space-y-3 text-sm text-gray-400">
-                            <div class="flex justify-between"><span>Developer</span> <span class="text-white font-medium">{{ $game->developer ?? 'PlayVision' }}</span></div>
-                            <div class="flex justify-between"><span>Publisher</span> <span class="text-white font-medium">{{ $game->publisher ?? 'PlayVision' }}</span></div>
-                            <div class="flex justify-between"><span>Release Date</span> <span class="text-white font-medium">{{ $game->release_date ? \Carbon\Carbon::parse($game->release_date)->format('Y-m-d') : 'TBA' }}</span></div>
+                            <div class="flex justify-between">
+                                <span>Developer</span> 
+                                <span class="text-white font-medium">{{ $game->developer ?? 'PlayVision' }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Publisher</span> 
+                                <span class="text-white font-medium">{{ $game->publisher ?? 'PlayVision' }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Release Date</span> 
+                                <span class="text-white font-medium">
+                                    {{ $game->release_date ? \Carbon\Carbon::parse($game->release_date)->format('Y-m-d') : 'TBA' }}
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -711,4 +723,4 @@
         }
     </script>
 </body>
-</html>r
+</html>

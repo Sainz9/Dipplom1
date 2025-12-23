@@ -29,6 +29,7 @@ return new class extends Migration
             $table->text('img');
             $table->string('banner')->nullable();
             $table->string('trailer')->nullable();
+            $table->string('trailer')->nullable();
             $table->json('screenshots')->nullable();
             
             // Recommended Requirements (Зөвлөмжит)

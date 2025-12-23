@@ -10,26 +10,77 @@ use App\Models\Order;
 
 class GameController extends Controller
 {
-    // 1. HOME / INDEX
-    public function index()
+    // Нүүр хуудас (Хайлт болон Шүүлтүүртэй)
+    public function index(Request $request)
     {
-        $games = Game::with('categories')->latest()->get();
+        // 1. Үндсэн Query
+        $query = Game::with('categories');
 
+        // 2. Хайлт (Search Input)
+        if ($request->filled('search')) {
+            $query->where('title', 'like', '%' . $request->search . '%');
+        }
+
+        // 3. Төрөл (Genre/Category)
+        if ($request->filled('genre')) {
+            $query->whereHas('categories', function($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->genre . '%');
+            });
+        }
+
+        // 4. Платформ (Platform)
+        if ($request->filled('platform')) {
+            $query->where('platform', 'like', '%' . $request->platform . '%');
+        }
+
+        // 5. Үнэ (Price)
+        if ($request->filled('price')) {
+            switch ($request->price) {
+                case 'free':
+                    $query->where('price', 0)->orWhere('tag', 'FreeGame');
+                    break;
+                case 'sale':
+                    $query->whereNotNull('sale_price')->where('sale_price', '>', 0);
+                    break;
+                case 'under_20':
+                    $query->where('price', '<', 20000);
+                    break;
+            }
+        }
+
+        // Бүх тоглоом (Шүүлтүүртэй)
+        $games = $query->latest()->get();
+
+        // Slider-т зориулсан тоглоомууд
         $sliderGames = Game::whereNotNull('banner')->latest()->take(5)->get();
         if ($sliderGames->isEmpty()) {
             $sliderGames = Game::latest()->take(5)->get();
         }
 
+        // Coming Soon
         $comingSoonGames = Game::where('tag', 'Тун удахгүй')->latest()->get();
 
+        // Категориуд (Footer хэсэгт эсвэл өөр газар хэрэг болж магадгүй)
         $categories = Category::with(['games' => function($query) {
             $query->latest()->take(10);
         }])->get();
 
-        return view('welcome', compact('games', 'sliderGames', 'categories', 'comingSoonGames'));
+        // --- Navbar дээрх Dropdown цэсэнд зориулсан (АВТОМАТААР ШИНЭЧЛЭГДЭНЭ) ---
+        $navCategories = Category::orderBy('name', 'asc')->get();
+
+        // --- Нүүр хуудасны хэсгүүдийн тохиргоо ---
+        $sections = [
+            'GOTY'          => ['title' => '🏆 Game of the Year', 'color' => 'yellow-500', 'border' => 'hover:border-yellow-500'],
+            'BestSelling'   => ['title' => '💎 Best Sellers', 'color' => 'blue-500', 'border' => 'hover:border-blue-500'],
+            'Шинэ'          => ['title' => '🔥 Шинэ (New)', 'color' => 'green-500', 'border' => 'hover:border-green-500'],
+            'EditorsChoice' => ['title' => '🎖️ Редакторын сонголт', 'color' => 'pink-500', 'border' => 'hover:border-pink-500'],
+            'Эрэлттэй'      => ['title' => '⚡ Эрэлттэй', 'color' => 'orange-500', 'border' => 'hover:border-orange-500'],
+            'Trending'      => ['title' => '⚡ Эрэлттэй', 'color' => 'orange-500', 'border' => 'hover:border-orange-500'],
+        ];
+
+        return view('welcome', compact('games', 'sliderGames', 'categories', 'navCategories', 'comingSoonGames', 'sections'));
     }
 
-    // 2. ADMIN DASHBOARD
     public function adminDashboard()
     {
         $games = Game::with('categories')->latest()->get();
@@ -37,7 +88,31 @@ class GameController extends Controller
         return view('admin.dashboard', compact('games', 'categories'));
     }
 
-    // 3. STORE GAME
+    // --- ШИНЭ ТӨРӨЛ НЭМЭХ (Category Add) ---
+    public function storeCategory(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|unique:categories,name|max:255',
+        ]);
+
+        Category::create([
+            'name' => $request->name,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Шинэ төрөл амжилттай нэмэгдлээ!');
+    }
+
+    // --- ТӨРӨЛ УСТГАХ (Category Delete) ---
+    public function destroyCategory($id)
+    {
+        $category = Category::findOrFail($id);
+        $category->delete();
+
+        return redirect()->back()->with('success', 'Төрөл амжилттай устгагдлаа!');
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -49,10 +124,12 @@ class GameController extends Controller
             'categories.*'=> 'exists:categories,id',
             'banner'      => 'nullable',
             'trailer'     => 'nullable',
+            'trailer'     => 'nullable',
             'screenshots' => 'nullable|array',
             'tag'         => 'nullable',
             'release_date'=> 'nullable|date',
             'description' => 'nullable',
+            'platform'    => 'nullable', 
             'min_os'      => 'nullable',
             'min_cpu'     => 'nullable',
             'min_gpu'     => 'nullable',
@@ -63,13 +140,17 @@ class GameController extends Controller
             'rec_gpu'     => 'nullable',
             'rec_ram'     => 'nullable',
             'rec_storage' => 'nullable',
+            'developer'   => 'nullable',
+            'publisher'   => 'nullable',
+            'developer' => 'nullable',
+    'publisher' => 'nullable',
         ]);
 
         $data = $request->except(['categories', 'screenshots']);
 
         if ($request->has('screenshots')) {
             $screenshots = array_filter($request->input('screenshots'), fn($v) => $v !== null && $v !== '');
-            $data['screenshots'] = array_values($screenshots);
+            $data['screenshots'] = array_values($screenshots); 
         }
 
         $game = Game::create($data);
@@ -78,10 +159,10 @@ class GameController extends Controller
             $game->categories()->attach($request->input('categories'));
         }
 
+        
         return redirect()->back()->with('success', 'Game added successfully!');
     }
 
-    // 4. EDIT GAME
     public function edit($id)
     {
         $game = Game::with('categories')->findOrFail($id);
@@ -89,7 +170,6 @@ class GameController extends Controller
         return view('admin.game.edit', compact('game', 'categories'));
     }
 
-    // 5. UPDATE GAME
     public function update(Request $request, $id)
     {
         $game = Game::findOrFail($id);
@@ -103,10 +183,12 @@ class GameController extends Controller
             'categories.*'=> 'exists:categories,id',
             'banner'      => 'nullable',
             'trailer'     => 'nullable',
+            'trailer'     => 'nullable',
             'screenshots' => 'nullable|array',
             'tag'         => 'nullable',
             'release_date'=> 'nullable|date',
             'description' => 'nullable',
+            'platform'    => 'nullable',
             'min_os'      => 'nullable',
             'min_cpu'     => 'nullable',
             'min_gpu'     => 'nullable',
@@ -117,6 +199,10 @@ class GameController extends Controller
             'rec_gpu'     => 'nullable',
             'rec_ram'     => 'nullable',
             'rec_storage' => 'nullable',
+            'developer'   => 'nullable',
+            'publisher'   => 'nullable',
+            'developer' => 'nullable',
+'publisher' => 'nullable',
         ]);
 
         $data = $request->except(['categories', 'screenshots']);
@@ -137,7 +223,6 @@ class GameController extends Controller
         return redirect()->route('admin.dashboard')->with('success', 'Game updated successfully!');
     }
 
-    // 6. SHOW SINGLE GAME
     public function show($id)
     {
         $game = Game::with('categories')->findOrFail($id);
@@ -153,7 +238,6 @@ class GameController extends Controller
         return view('game', compact('game', 'relatedGames'));
     }
 
-    // 7. DELETE GAME
     public function destroy($id)
     {
         $game = Game::findOrFail($id);
@@ -162,7 +246,6 @@ class GameController extends Controller
         return redirect()->back()->with('success', 'Game deleted successfully!');
     }
 
-    // 8. DOWNLOAD GAME
     public function download($id)
     {
         $game = Game::findOrFail($id);

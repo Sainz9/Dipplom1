@@ -13,7 +13,6 @@ public function up()
 {
     Schema::create('orders', function (Blueprint $table) {
         $table->id();
-        // ДООРХ МӨР ЗААВАЛ БАЙХ ЁСТОЙ:
         $table->foreignId('user_id')->constrained()->onDelete('cascade'); 
         $table->foreignId('game_id')->constrained()->onDelete('cascade');
         $table->decimal('amount', 10, 2);
@@ -23,9 +22,7 @@ public function up()
     });
 }
 
-    /**
-     * Reverse the migrations.
-     */
+   
   public function down(): void
     {
         Schema::dropIfExists('orders'); // Энийг нэмэх
