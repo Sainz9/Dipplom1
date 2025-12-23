@@ -17,8 +17,11 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
-    {
-        //
+  public function boot(): void
+{
+    // Хэрэв Production (Vercel) дээр байвал HTTPS-ийг албадна
+    if($this->app->environment('production')) {
+        URL::forceScheme('https');
     }
+}
 }
