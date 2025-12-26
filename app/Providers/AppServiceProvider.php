@@ -2,17 +2,34 @@
 
 namespace App\Providers;
 
+use App\Models\Category;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\URL; // <--- ЭНЭ МӨР ДУТУУ БАЙНА! ЗААВАЛ НЭМ!
 
 class AppServiceProvider extends ServiceProvider
 {
-    // ... бусад код ...
-    
+    /**
+     * Register any application services.
+     */
+    public function register(): void
+    {
+        //
+    }
+
+    /**
+     * Bootstrap any application services.
+     */
     public function boot(): void
     {
-        if($this->app->environment('production')) {
-            URL::forceScheme('https'); // Энд алдаа зааж байсан
-        }
+        View::composer('layouts.inc.app.header',function($view) {
+            $view->with('categories', Category::all());
+        });
+
+        View::composer('*', function ($view) {
+             $cart = session('cart');
+             $cartCount = collect($cart)->sum('quantity');
+             $view->with('cartCount', $cartCount);
+        });
+
     }
 }
