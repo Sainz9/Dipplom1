@@ -3,25 +3,16 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\URL; // <--- ЭНЭ МӨР ДУТУУ БАЙНА! ЗААВАЛ НЭМ!
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
-    public function register(): void
+    // ... бусад код ...
+    
+    public function boot(): void
     {
-        //
+        if($this->app->environment('production')) {
+            URL::forceScheme('https'); // Энд алдаа зааж байсан
+        }
     }
-
-    /**
-     * Bootstrap any application services.
-     */
-  public function boot(): void
-{
-    // Хэрэв Production (Vercel) дээр байвал HTTPS-ийг албадна
-    if($this->app->environment('production')) {
-        URL::forceScheme('https');
-    }
-}
 }
