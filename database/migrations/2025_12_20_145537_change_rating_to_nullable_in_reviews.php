@@ -9,15 +9,19 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-  public function up()
+public function up(): void
 {
-    // rating баганыг NULL байж болохоор өөрчилж байна
-    DB::statement("ALTER TABLE reviews MODIFY rating INT NULL");
+    Schema::table('reviews', function (Blueprint $table) {
+ 
+        $table->integer('rating')->nullable()->change();
+    });
 }
 
-public function down()
+public function down(): void
 {
-    // Буцаах үед (шаардлагатай бол)
-    DB::statement("ALTER TABLE reviews MODIFY rating INT NOT NULL");
+    Schema::table('reviews', function (Blueprint $table) {
+      
+        $table->integer('rating')->nullable(false)->change();
+    });
 }
 };
