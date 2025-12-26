@@ -2,7 +2,7 @@
 <html lang="mn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>{{ $game->title ?? 'Game Details' }} | PlayVision</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -45,6 +45,9 @@
             -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
             mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
         }
+
+        /* Mobile Safe Area for Sticky Bottom */
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
     </style>
 
     <script>
@@ -152,7 +155,8 @@
         </div>
     </nav>
 
-    <main class="pt-24 md:pt-32 pb-20 flex-grow relative z-10 animate-fade-in">
+    {{-- MAIN CONTENT (Added pb-32 for Mobile Sticky Bar Space) --}}
+    <main class="pt-24 md:pt-32 pb-32 md:pb-20 flex-grow relative z-10 animate-fade-in">
         <div class="max-w-[1400px] mx-auto px-4 md:px-6">
             
             {{-- TITLE HEADER --}}
@@ -163,6 +167,36 @@
                     <div class="flex items-center gap-1 bg-yellow-500/10 border border-yellow-500/20 px-2 py-1 rounded text-yellow-400 font-bold text-xs md:text-sm" title="{{ $ratingCount }} ratings">
                         <span>★</span> {{ $displayRating }} <span class="text-[10px] text-gray-500 ml-1">({{ $ratingCount }})</span>
                     </div>
+
+                    {{-- Dynamic Status Badge --}}
+                    @php
+                        $tag = $game->tag;
+                        $badgeClass = 'bg-white/10 text-white border-white/20';
+                        $label = $tag;
+
+                        if($tag == 'EarlyAccess') {
+                            $badgeClass = 'bg-teal-600/20 text-teal-400 border-teal-500/50 shadow-[0_0_10px_rgba(20,184,166,0.3)]';
+                            $label = '🛠️ Туршилтын хувилбар';
+                        } elseif($tag == 'PreOrder') {
+                            $badgeClass = 'bg-indigo-600/20 text-indigo-400 border-indigo-500/50 shadow-[0_0_10px_rgba(99,102,241,0.3)]';
+                            $label = '📦 Урьдчилсан захиалга';
+                        } elseif($tag == 'GOTY') {
+                            $badgeClass = 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50 shadow-[0_0_10px_rgba(234,179,8,0.3)]';
+                            $label = '🏆 Оны шилдэг';
+                        } elseif($tag == 'FreeGame') {
+                            $badgeClass = 'bg-green-500/20 text-green-400 border-green-500/50';
+                            $label = '🎁 Үнэгүй';
+                        } elseif($tag == 'New' || $tag == 'Шинэ') {
+                            $badgeClass = 'bg-green-500/20 text-green-400 border-green-500/50';
+                            $label = '🔥 Шинэ';
+                        }
+                    @endphp
+
+                    @if($tag)
+                        <span class="text-[10px] font-bold px-3 py-1 rounded border {{ $badgeClass }} flex items-center gap-1 uppercase tracking-wide">
+                            {{ $label }}
+                        </span>
+                    @endif
 
                     @if(isset($game->categories))
                         @foreach($game->categories as $category)
@@ -204,13 +238,6 @@
                     <div class="w-full relative group/thumbs mt-2">
                         <div class="absolute left-0 top-0 bottom-0 w-8 md:w-12 bg-gradient-to-r from-[#0f0f0f] to-transparent z-10 pointer-events-none"></div>
                         <div class="absolute right-0 top-0 bottom-0 w-8 md:w-12 bg-gradient-to-l from-[#0f0f0f] to-transparent z-10 pointer-events-none"></div>
-
-                        <button onclick="scrollThumbs('left')" class="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-black/50 backdrop-blur-md border border-white/10 rounded-full items-center justify-center opacity-0 group-hover/thumbs:opacity-100 transition hover:bg-brand hover:scale-110">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                        </button>
-                        <button onclick="scrollThumbs('right')" class="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-black/50 backdrop-blur-md border border-white/10 rounded-full items-center justify-center opacity-0 group-hover/thumbs:opacity-100 transition hover:bg-brand hover:scale-110">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                        </button>
 
                         <div id="thumbnails-track" class="flex gap-2 md:gap-3 overflow-x-auto px-4 py-2 scroll-smooth custom-scroll snap-x snap-mandatory pb-4">
                             @foreach($mediaList as $index => $media)
@@ -339,16 +366,13 @@
                                                 <form action="{{ route('reviews.update', $review->id) }}" method="POST">
                                                     @csrf
                                                     @method('PUT')
-                                                    
                                                     <div class="rate mb-2 scale-75 origin-left">
                                                         @for($i=5; $i>=1; $i--)
                                                             <input type="radio" id="star{{$i}}-{{$review->id}}" name="rating" value="{{$i}}" {{ $review->rating == $i ? 'checked' : '' }} />
                                                             <label for="star{{$i}}-{{$review->id}}">{{$i}} stars</label>
                                                         @endfor
                                                     </div>
-
                                                     <textarea name="comment" rows="3" required class="w-full bg-black/40 border border-brand/50 rounded-xl px-4 py-3 text-sm focus:outline-none text-white resize-none mt-2">{{ $review->comment }}</textarea>
-                                                    
                                                     <div class="flex gap-2 mt-2 justify-end">
                                                         <button type="button" onclick="toggleEdit({{ $review->id }})" class="text-gray-400 hover:text-white text-xs font-bold px-3 py-1">Болих</button>
                                                         <button type="submit" class="bg-brand hover:bg-white text-black font-bold text-xs px-4 py-1.5 rounded transition">Хадгалах</button>
@@ -381,45 +405,30 @@
                                 </h4>
                                 <ul class="space-y-4 text-sm">
                                     <li class="flex items-start gap-3">
-                                        <div class="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-gray-500 shrink-0">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                                        </div>
                                         <div class="min-w-0 flex-1">
                                             <div class="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider mb-0.5">OS</div>
                                             <div class="text-sm text-gray-200 leading-tight break-words">{{ $game->min_os ?? 'Not specified' }}</div>
                                         </div>
                                     </li>
                                     <li class="flex items-start gap-3">
-                                        <div class="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-gray-500 shrink-0">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" /></svg>
-                                        </div>
                                         <div class="min-w-0 flex-1">
                                             <div class="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider mb-0.5">Processor</div>
                                             <div class="text-sm text-gray-200 leading-tight break-words">{{ $game->min_cpu ?? 'Not specified' }}</div>
                                         </div>
                                     </li>
                                     <li class="flex items-start gap-3">
-                                        <div class="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-gray-500 shrink-0">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-                                        </div>
                                         <div class="min-w-0 flex-1">
                                             <div class="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider mb-0.5">Memory</div>
                                             <div class="text-sm text-gray-200 leading-tight break-words">{{ $game->min_ram ?? 'Not specified' }}</div>
                                         </div>
                                     </li>
                                     <li class="flex items-start gap-3">
-                                        <div class="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-gray-500 shrink-0">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                        </div>
                                         <div class="min-w-0 flex-1">
                                             <div class="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider mb-0.5">Graphics</div>
                                             <div class="text-sm text-gray-200 leading-tight break-words">{{ $game->min_gpu ?? 'Not specified' }}</div>
                                         </div>
                                     </li>
                                     <li class="flex items-start gap-3">
-                                        <div class="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-gray-500 shrink-0">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" /></svg>
-                                        </div>
                                         <div class="min-w-0 flex-1">
                                             <div class="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider mb-0.5">Storage</div>
                                             <div class="text-sm text-gray-200 leading-tight break-words">{{ $game->min_storage ?? 'Not specified' }}</div>
@@ -436,45 +445,30 @@
                                 </div>
                                 <ul class="space-y-4 text-sm">
                                     <li class="flex items-start gap-3">
-                                        <div class="w-8 h-8 rounded bg-green-500/10 flex items-center justify-center text-green-500 shrink-0">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                                        </div>
                                         <div class="min-w-0 flex-1">
                                             <div class="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider mb-0.5">OS</div>
                                             <div class="text-sm text-white font-medium leading-tight break-words">{{ $game->rec_os ?? $game->min_os }}</div>
                                         </div>
                                     </li>
                                     <li class="flex items-start gap-3">
-                                        <div class="w-8 h-8 rounded bg-green-500/10 flex items-center justify-center text-green-500 shrink-0">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" /></svg>
-                                        </div>
                                         <div class="min-w-0 flex-1">
                                             <div class="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider mb-0.5">Processor</div>
                                             <div class="text-sm text-white font-medium leading-tight break-words">{{ $game->rec_cpu ?? 'Not specified' }}</div>
                                         </div>
                                     </li>
                                     <li class="flex items-start gap-3">
-                                        <div class="w-8 h-8 rounded bg-green-500/10 flex items-center justify-center text-green-500 shrink-0">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-                                        </div>
                                         <div class="min-w-0 flex-1">
                                             <div class="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider mb-0.5">Memory</div>
                                             <div class="text-sm text-white font-medium leading-tight break-words">{{ $game->rec_ram ?? 'Not specified' }}</div>
                                         </div>
                                     </li>
                                     <li class="flex items-start gap-3">
-                                        <div class="w-8 h-8 rounded bg-green-500/10 flex items-center justify-center text-green-500 shrink-0">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                        </div>
                                         <div class="min-w-0 flex-1">
                                             <div class="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider mb-0.5">Graphics</div>
                                             <div class="text-sm text-white font-medium leading-tight break-words">{{ $game->rec_gpu ?? 'Not specified' }}</div>
                                         </div>
                                     </li>
                                     <li class="flex items-start gap-3">
-                                        <div class="w-8 h-8 rounded bg-green-500/10 flex items-center justify-center text-green-500 shrink-0">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" /></svg>
-                                        </div>
                                         <div class="min-w-0 flex-1">
                                             <div class="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider mb-0.5">Storage</div>
                                             <div class="text-sm text-white font-medium leading-tight break-words">{{ $game->rec_storage ?? 'Not specified' }}</div>
@@ -487,8 +481,8 @@
 
                 </div>
 
-                {{-- RIGHT: BUY CARD (Sticky only on desktop) --}}
-                <div class="lg:col-span-4 h-fit space-y-6">
+                {{-- RIGHT: BUY CARD (Desktop Only) --}}
+                <div class="lg:col-span-4 h-fit space-y-6 hidden lg:block">
                     <div class="bg-surface/90 backdrop-blur-md p-6 rounded-2xl border border-white/10 shadow-2xl relative overflow-hidden lg:sticky lg:top-24">
                         <div class="absolute -top-10 -right-10 w-32 h-32 bg-brand/20 blur-3xl rounded-full pointer-events-none"></div>
 
@@ -498,7 +492,7 @@
                                 $isComingSoon = ($game->tag == 'Тун удахгүй' || !$isPriceNumeric);
                             @endphp
 
-                            @if($isComingSoon)
+                            @if($isComingSoon && $game->tag !== 'PreOrder')
                                 <div class="text-2xl font-black text-gray-200">COMING SOON</div>
                                 <div class="text-gray-500 text-sm mt-1">Pre-order details coming soon.</div>
                             @elseif($game->price == 0)
@@ -532,13 +526,19 @@
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                                     ТАТАХ (Download)
                                 </a>
-                            @elseif($isComingSoon)
+                            @elseif($isComingSoon && $game->tag !== 'PreOrder')
                                 <button disabled class="w-full bg-white/5 text-gray-500 font-bold py-4 rounded-xl cursor-not-allowed border border-white/5 uppercase tracking-wide">Not Available</button>
                             @else
                                 <form action="{{ route('checkout.index') }}" method="GET">
                                     <input type="hidden" name="game_id" value="{{ $game->id }}">
                                     <button type="submit" class="w-full bg-brand hover:bg-brandHover text-black font-black py-4 rounded-xl uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(0,120,242,0.4)] hover:shadow-[0_0_30px_rgba(0,120,242,0.6)] transform active:scale-[0.98]">
-                                        Худалдаж авах
+                                        @if($game->tag == 'PreOrder')
+                                            Урьдчилан захиалах
+                                        @elseif($game->tag == 'EarlyAccess')
+                                            Туршилтаар авах
+                                        @else
+                                            Худалдаж авах
+                                        @endif
                                     </button>
                                 </form>
 
@@ -628,7 +628,43 @@
 
     </main>
 
-    <footer class="border-t border-white/5 py-12 text-center bg-[#0a0a0a]">
+    {{-- MOBILE STICKY ACTION BAR (New Feature) --}}
+    <div class="fixed bottom-0 left-0 w-full z-50 bg-[#0f0f0f]/90 backdrop-blur-md border-t border-white/10 p-4 lg:hidden pb-safe">
+        <div class="flex items-center gap-4">
+            
+            <div class="flex flex-col">
+                @if($isComingSoon && $game->tag !== 'PreOrder')
+                    <span class="text-xs text-gray-500 font-bold uppercase">Coming Soon</span>
+                @elseif($game->price == 0)
+                    <span class="text-lg font-black text-brand">Free</span>
+                @elseif($game->sale_price && is_numeric($game->sale_price))
+                    <span class="text-xs text-gray-500 line-through">{{ number_format((float)$game->price) }}₮</span>
+                    <span class="text-lg font-black text-white">{{ number_format((float)$game->sale_price) }}₮</span>
+                @else
+                    <span class="text-lg font-black text-white">{{ number_format((float)$game->price) }}₮</span>
+                @endif
+            </div>
+
+            <div class="flex-1 flex gap-2">
+                @if($userOwnsGame)
+                     <a href="{{ route('game.download', $game->id) }}" class="flex-1 bg-green-600 text-white font-bold py-3 rounded-lg text-center text-sm uppercase tracking-wide">
+                        Татах
+                    </a>
+                @elseif($isComingSoon && $game->tag !== 'PreOrder')
+                    <button disabled class="flex-1 bg-white/10 text-gray-500 font-bold py-3 rounded-lg cursor-not-allowed">Unavailable</button>
+                @else
+                    <form action="{{ route('checkout.index') }}" method="GET" class="flex-1">
+                        <input type="hidden" name="game_id" value="{{ $game->id }}">
+                        <button type="submit" class="w-full bg-brand text-black font-black py-3 rounded-lg text-sm uppercase tracking-wide">
+                            @if($game->tag == 'PreOrder') Pre-Order @elseif($game->tag == 'EarlyAccess') Get Access @else Buy Now @endif
+                        </button>
+                    </form>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    <footer class="border-t border-white/5 py-12 text-center bg-[#0a0a0a] pb-32 lg:pb-12">
         <p class="text-gray-600 text-sm">&copy; 2025 PlayVision. All rights reserved.</p>
     </footer>
 
