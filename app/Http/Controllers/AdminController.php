@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Category;
 use App\Models\Game;
-
+use Illuminate\Support\Facades\URL;
 class AdminController extends Controller
 {
     public function index()
