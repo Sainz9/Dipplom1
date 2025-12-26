@@ -9,11 +9,15 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-  public function up()
+public function up(): void
 {
     Schema::table('games', function (Blueprint $table) {
-        $table->string('developer')->nullable()->default('PlayVision');
-        $table->string('publisher')->nullable()->default('PlayVision');
+        if (!Schema::hasColumn('games', 'developer')) {
+            $table->string('developer')->nullable();
+        }
+        if (!Schema::hasColumn('games', 'publisher')) {
+            $table->string('publisher')->nullable();
+        }
     });
 }
 

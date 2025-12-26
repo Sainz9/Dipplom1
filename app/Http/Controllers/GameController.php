@@ -113,7 +113,7 @@ class GameController extends Controller
         return redirect()->back()->with('success', 'Төрөл амжилттай устгагдлаа!');
     }
 
-    public function store(Request $request)
+   public function store(Request $request)
     {
         $request->validate([
             'title'       => 'required',
@@ -124,12 +124,11 @@ class GameController extends Controller
             'categories.*'=> 'exists:categories,id',
             'banner'      => 'nullable',
             'trailer'     => 'nullable',
-            'trailer'     => 'nullable',
             'screenshots' => 'nullable|array',
             'tag'         => 'nullable',
             'release_date'=> 'nullable|date',
             'description' => 'nullable',
-            'platform'    => 'nullable', 
+            'platform'    => 'nullable',
             'min_os'      => 'nullable',
             'min_cpu'     => 'nullable',
             'min_gpu'     => 'nullable',
@@ -140,10 +139,9 @@ class GameController extends Controller
             'rec_gpu'     => 'nullable',
             'rec_ram'     => 'nullable',
             'rec_storage' => 'nullable',
+            // Энд давхардлыг арилгав
             'developer'   => 'nullable',
             'publisher'   => 'nullable',
-            'developer' => 'nullable',
-    'publisher' => 'nullable',
         ]);
 
         $data = $request->except(['categories', 'screenshots']);
@@ -159,7 +157,6 @@ class GameController extends Controller
             $game->categories()->attach($request->input('categories'));
         }
 
-        
         return redirect()->back()->with('success', 'Game added successfully!');
     }
 
