@@ -239,6 +239,13 @@
                         <div class="absolute left-0 top-0 bottom-0 w-8 md:w-12 bg-gradient-to-r from-[#0f0f0f] to-transparent z-10 pointer-events-none"></div>
                         <div class="absolute right-0 top-0 bottom-0 w-8 md:w-12 bg-gradient-to-l from-[#0f0f0f] to-transparent z-10 pointer-events-none"></div>
 
+                        <button onclick="scrollThumbs('left')" class="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-black/50 backdrop-blur-md border border-white/10 rounded-full items-center justify-center opacity-0 group-hover/thumbs:opacity-100 transition hover:bg-brand hover:scale-110">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                        </button>
+                        <button onclick="scrollThumbs('right')" class="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-black/50 backdrop-blur-md border border-white/10 rounded-full items-center justify-center opacity-0 group-hover/thumbs:opacity-100 transition hover:bg-brand hover:scale-110">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </button>
+
                         <div id="thumbnails-track" class="flex gap-2 md:gap-3 overflow-x-auto px-4 py-2 scroll-smooth custom-scroll snap-x snap-mandatory pb-4">
                             @foreach($mediaList as $index => $media)
                                 <button onclick="setMedia({{ $index }})" 
@@ -366,13 +373,16 @@
                                                 <form action="{{ route('reviews.update', $review->id) }}" method="POST">
                                                     @csrf
                                                     @method('PUT')
+                                                    
                                                     <div class="rate mb-2 scale-75 origin-left">
                                                         @for($i=5; $i>=1; $i--)
                                                             <input type="radio" id="star{{$i}}-{{$review->id}}" name="rating" value="{{$i}}" {{ $review->rating == $i ? 'checked' : '' }} />
                                                             <label for="star{{$i}}-{{$review->id}}">{{$i}} stars</label>
                                                         @endfor
                                                     </div>
+
                                                     <textarea name="comment" rows="3" required class="w-full bg-black/40 border border-brand/50 rounded-xl px-4 py-3 text-sm focus:outline-none text-white resize-none mt-2">{{ $review->comment }}</textarea>
+                                                    
                                                     <div class="flex gap-2 mt-2 justify-end">
                                                         <button type="button" onclick="toggleEdit({{ $review->id }})" class="text-gray-400 hover:text-white text-xs font-bold px-3 py-1">Болих</button>
                                                         <button type="submit" class="bg-brand hover:bg-white text-black font-bold text-xs px-4 py-1.5 rounded transition">Хадгалах</button>
@@ -531,6 +541,8 @@
                             @else
                                 <form action="{{ route('checkout.index') }}" method="GET">
                                     <input type="hidden" name="game_id" value="{{ $game->id }}">
+                                    
+                                    {{-- DYNAMIC BUTTON TEXT --}}
                                     <button type="submit" class="w-full bg-brand hover:bg-brandHover text-black font-black py-4 rounded-xl uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(0,120,242,0.4)] hover:shadow-[0_0_30px_rgba(0,120,242,0.6)] transform active:scale-[0.98]">
                                         @if($game->tag == 'PreOrder')
                                             Урьдчилан захиалах

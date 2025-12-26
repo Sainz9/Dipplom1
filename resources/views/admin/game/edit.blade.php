@@ -101,7 +101,23 @@
                         </div>
                     </div>
 
-                    {{-- 2. CATEGORIES & TAGS --}}
+                    {{-- 2. DEVELOPER / PUBLISHER / DATE (NEW) --}}
+                    <div class="grid grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Developer</label>
+                            <input type="text" name="developer" value="{{ old('developer', $game->developer) }}" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-3 text-xs focus:border-brand focus:outline-none text-brand/80 font-bold placeholder-gray-600">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Publisher</label>
+                            <input type="text" name="publisher" value="{{ old('publisher', $game->publisher) }}" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-3 text-xs focus:border-brand focus:outline-none text-brand/80 font-bold placeholder-gray-600">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Release Date</label>
+                            <input type="date" name="release_date" value="{{ old('release_date', $game->release_date) }}" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-3 text-xs focus:border-brand focus:outline-none text-white uppercase tracking-wider">
+                        </div>
+                    </div>
+
+                    {{-- 3. CATEGORIES & TAGS --}}
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {{-- Categories Checkbox --}}
                         <div class="md:col-span-2">
@@ -110,7 +126,7 @@
                                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
                                     @foreach($categories as $cat)
                                         <div class="flex items-center group p-1 rounded hover:bg-white/5 transition">
-                                            <label class="flex items-center space-x-2 cursor-pointer w-full">
+                                            <label class="flex items-center space-x-2 cursor-pointer w-full select-none">
                                                 <input type="checkbox" name="categories[]" value="{{ $cat->id }}" 
                                                     class="w-4 h-4 rounded border-gray-600 text-brand focus:ring-brand bg-gray-700"
                                                     {{ in_array($cat->id, $game->categories->pluck('id')->toArray()) ? 'checked' : '' }}>
@@ -122,29 +138,38 @@
                             </div>
                         </div>
 
-                        {{-- Tag & Date --}}
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Badge Tag</label>
-                                <div class="relative">
-                                    <select name="tag" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand focus:outline-none text-white appearance-none cursor-pointer">
-                                        <option value="" {{ $game->tag == '' ? 'selected' : '' }}>No Badge</option>
-                                        <option value="Тун удахгүй" class="text-brand font-bold" {{ $game->tag == 'Тун удахгүй' ? 'selected' : '' }}>★ Тун удахгүй</option>
-                                        <option value="Шинэ" class="text-green-400" {{ $game->tag == 'Шинэ' ? 'selected' : '' }}>Шинэ</option>
-                                        <option value="Захиалах" class="text-orange-500" {{ $game->tag == 'Захиалах' ? 'selected' : '' }}>Захиалах</option>
-                                        <option value="Дуусж байгаа" class="text-red-400" {{ $game->tag == 'Дуусж байгаа' ? 'selected' : '' }}>Дуусж байгаа</option>
-                                    </select>
-                                    <div class="absolute right-4 top-3.5 pointer-events-none text-gray-500"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Release Date</label>
-                                <input type="date" name="release_date" value="{{ old('release_date', $game->release_date) }}" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand focus:outline-none text-white">
+                        {{-- Tag Select (Updated) --}}
+                        <div>
+                            <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Badge Tag</label>
+                            <div class="relative">
+                                <select name="tag" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand focus:outline-none text-white appearance-none cursor-pointer">
+                                    <option value="" {{ $game->tag == '' ? 'selected' : '' }}>Сонгоогүй (No Badge)</option>
+                                    
+                                    <optgroup label="Үндсэн төлөв">
+                                        <option value="New" class="text-green-400" {{ $game->tag == 'New' ? 'selected' : '' }}>🔥 Шинэ (New Release)</option>
+                                        <option value="Тун удахгүй" class="text-gray-400" {{ $game->tag == 'Тун удахгүй' ? 'selected' : '' }}>🚀 Тун удахгүй (Coming Soon)</option>
+                                        <option value="FreeGame" class="text-green-500 font-bold" {{ $game->tag == 'FreeGame' ? 'selected' : '' }}>🎁 Үнэгүй (Free to Play)</option>
+                                        <option value="Хямдралтай" class="text-red-400" {{ $game->tag == 'Хямдралтай' ? 'selected' : '' }}>🏷️ Хямдралтай (On Sale)</option>
+                                    </optgroup>
+
+                                    <optgroup label="Эрэлт & Шагнал">
+                                        <option value="Trending" class="text-orange-400" {{ $game->tag == 'Trending' ? 'selected' : '' }}>⚡ Эрэлттэй (Trending)</option>
+                                        <option value="BestSelling" class="text-blue-400" {{ $game->tag == 'BestSelling' ? 'selected' : '' }}>💎 Шилдэг борлуулалт (Top Seller)</option>
+                                        <option value="GOTY" class="text-yellow-400 font-bold" {{ $game->tag == 'GOTY' ? 'selected' : '' }}>🏆 Оны шилдэг (Game of the Year)</option>
+                                        <option value="EditorsChoice" class="text-purple-400" {{ $game->tag == 'EditorsChoice' ? 'selected' : '' }}>🎖️ Редакторын онцлох (Editor's Choice)</option>
+                                    </optgroup>
+
+                                    <optgroup label="Бусад">
+                                        <option value="EarlyAccess" class="text-teal-400" {{ $game->tag == 'EarlyAccess' ? 'selected' : '' }}>🛠️ Туршилтын хувилбар (Early Access)</option>
+                                        <option value="PreOrder" class="text-indigo-400" {{ $game->tag == 'PreOrder' ? 'selected' : '' }}>📦 Урьдчилсан захиалга (Pre-Order)</option>
+                                    </optgroup>
+                                </select>
+                                <div class="absolute right-4 top-3.5 pointer-events-none text-gray-500"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
                             </div>
                         </div>
                     </div>
 
-                    {{-- 3. MEDIA LINKS --}}
+                    {{-- 4. MEDIA LINKS --}}
                     <div class="space-y-4 pt-4 border-t border-white/5">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
@@ -160,9 +185,13 @@
                             <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">YouTube Trailer URL</label>
                             <input type="text" name="trailer" value="{{ old('trailer', $game->trailer) }}" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-xs focus:border-brand focus:outline-none text-gray-400 truncate font-mono">
                         </div>
+                        <div>
+                            <label class="block text-xs text-green-400 font-semibold mb-1.5 ml-1">Download Link</label>
+                            <input type="text" name="download_link" value="{{ old('download_link', $game->download_link) }}" class="w-full bg-black/40 border border-green-500/30 rounded-xl px-4 py-3 text-xs focus:border-green-500 focus:outline-none text-green-300 truncate font-mono" placeholder="https://drive.google.com/...">
+                        </div>
                     </div>
 
-                    {{-- 4. SCREENSHOTS (1-15) --}}
+                    {{-- 5. SCREENSHOTS (1-15) --}}
                     <div>
                         <label class="block text-xs text-gray-400 font-semibold mb-2 ml-1 flex justify-between items-center">
                             <span>Game Screenshots (Max 15)</span>
@@ -185,21 +214,39 @@
                         </div>
                     </div>
 
-                    {{-- 5. DESCRIPTION --}}
+                    {{-- 6. DESCRIPTION --}}
                     <div>
                         <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Description</label>
                         <textarea name="description" rows="5" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand focus:outline-none text-white resize-none custom-scrollbar">{{ old('description', $game->description) }}</textarea>
                     </div>
 
-                    {{-- 6. SYSTEM REQUIREMENTS --}}
+                    {{-- 7. SYSTEM REQUIREMENTS --}}
                     <div class="bg-black/20 p-5 rounded-xl border border-white/5">
-                        <h3 class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3">System Requirements</h3>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                            <input type="text" name="min_os" value="{{ old('min_os', $game->min_os) }}" placeholder="OS" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none">
-                            <input type="text" name="min_cpu" value="{{ old('min_cpu', $game->min_cpu) }}" placeholder="CPU" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none">
-                            <input type="text" name="min_gpu" value="{{ old('min_gpu', $game->min_gpu) }}" placeholder="GPU" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none">
-                            <input type="text" name="min_ram" value="{{ old('min_ram', $game->min_ram) }}" placeholder="RAM" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none">
-                            <input type="text" name="min_storage" value="{{ old('min_storage', $game->min_storage) }}" placeholder="Storage" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none col-span-2 md:col-span-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            
+                            {{-- Minimum --}}
+                            <div>
+                                <h3 class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3 border-b border-white/5 pb-1">Minimum</h3>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <input type="text" name="min_os" value="{{ old('min_os', $game->min_os) }}" placeholder="OS" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none">
+                                    <input type="text" name="min_cpu" value="{{ old('min_cpu', $game->min_cpu) }}" placeholder="CPU" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none">
+                                    <input type="text" name="min_gpu" value="{{ old('min_gpu', $game->min_gpu) }}" placeholder="GPU" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none">
+                                    <input type="text" name="min_ram" value="{{ old('min_ram', $game->min_ram) }}" placeholder="RAM" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none">
+                                    <input type="text" name="min_storage" value="{{ old('min_storage', $game->min_storage) }}" placeholder="Storage" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none col-span-2">
+                                </div>
+                            </div>
+
+                            {{-- Recommended --}}
+                            <div>
+                                <h3 class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3 border-b border-white/5 pb-1">Recommended</h3>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <input type="text" name="rec_os" value="{{ old('rec_os', $game->rec_os) }}" placeholder="OS" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none">
+                                    <input type="text" name="rec_cpu" value="{{ old('rec_cpu', $game->rec_cpu) }}" placeholder="CPU" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none">
+                                    <input type="text" name="rec_gpu" value="{{ old('rec_gpu', $game->rec_gpu) }}" placeholder="GPU" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none">
+                                    <input type="text" name="rec_ram" value="{{ old('rec_ram', $game->rec_ram) }}" placeholder="RAM" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none">
+                                    <input type="text" name="rec_storage" value="{{ old('rec_storage', $game->rec_storage) }}" placeholder="Storage" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none col-span-2">
+                                </div>
+                            </div>
                         </div>
                     </div>
 

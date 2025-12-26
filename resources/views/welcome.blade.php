@@ -201,7 +201,7 @@
                                     $icon = '🛠️';
                                     $tagText = 'Туршилтын хувилбар'; // Монголоор харагдуулах
                                     break;
-                                case 'PreOrder':
+                                case 'PreOrder ':
                                     $badgeClass = 'bg-indigo-600 text-white border-indigo-500 shadow-indigo-500/30';
                                     $icon = '📦';
                                     $tagText = 'Урьдчилсан захиалга'; // Монголоор харагдуулах
@@ -351,6 +351,8 @@
                     'EditorsChoice' => ['title' => '🎖️ Editer сонголт', 'color' => 'pink-500', 'border' => 'hover:border-pink-500'],
                     'Шинэ'          => ['title' => '🔥 Шинэ (New)', 'color' => 'green-500', 'border' => 'hover:border-green-500'],
                     'Trending'          => ['title' => '🔥 Trending', 'color' => 'green-500', 'border' => 'hover:border-green-500'],
+                    'PreOrder'          => ['title' => '🛠️ PreOrder', 'color' => 'green-500', 'border' => 'hover:border-green-500'],
+                    'EarlyAccess'          => ['title' => '📦 EarlyAccess', 'color' => 'green-500', 'border' => 'hover:border-green-500'],
                 ];
             @endphp
 
