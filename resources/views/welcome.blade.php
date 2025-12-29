@@ -193,6 +193,7 @@
                                 case 'GOTY': $badgeClass = 'bg-yellow-500 text-black border-yellow-400 shadow-yellow-500/50'; $icon = '🏆'; break;
                                 case 'BestSelling': $badgeClass = 'bg-blue-500 text-white border-blue-400 shadow-blue-500/50'; $icon = '💎'; break;
                                 case 'EditorsChoice': $badgeClass = 'bg-purple-600 text-white border-purple-400'; $icon = '🎖️'; break;
+                                case 'Хямдралтай': $badgeClass = 'bg-purple-600 text-white border-purple-400'; $icon = '🎖️'; break;
                                 case 'Шинэ': $badgeClass = 'bg-green-500 text-white border-green-400'; $icon = '🔥'; break;
                                 case 'Trending': $badgeClass = 'bg-orange-500 text-white border-orange-400'; $icon = '⚡'; break;
                                 case 'Тун удахгүй': $badgeClass = 'bg-gray-700 text-gray-300 border-gray-600'; $icon = '🚀'; break;
@@ -201,7 +202,7 @@
                                     $icon = '🛠️';
                                     $tagText = 'Туршилтын хувилбар'; // Монголоор харагдуулах
                                     break;
-                                case 'PreOrder ':
+                                case 'PreOrder':
                                     $badgeClass = 'bg-indigo-600 text-white border-indigo-500 shadow-indigo-500/30';
                                     $icon = '📦';
                                     $tagText = 'Урьдчилсан захиалга'; // Монголоор харагдуулах
@@ -351,8 +352,7 @@
                     'EditorsChoice' => ['title' => '🎖️ Editer сонголт', 'color' => 'pink-500', 'border' => 'hover:border-pink-500'],
                     'Шинэ'          => ['title' => '🔥 Шинэ (New)', 'color' => 'green-500', 'border' => 'hover:border-green-500'],
                     'Trending'          => ['title' => '🔥 Trending', 'color' => 'green-500', 'border' => 'hover:border-green-500'],
-                    'PreOrder'          => ['title' => '🛠️ PreOrder', 'color' => 'green-500', 'border' => 'hover:border-green-500'],
-                    'EarlyAccess'          => ['title' => '📦 EarlyAccess', 'color' => 'green-500', 'border' => 'hover:border-green-500'],
+                    'Хямдралтай'          => ['title' => '🔥 Хямдралтай', 'color' => 'green-500', 'border' => 'hover:border-green-500'],
                 ];
             @endphp
 

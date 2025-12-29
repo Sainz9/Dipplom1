@@ -124,6 +124,7 @@ class GameController extends Controller
             'categories.*'=> 'exists:categories,id',
             'banner'      => 'nullable',
             'trailer'     => 'nullable',
+            'trailer'     => 'nullable',
             'screenshots' => 'nullable|array',
             'tag'         => 'nullable',
             'release_date'=> 'nullable|date',
@@ -139,7 +140,6 @@ class GameController extends Controller
             'rec_gpu'     => 'nullable',
             'rec_ram'     => 'nullable',
             'rec_storage' => 'nullable',
-            // FIXED: Removed duplicates here
             'developer'   => 'nullable',
             'publisher'   => 'nullable',
         ]);
@@ -157,6 +157,7 @@ class GameController extends Controller
             $game->categories()->attach($request->input('categories'));
         }
 
+        
         return redirect()->back()->with('success', 'Game added successfully!');
     }
 
@@ -180,6 +181,7 @@ class GameController extends Controller
             'categories.*'=> 'exists:categories,id',
             'banner'      => 'nullable',
             'trailer'     => 'nullable',
+            'trailer'     => 'nullable',
             'screenshots' => 'nullable|array',
             'tag'         => 'nullable',
             'release_date'=> 'nullable|date',
@@ -195,7 +197,6 @@ class GameController extends Controller
             'rec_gpu'     => 'nullable',
             'rec_ram'     => 'nullable',
             'rec_storage' => 'nullable',
-            // FIXED: Removed duplicates here
             'developer'   => 'nullable',
             'publisher'   => 'nullable',
         ]);
