@@ -10,6 +10,6 @@ class Category extends Model
     // Энэ функц ЗААВАЛ байх ёстой
     public function games()
     {
-        return $this->belongsToMany(Game::class, 'category_game');
+        return $this->belongsToMany(Game::class);
     }
 }
