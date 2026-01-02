@@ -142,7 +142,6 @@
 
                         {{-- DUAL INPUT SECTIONS --}}
                         <div class="space-y-4 pt-2">
-                            
                             {{-- 1. Cover Image --}}
                             <div class="p-3 bg-white/5 rounded-xl border border-white/10">
                                 <label class="block text-xs text-gray-400 font-semibold mb-2">1. Cover Image (Босоо) <span class="text-red-500">*</span></label>
@@ -186,7 +185,7 @@
                                     <div class="text-[10px] text-center text-gray-600 font-bold">- OR -</div>
                                     <div class="relative">
                                         <span class="absolute left-3 top-2.5 text-[10px] text-gray-500 font-bold">LINK:</span>
-                                        <input type="text" name="download_url" placeholder="Google Drive / Mediafire Link..." class="w-full bg-black/40 border border-white/10 rounded-lg pl-12 pr-3 py-2 text-xs text-white focus:border-green-500 outline-none placeholder-gray-700">
+                                        <input type="text" name="download_url" placeholder="Google Drive Link..." class="w-full bg-black/40 border border-white/10 rounded-lg pl-12 pr-3 py-2 text-xs text-white focus:border-green-500 outline-none placeholder-gray-700">
                                     </div>
                                 </div>
                             </div>
@@ -211,75 +210,79 @@
                         <div class="space-y-4">
                             <div>
                                 <label class="block text-xs text-gray-400 font-semibold mb-2 ml-1">Select Categories <span class="text-red-500">*</span></label>
+                                
+                                {{-- NEW: CATEGORY SEARCH INPUT --}}
+                                <div class="relative mb-2">
+                                    <input type="text" id="catSearch" placeholder="Search categories..." class="w-full bg-black/40 border border-white/10 rounded-lg pl-8 pr-3 py-2 text-xs text-white focus:border-brand outline-none placeholder-gray-600 transition-colors focus:bg-black/60">
+                                    <div class="absolute left-2.5 top-2 text-gray-600">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                    </div>
+                                </div>
+
                                 <div class="bg-black/40 border border-white/10 rounded-xl p-3 max-h-40 overflow-y-auto custom-scrollbar">
                                     <div class="grid grid-cols-2 gap-2" id="categoryList">
                                         @if(isset($categories) && count($categories) > 0)
                                             @foreach($categories as $cat)
-                                                <div class="flex items-center space-x-2">
-                                                    <input type="checkbox" name="categories[]" value="{{ $cat->id }}" class="w-4 h-4 rounded border-gray-600 text-brand focus:ring-brand bg-gray-700 cursor-pointer">
-                                                    <span class="text-xs text-gray-300">{{ $cat->name }}</span>
+                                                <div class="flex items-center justify-between group p-1 rounded hover:bg-white/5 transition cat-item">
+                                                    <label class="flex items-center space-x-2 cursor-pointer w-full select-none">
+                                                        <input type="checkbox" name="categories[]" value="{{ $cat->id }}" class="w-4 h-4 rounded border-gray-600 text-brand focus:ring-brand bg-gray-700 cursor-pointer">
+                                                        <span class="text-xs text-gray-300 group-hover:text-white cat-name">{{ $cat->name }}</span>
+                                                    </label>
+                                                    <button form="delete-cat-{{ $cat->id }}" class="text-gray-600 hover:text-red-500 px-1 opacity-0 group-hover:opacity-100 transition" title="Delete Category">×</button>
                                                 </div>
                                             @endforeach
                                         @else
-                                            <p class="text-gray-500 text-xs text-center col-span-2">No categories found.</p>
+                                            <p class="text-gray-500 text-xs italic text-center col-span-2 py-4">No categories found. Add one above.</p>
                                         @endif
                                     </div>
                                 </div>
+                                <p class="text-[10px] text-gray-600 mt-1 ml-1">Check multiple categories.</p>
                             </div>
 
-                            <div>
-                             
-  <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Game Status / Badge</label>
-    <div class="relative">
-        <select name="tag" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand focus:outline-none text-white appearance-none cursor-pointer">
-            <option value="">Сонгоогүй (No Badge)</option>
-            
-            <optgroup label="Үндсэн төлөв">
-                <option value="Шинэ" class="text-green-400">🔥 Шинэ (New Release)</option>
-                <option value="Тун удахгүй" class="text-gray-400">🚀 Тун удахгүй (Coming Soon)</option>
-                <option value="FreeGame" class="text-green-500 font-bold">🎁 Үнэгүй (Free to Play)</option>
-                <option value="Хямдралтай" class="text-red-400">🏷️ Хямдралтай (On Sale)</option>
-            </optgroup>
+                          <div>
+                                <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Game Status / Badge</label>
+                                <div class="relative">
+                                    <select name="tag" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand focus:outline-none text-white appearance-none cursor-pointer">
+                                        <option value="">Сонгоогүй (No Badge)</option>
+                                        
+                                        <optgroup label="Үндсэн төлөв">
+                                            <option value="Шинэ" class="text-green-400">🔥 Шинэ (New Release)</option>
+                                            <option value="Тун удахгүй" class="text-gray-400">🚀 Тун удахгүй (Coming Soon)</option>
+                                            <option value="FreeGame" class="text-green-500 font-bold">🎁 Үнэгүй (Free to Play)</option>
+                                            <option value="Хямдралтай" class="text-red-400">🏷️ Хямдралтай (On Sale)</option>
+                                        </optgroup>
 
-            <optgroup label="Эрэлт & Шагнал">
-                <option value="Trending" class="text-orange-400">⚡ Эрэлттэй (Trending)</option>
-                <option value="BestSelling" class="text-blue-400">💎 Шилдэг борлуулалт (Top Seller)</option>
-                <option value="GOTY" class="text-yellow-400 font-bold">🏆 Оны шилдэг (Game of the Year)</option>
-                <option value="EditorsChoice" class="text-purple-400">🎖️ Редакторын онцлох (Editor's Choice)</option>
-            </optgroup>
+                                        <optgroup label="Эрэлт & Шагнал">
+                                            <option value="Trending" class="text-orange-400">⚡ Эрэлттэй (Trending)</option>
+                                            <option value="BestSelling" class="text-blue-400">💎 Шилдэг борлуулалт (Top Seller)</option>
+                                            <option value="GOTY" class="text-yellow-400 font-bold">🏆 Оны шилдэг (Game of the Year)</option>
+                                            <option value="EditorsChoice" class="text-purple-400">🎖️ Редакторын онцлох (Editor's Choice)</option>
+                                        </optgroup>
 
-            <optgroup label="Бусад">
-                <option value="EarlyAccess" class="text-teal-400">🛠️ Туршилтын хувилбар (Early Access)</option>
-                <option value="PreOrder" class="text-indigo-400">📦 Урьдчилсан захиалга (Pre-Order)</option>
-            </optgroup>
-        </select>
-        <div class="absolute right-4 top-3.5 pointer-events-none text-gray-500">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-        </div>
-    </div>
-</div>
+                                        <optgroup label="Бусад">
+                                            <option value="EarlyAccess" class="text-teal-400">🛠️ Туршилтын хувилбар (Early Access)</option>
+                                            <option value="PreOrder" class="text-indigo-400">📦 Урьдчилсан захиалга (Pre-Order)</option>
+                                        </optgroup>
+                                    </select>
+                                    <div class="absolute right-4 top-3.5 pointer-events-none text-gray-500">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-<div class="border-t border-white/5 pt-4 mt-2 bg-white/5 p-4 rounded-xl">
-    <label class="block text-xs text-gray-400 font-semibold mb-3 flex justify-between items-center">
-        <span>Game Screenshots (Max 15)</span>
-        <span class="text-[10px] text-brand font-bold">Upload & URL хоёуланг нь ашиглаж болно</span>
-    </label>
-    
-    <div class="space-y-4">
-        {{-- A. FILE UPLOAD --}}
-        <div>
-            <label class="text-[10px] text-gray-500 uppercase font-bold mb-1 block">Сонголт A: Утаснаас зураг сонгох</label>
-            <input type="file" 
-                   name="screenshots_files[]" 
-                   accept="image/*" 
-                   multiple 
-                   class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-xs text-white focus:border-brand file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-brand file:text-black hover:file:bg-brand/80 cursor-pointer">
-        
-        </div>
 
-      
-    </div>
-</div>
+                        {{-- Screenshots (Upload only, Max 15) --}}
+                        <div class="border-t border-white/5 pt-4 mt-2">
+                            <label class="block text-xs text-gray-400 font-semibold mb-2 ml-1 flex justify-between items-center">
+                                <span>Game Screenshots (Max 15)</span>
+                                <span class="text-[10px] text-brand font-bold">Multiple select supported</span>
+                            </label>
+                            <div class="grid grid-cols-1 gap-3">
+                                <input type="file" name="screenshots_files[]" accept="image/*" multiple class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-xs text-white focus:border-brand file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-gray-700 file:text-white">
+                                <p class="text-[10px] text-gray-500">Ctrl/Select дарж байгаад олон зураг зэрэг сонгоно уу.</p>
+                            </div>
+                        </div>
+
                         <div>
                             <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Description</label>
                             <textarea name="description" rows="3" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand focus:outline-none text-white resize-none placeholder-gray-700"></textarea>
@@ -346,133 +349,129 @@
             </div>
         </div>
 
-        {{-- Desktop List View --}}
-       <div class="xl:col-span-8 h-full block mt-8 xl:mt-0">
-    <div class="bg-card rounded-2xl border border-white/5 shadow-2xl overflow-hidden flex flex-col h-full min-h-[500px]">
-        
-        {{-- Header --}}
-        <div class="px-6 py-5 border-b border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 bg-white/[0.02]">
-            <div class="flex items-center gap-3 w-full md:w-auto">
-                <h2 class="text-lg font-bold text-white">Library</h2>
-                <div class="h-4 w-[1px] bg-gray-700"></div>
-                <input type="text" id="gameSearch" placeholder="Search games..." class="bg-transparent border-none text-sm focus:ring-0 text-white placeholder-gray-600 w-full md:w-64" onkeyup="filterGames()">
-            </div>
-            <div class="flex gap-2 w-full md:w-auto">
-                <button onclick="filterType('all')" class="filter-btn bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg text-xs font-bold text-gray-400 hover:text-white transition active w-1/2 md:w-auto text-center">All</button>
-                <button onclick="filterType('free')" class="filter-btn bg-green-500/10 hover:bg-green-500/20 px-3 py-1.5 rounded-lg text-xs font-bold text-green-500 transition w-1/2 md:w-auto text-center">Free Games</button>
-            </div>
-        </div>
-
-        <div class="flex-1 p-4 md:p-0 overflow-y-auto custom-scrollbar">
-            
-            {{-- 1. MOBILE VIEW (CARDS) - Утсан дээр энэ хэсэг харагдана --}}
-            <div class="grid grid-cols-1 gap-4 md:hidden" id="mobileGameList">
-                @foreach($games as $game)
-                <div class="bg-white/5 border border-white/5 rounded-xl p-4 flex items-center gap-4 game-row" data-price="{{ $game->price }}">
-                    {{-- Image --}}
-                    <div class="relative w-16 h-20 shrink-0 rounded-lg overflow-hidden shadow-lg border border-white/10">
-                        <img src="{{ $game->img }}" class="w-full h-full object-cover">
+        <div class="xl:col-span-8 h-full block mt-8 xl:mt-0">
+            <div class="bg-card rounded-2xl border border-white/5 shadow-2xl overflow-hidden flex flex-col h-full min-h-[500px]">
+                
+                {{-- Header --}}
+                <div class="px-6 py-5 border-b border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 bg-white/[0.02]">
+                    <div class="flex items-center gap-3 w-full md:w-auto">
+                        <h2 class="text-lg font-bold text-white">Library</h2>
+                        <div class="h-4 w-[1px] bg-gray-700"></div>
+                        <input type="text" id="gameSearch" placeholder="Search games..." class="bg-transparent border-none text-sm focus:ring-0 text-white placeholder-gray-600 w-full md:w-64" onkeyup="filterGames()">
                     </div>
-
-                    {{-- Info --}}
-                    <div class="flex-1 min-w-0">
-                        <h3 class="font-bold text-white text-sm truncate game-title">{{ $game->title }}</h3>
-                        <div class="flex flex-wrap gap-1 my-1">
-                            @if($game->tag) <span class="text-[9px] bg-brand/10 text-brand px-1.5 py-0.5 rounded border border-brand/20">{{ $game->tag }}</span> @endif
-                            @if(is_numeric($game->price) && $game->price == 0)
-                                <span class="text-[9px] bg-green-500/10 text-green-500 px-1.5 py-0.5 rounded border border-green-500/20">FREE</span>
-                            @else
-                                <span class="text-[9px] bg-white/10 text-gray-300 px-1.5 py-0.5 rounded">{{ number_format((float)$game->price) }}₮</span>
-                            @endif
-                        </div>
-                    </div>
-
-                    {{-- Actions (Edit/Delete) --}}
-                    <div class="flex flex-col gap-2">
-                        <a href="{{ route('admin.game.edit', $game->id) }}" class="w-8 h-8 flex items-center justify-center rounded-lg bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 hover:bg-yellow-500 hover:text-black transition">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                        </a>
-                        <form action="{{ route('admin.game.destroy', $game->id) }}" method="POST" onsubmit="return confirm('Delete?');">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="w-8 h-8 flex items-center justify-center rounded-lg bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white transition">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                            </button>
-                        </form>
+                    <div class="flex gap-2 w-full md:w-auto">
+                        <button onclick="filterType('all')" class="filter-btn bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg text-xs font-bold text-gray-400 hover:text-white transition active w-1/2 md:w-auto text-center">All</button>
+                        <button onclick="filterType('free')" class="filter-btn bg-green-500/10 hover:bg-green-500/20 px-3 py-1.5 rounded-lg text-xs font-bold text-green-500 transition w-1/2 md:w-auto text-center">Free Games</button>
                     </div>
                 </div>
-                @endforeach
-            </div>
 
-            {{-- 2. DESKTOP VIEW (TABLE) - Компьютер дээр энэ хэсэг харагдана --}}
-            <div class="hidden md:block">
-                <table class="w-full text-left border-collapse" id="gamesTable">
-                    <thead>
-                        <tr class="bg-black/40 border-b border-white/5">
-                            <th class="py-4 px-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest w-[45%]">Game Details</th>
-                            <th class="py-4 px-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Categories</th>
-                            <th class="py-4 px-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Price</th>
-                            <th class="py-4 px-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-white/5">
+                <div class="flex-1 p-4 md:p-0 overflow-y-auto custom-scrollbar">
+                    
+                    {{-- 1. MOBILE VIEW (CARDS) --}}
+                    <div class="grid grid-cols-1 gap-4 md:hidden p-4" id="mobileGameList">
                         @foreach($games as $game)
-                        <tr class="hover:bg-white/[0.02] transition-colors group game-row" data-price="{{ $game->price }}">
-                            <td class="py-4 px-6">
-                                <div class="flex items-start gap-5">
-                                    <div class="relative w-12 h-16 shrink-0 rounded-lg overflow-hidden shadow-lg border border-white/10 group-hover:border-brand/50 transition-colors">
-                                        <img src="{{ $game->img }}" class="w-full h-full object-cover">
-                                    </div>
-                                    <div class="pt-1">
-                                        <div class="font-bold text-base text-gray-200 group-hover:text-brand transition-colors leading-tight game-title">{{ $game->title }}</div>
-                                        <div class="flex flex-wrap items-center gap-2 mt-2">
-                                            @if($game->tag)
-                                                <span class="text-[10px] font-bold px-2 py-0.5 rounded border bg-white/5 text-gray-400 border-white/10 uppercase">{{ $game->tag }}</span>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="py-4 px-6 align-middle">
-                                <div class="flex flex-wrap gap-1">
-                                    @foreach($game->categories as $category)
-                                        <span class="inline-block bg-white/5 hover:bg-white/10 px-2 py-0.5 rounded text-[10px] font-medium text-gray-300 border border-white/5 transition-colors">{{ $category->name }}</span>
-                                    @endforeach
-                                </div>
-                            </td>
-                            <td class="py-4 px-6 align-middle">
-                                <div class="flex flex-col">
+                        <div class="bg-white/5 border border-white/5 rounded-xl p-4 flex items-center gap-4 game-row relative overflow-hidden" data-price="{{ $game->price }}">
+                            {{-- Image --}}
+                            <div class="relative w-20 h-24 shrink-0 rounded-lg overflow-hidden shadow-lg border border-white/10">
+                                <img src="{{ $game->img }}" class="w-full h-full object-cover">
+                            </div>
+
+                            {{-- Info --}}
+                            <div class="flex-1 min-w-0 pr-10">
+                                <h3 class="font-bold text-white text-sm truncate game-title mb-1">{{ $game->title }}</h3>
+                                <div class="flex flex-wrap gap-1 mb-2">
+                                    @if($game->tag) 
+                                        <span class="text-[9px] bg-brand/10 text-brand px-1.5 py-0.5 rounded border border-brand/20 uppercase font-bold">{{ $game->tag }}</span> 
+                                    @endif
                                     @if(is_numeric($game->price) && $game->price == 0)
-                                        <span class="text-green-500 font-bold text-sm tracking-wide">FREE</span>
+                                        <span class="text-[9px] bg-green-500/10 text-green-500 px-1.5 py-0.5 rounded border border-green-500/20 font-bold">FREE</span>
                                     @else
-                                        <span class="font-mono text-sm text-gray-200">{{ number_format((float)$game->price) }}₮</span>
-                                        @if($game->sale_price)
-                                            <span class="text-gray-600 line-through text-xs font-mono">{{ number_format((float)$game->sale_price) }}₮</span>
-                                        @endif
+                                        <span class="text-[9px] bg-white/10 text-gray-300 px-1.5 py-0.5 rounded">{{ number_format((float)$game->price) }}₮</span>
                                     @endif
                                 </div>
-                            </td>
-                            <td class="py-4 px-6 text-right align-middle">
-                                <div class="flex justify-end items-center gap-3 opacity-80 group-hover:opacity-100 transition-opacity">
-                                    <a href="{{ route('admin.game.edit', $game->id) }}" class="p-2 rounded-lg bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500 hover:text-black transition-all border border-yellow-500/20" title="Edit">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                                    </a>
-                                    <form action="{{ route('admin.game.destroy', $game->id) }}" method="POST" onsubmit="return confirm('Delete?');">
+
+                                <div class="flex gap-2 mt-2">
+                                    <a href="{{ route('admin.game.edit', $game->id) }}" class="flex-1 bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 py-1.5 rounded text-[10px] uppercase font-bold text-center hover:bg-yellow-500 hover:text-black transition">Edit</a>
+                                    <form action="{{ route('admin.game.destroy', $game->id) }}" method="POST" onsubmit="return confirm('Delete?');" class="flex-1">
                                         @csrf @method('DELETE')
-                                        <button type="submit" class="p-2 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all border border-red-500/20">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                        </button>
+                                        <button type="submit" class="w-full bg-red-500/10 text-red-500 border border-red-500/20 py-1.5 rounded text-[10px] uppercase font-bold text-center hover:bg-red-500 hover:text-white transition">Delete</button>
                                     </form>
                                 </div>
-                            </td>
-                        </tr>
+                            </div>
+                        </div>
                         @endforeach
-                    </tbody>
-                </table>
+                    </div>
+
+                    {{-- 2. DESKTOP VIEW (TABLE) --}}
+                    <div class="hidden md:block">
+                        <table class="w-full text-left border-collapse" id="gamesTable">
+                            <thead>
+                                <tr class="bg-black/40 border-b border-white/5">
+                                    <th class="py-4 px-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest w-[45%]">Game Details</th>
+                                    <th class="py-4 px-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Categories</th>
+                                    <th class="py-4 px-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Price</th>
+                                    <th class="py-4 px-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-white/5">
+                                @foreach($games as $game)
+                                <tr class="hover:bg-white/[0.02] transition-colors group game-row" data-price="{{ $game->price }}">
+                                    <td class="py-4 px-6">
+                                        <div class="flex items-start gap-5">
+                                            <div class="relative w-12 h-16 shrink-0 rounded-lg overflow-hidden shadow-lg border border-white/10 group-hover:border-brand/50 transition-colors">
+                                                <img src="{{ $game->img }}" class="w-full h-full object-cover">
+                                            </div>
+                                            <div class="pt-1">
+                                                <div class="font-bold text-base text-gray-200 group-hover:text-brand transition-colors leading-tight game-title">{{ $game->title }}</div>
+                                                <div class="flex flex-wrap items-center gap-2 mt-2">
+                                                    @if($game->tag)
+                                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded border bg-white/5 text-gray-400 border-white/10 uppercase">{{ $game->tag }}</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-4 px-6 align-middle">
+                                        <div class="flex flex-wrap gap-1">
+                                            @foreach($game->categories as $category)
+                                                <span class="inline-block bg-white/5 hover:bg-white/10 px-2 py-0.5 rounded text-[10px] font-medium text-gray-300 border border-white/5 transition-colors">{{ $category->name }}</span>
+                                            @endforeach
+                                        </div>
+                                    </td>
+                                    <td class="py-4 px-6 align-middle">
+                                        <div class="flex flex-col">
+                                            @if(is_numeric($game->price) && $game->price == 0)
+                                                <span class="text-green-500 font-bold text-sm tracking-wide">FREE</span>
+                                            @else
+                                                <span class="font-mono text-sm text-gray-200">{{ number_format((float)$game->price) }}₮</span>
+                                                @if($game->sale_price)
+                                                    <span class="text-gray-600 line-through text-xs font-mono">{{ number_format((float)$game->sale_price) }}₮</span>
+                                                @endif
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td class="py-4 px-6 text-right align-middle">
+                                        <div class="flex justify-end items-center gap-3 opacity-80 group-hover:opacity-100 transition-opacity">
+                                            <a href="{{ route('admin.game.edit', $game->id) }}" class="p-2 rounded-lg bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500 hover:text-black transition-all border border-yellow-500/20" title="Edit">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                            </a>
+                                            <form action="{{ route('admin.game.destroy', $game->id) }}" method="POST" onsubmit="return confirm('Delete?');">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" class="p-2 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all border border-red-500/20">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                </div>
             </div>
-            
         </div>
-    </div>
-</div>
 
     </div>
 
@@ -523,6 +522,7 @@
             });
         }
 
+        // --- CATEGORY SEARCH SCRIPT ---
         const catSearch = document.getElementById('catSearch');
         if(catSearch) {
             catSearch.addEventListener('keyup', function() {
@@ -542,4 +542,3 @@
     </script>
 </body>
 </html>
-

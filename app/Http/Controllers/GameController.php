@@ -14,6 +14,8 @@ class GameController extends Controller
     // Нүүр хуудас (Хайлт болон Шүүлтүүртэй)
     public function index(Request $request)
     {
+        $games = Game::latest()->get();
+    return view('dashboard', compact('games'));
         $query = Game::with('categories');
 
         if ($request->filled('search')) {
