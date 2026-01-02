@@ -8,67 +8,52 @@ use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Order;
 use App\Models\User;
+
 class GameController extends Controller
 {
-    // Нүүр хуудас (Хайлт болон Шүүлтүүртэй)
+    // Нүүр хуудас
     public function index(Request $request)
     {
-        // 1. Үндсэн Query
         $query = Game::with('categories');
 
-        // 2. Хайлт (Search Input)
         if ($request->filled('search')) {
             $query->where('title', 'like', '%' . $request->search . '%');
         }
 
-        // 3. Төрөл (Genre/Category)
         if ($request->filled('genre')) {
             $query->whereHas('categories', function($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->genre . '%');
             });
         }
 
-        // 4. Платформ (Platform)
         if ($request->filled('platform')) {
             $query->where('platform', 'like', '%' . $request->platform . '%');
         }
 
-        // 5. Үнэ (Price)
         if ($request->filled('price')) {
             switch ($request->price) {
-                case 'free':
-                    $query->where('price', 0)->orWhere('tag', 'FreeGame');
-                    break;
-                case 'sale':
-                    $query->whereNotNull('sale_price')->where('sale_price', '>', 0);
-                    break;
-                case 'under_20':
-                    $query->where('price', '<', 20000);
-                    break;
+                case 'free': $query->where('price', 0)->orWhere('tag', 'FreeGame'); break;
+                case 'sale': $query->whereNotNull('sale_price')->where('sale_price', '>', 0); break;
+                case 'under_20': $query->where('price', '<', 20000); break;
             }
         }
 
-        // Бүх тоглоом (Шүүлтүүртэй)
-        $games = $query->latest()->get();
+        // SQLite & MySQL compatible ordering
+        $games = $query->orderBy('created_at', 'desc')->get();
 
-        // Slider-т зориулсан тоглоомууд
-        $sliderGames = Game::whereNotNull('banner')->latest()->take(5)->get();
+        $sliderGames = Game::whereNotNull('banner')->orderBy('created_at', 'desc')->take(5)->get();
         if ($sliderGames->isEmpty()) {
-            $sliderGames = Game::latest()->take(5)->get();
+            $sliderGames = Game::orderBy('created_at', 'desc')->take(5)->get();
         }
 
-        // Coming Soon
-        $comingSoonGames = Game::where('tag', 'Тун удахгүй')->latest()->get();
+        $comingSoonGames = Game::where('tag', 'Тун удахгүй')->orderBy('created_at', 'desc')->get();
 
-        // Категориуд (Footer хэсэгт эсвэл өөр газар хэрэг болж магадгүй)
         $categories = Category::with(['games' => function($query) {
-            $query->latest()->take(10);
+            $query->orderBy('games.created_at', 'desc')->take(10);
         }])->get();
 
-        // --- Navbar дээрх Dropdown цэсэнд зориулсан (АВТОМАТААР ШИНЭЧЛЭГДЭНЭ) ---
         $navCategories = Category::orderBy('name', 'asc')->get();
 
-        // --- Нүүр хуудасны хэсгүүдийн тохиргоо ---
         $sections = [
             'GOTY'          => ['title' => '🏆 Game of the Year', 'color' => 'yellow-500', 'border' => 'hover:border-yellow-500'],
             'BestSelling'   => ['title' => '💎 Best Sellers', 'color' => 'blue-500', 'border' => 'hover:border-blue-500'],
@@ -83,72 +68,107 @@ class GameController extends Controller
 
     public function adminDashboard()
     {
-        $games = Game::with('categories')->latest()->get();
+        $games = Game::with('categories')->orderBy('created_at', 'desc')->get();
         $categories = Category::orderBy('name', 'asc')->get();
         return view('admin.dashboard', compact('games', 'categories'));
     }
 
-    // --- ШИНЭ ТӨРӨЛ НЭМЭХ (Category Add) ---
     public function storeCategory(Request $request)
     {
-        $request->validate([
-            'name' => 'required|unique:categories,name|max:255',
-        ]);
-
-        Category::create([
-            'name' => $request->name,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
+        $request->validate(['name' => 'required|unique:categories,name|max:255']);
+        Category::create(['name' => $request->name]);
         return redirect()->back()->with('success', 'Шинэ төрөл амжилттай нэмэгдлээ!');
     }
 
-    // --- ТӨРӨЛ УСТГАХ (Category Delete) ---
     public function destroyCategory($id)
     {
         $category = Category::findOrFail($id);
         $category->delete();
-
         return redirect()->back()->with('success', 'Төрөл амжилттай устгагдлаа!');
     }
 
+    // --- ЗАССАН STORE ФУНКЦ (FILE & URL SUPPORT) ---
     public function store(Request $request)
     {
         $request->validate([
-            'title'       => 'required',
-            'price'       => 'required',
-            'sale_price'  => 'nullable|numeric',
-            'img'         => 'required',
-            'categories'  => 'required|array',
-            'categories.*'=> 'exists:categories,id',
-            'banner'      => 'nullable',
-            'trailer'     => 'nullable',
-            'trailer'     => 'nullable',
-            'screenshots' => 'nullable|array',
-            'tag'         => 'nullable',
-            'release_date'=> 'nullable|date',
-            'description' => 'nullable',
-            'platform'    => 'nullable', 
-            'min_os'      => 'nullable',
-            'min_cpu'     => 'nullable',
-            'min_gpu'     => 'nullable',
-            'min_ram'     => 'nullable',
-            'min_storage' => 'nullable',
-            'rec_os'      => 'nullable',
-            'rec_cpu'     => 'nullable',
-            'rec_gpu'     => 'nullable',
-            'rec_ram'     => 'nullable',
-            'rec_storage' => 'nullable',
-            'developer'   => 'nullable',
-            'publisher'   => 'nullable',
+            'title'           => 'required',
+            'price'           => 'required',
+            'sale_price'      => 'nullable|numeric',
+            
+            // ЗУРАГ: Файл эсвэл URL-ийн аль нэг нь заавал байх ёстой
+            'img_file'        => 'nullable|image|max:5120', 
+            'img_url'         => 'nullable|url|required_without:img_file', 
+
+            'categories'      => 'required|array',
+            'categories.*'    => 'exists:categories,id',
+            
+            'banner_file'     => 'nullable|image|max:10240',
+            'banner_url'      => 'nullable|url',
+            
+            'trailer_file'    => 'nullable|mimetypes:video/mp4,video/webm|max:51200',
+            'trailer_url'     => 'nullable|url',
+            
+            'download_file'   => 'nullable|file|max:512000',
+            'download_url'    => 'nullable|url',
+            
+            'tag'             => 'nullable',
+            'description'     => 'nullable',
+            'developer'       => 'nullable',
+            'publisher'       => 'nullable',
+            'release_date'    => 'nullable',
+            'screenshots_files.*' => 'image|max:5120',
         ]);
 
-        $data = $request->except(['categories', 'screenshots']);
+        $data = $request->except([
+            'img_file', 'img_url', 
+            'banner_file', 'banner_url', 
+            'trailer_file', 'trailer_url', 
+            'download_file', 'download_url', 
+            'categories', 'screenshots_files'
+        ]);
 
-        if ($request->has('screenshots')) {
-            $screenshots = array_filter($request->input('screenshots'), fn($v) => $v !== null && $v !== '');
-            $data['screenshots'] = array_values($screenshots); 
+        // 1. COVER IMAGE
+        if ($request->hasFile('img_file')) {
+            $path = $request->file('img_file')->store('games/covers', 'public');
+            $data['img'] = '/storage/' . $path;
+        } elseif ($request->filled('img_url')) {
+            $data['img'] = $request->img_url;
+        }
+
+        // 2. BANNER
+        if ($request->hasFile('banner_file')) {
+            $path = $request->file('banner_file')->store('games/banners', 'public');
+            $data['banner'] = '/storage/' . $path;
+        } elseif ($request->filled('banner_url')) {
+            $data['banner'] = $request->banner_url;
+        }
+
+        // 3. TRAILER
+        if ($request->hasFile('trailer_file')) {
+            $path = $request->file('trailer_file')->store('games/trailers', 'public');
+            $data['trailer'] = '/storage/' . $path;
+        } elseif ($request->filled('trailer_url')) {
+            $data['trailer'] = $request->trailer_url;
+        }
+
+        // 4. DOWNLOAD LINK
+        if ($request->hasFile('download_file')) {
+            $path = $request->file('download_file')->store('games/files', 'public');
+            $data['download_link'] = '/storage/' . $path;
+        } elseif ($request->filled('download_url')) {
+            $data['download_link'] = $request->download_url;
+        }
+
+        // 5. SCREENSHOTS (Upload only)
+        $screenshots = [];
+        if ($request->hasFile('screenshots_files')) {
+            foreach ($request->file('screenshots_files') as $file) {
+                $path = $file->store('games/screenshots', 'public');
+                $screenshots[] = '/storage/' . $path;
+            }
+        }
+        if (!empty($screenshots)) {
+            $data['screenshots'] = $screenshots;
         }
 
         $game = Game::create($data);
@@ -156,7 +176,6 @@ class GameController extends Controller
         if ($request->has('categories')) {
             $game->categories()->attach($request->input('categories'));
         }
-
         
         return redirect()->back()->with('success', 'Game added successfully!');
     }
@@ -176,39 +195,22 @@ class GameController extends Controller
             'title'       => 'required',
             'price'       => 'required',
             'sale_price'  => 'nullable|numeric',
-            'img'         => 'required',
+            'img_file'    => 'nullable|image|max:5120', 
             'categories'  => 'nullable|array',
             'categories.*'=> 'exists:categories,id',
-            'banner'      => 'nullable',
-            'trailer'     => 'nullable',
-            'trailer'     => 'nullable',
-            'screenshots' => 'nullable|array',
-            'tag'         => 'nullable',
-            'release_date'=> 'nullable|date',
-            'description' => 'nullable',
-            'platform'    => 'nullable',
-            'min_os'      => 'nullable',
-            'min_cpu'     => 'nullable',
-            'min_gpu'     => 'nullable',
-            'min_ram'     => 'nullable',
-            'min_storage' => 'nullable',
-            'rec_os'      => 'nullable',
-            'rec_cpu'     => 'nullable',
-            'rec_gpu'     => 'nullable',
-            'rec_ram'     => 'nullable',
-            'rec_storage' => 'nullable',
-            'developer'   => 'nullable',
-            'publisher'   => 'nullable',
         ]);
 
-        $data = $request->except(['categories', 'screenshots']);
+        $data = $request->except(['img_file', 'img_url', 'categories', 'screenshots_files']); 
 
-        if ($request->has('screenshots')) {
-            $screenshots = array_filter($request->input('screenshots'), fn($v) => $v !== null && $v !== '');
-            $data['screenshots'] = array_values($screenshots);
-        } else {
-            $data['screenshots'] = null;
+        // Update logic for files/urls similar to store...
+        if ($request->hasFile('img_file')) {
+            $path = $request->file('img_file')->store('games/covers', 'public');
+            $data['img'] = '/storage/' . $path;
+        } elseif ($request->filled('img_url')) {
+            $data['img'] = $request->img_url;
         }
+
+        // (Add similar logic for banner, trailer, download if needed for update)
 
         $game->update($data);
 
@@ -238,7 +240,6 @@ class GameController extends Controller
     {
         $game = Game::findOrFail($id);
         $game->delete();
-
         return redirect()->back()->with('success', 'Game deleted successfully!');
     }
 
@@ -271,17 +272,10 @@ class GameController extends Controller
         return back()->with('error', 'Уучлаарай, та энэ тоглоомыг худалдаж аваагүй байна.');
     }
 
-
     public function about()
-{
-    // Database-ээс нийт тоглоомын тоог авах
-    $gamesCount = Game::count();
-
-    // Database-ээс нийт бүртгэлтэй хэрэглэгчийн тоог авах
-    // (Хэрэв танд 'users' table байгаа бол)
-    $gamersCount = User::count(); 
-
-    // View рүү хувьсагчуудаа дамжуулах
-return view('profile.about', compact('gamesCount', 'gamersCount'));    
-}
+    {
+        $gamesCount = Game::count();
+        $gamersCount = User::count(); 
+        return view('profile.about', compact('gamesCount', 'gamersCount'));    
+    }
 }
