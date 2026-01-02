@@ -372,7 +372,7 @@
                     $filteredGames = collect();
 
                     if ($key === 'New' || $key === 'Шинэ') {
-                        $filteredGames = $games->whereNotIn('tag', ['Тун удахгүй', 'ComingSoon', 'PreOrder', 'EarlyAccess', "Хямдралтай", "FreeGame", 'GOTY'])
+                        $filteredGames = $games->whereNotIn('tag', ['Тун удахгүй', 'ComingSoon', 'PreOrder', 'EarlyAccess', "Хямдралтай", "FreeGame", "BestSelling", 'GOTY'])
                                                        ->take(10);
                     } else {
                         $filteredGames = $games->where('tag', $key);

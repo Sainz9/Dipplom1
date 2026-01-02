@@ -11,7 +11,7 @@ use App\Models\User;
 
 class GameController extends Controller
 {
-    // Нүүр хуудас
+    // Нүүр хуудас (Хайлт болон Шүүлтүүртэй)
     public function index(Request $request)
     {
         $query = Game::with('categories');
@@ -73,6 +73,7 @@ class GameController extends Controller
         return view('admin.dashboard', compact('games', 'categories'));
     }
 
+    // --- ШИНЭ ТӨРӨЛ НЭМЭХ (Category Add) ---
     public function storeCategory(Request $request)
     {
         $request->validate(['name' => 'required|unique:categories,name|max:255']);
@@ -80,6 +81,7 @@ class GameController extends Controller
         return redirect()->back()->with('success', 'Шинэ төрөл амжилттай нэмэгдлээ!');
     }
 
+    // --- ТӨРӨЛ УСТГАХ (Category Delete) ---
     public function destroyCategory($id)
     {
         $category = Category::findOrFail($id);
@@ -88,43 +90,46 @@ class GameController extends Controller
     }
 
     // --- ЗАССАН STORE ФУНКЦ (FILE & URL SUPPORT) ---
-    public function store(Request $request)
+  public function store(Request $request)
     {
         $request->validate([
             'title'           => 'required',
             'price'           => 'required',
             'sale_price'      => 'nullable|numeric',
             
-            // ЗУРАГ: Файл эсвэл URL-ийн аль нэг нь заавал байх ёстой
             'img_file'        => 'nullable|image|max:5120', 
             'img_url'         => 'nullable|url|required_without:img_file', 
 
             'categories'      => 'required|array',
             'categories.*'    => 'exists:categories,id',
             
+            // Бусад талбарууд...
             'banner_file'     => 'nullable|image|max:10240',
             'banner_url'      => 'nullable|url',
-            
             'trailer_file'    => 'nullable|mimetypes:video/mp4,video/webm|max:51200',
             'trailer_url'     => 'nullable|url',
-            
             'download_file'   => 'nullable|file|max:512000',
             'download_url'    => 'nullable|url',
-            
             'tag'             => 'nullable',
             'description'     => 'nullable',
             'developer'       => 'nullable',
             'publisher'       => 'nullable',
             'release_date'    => 'nullable',
+            
+            // SCREENSHOTS
             'screenshots_files.*' => 'image|max:5120',
         ]);
 
+        // Request-ээс зөвхөн Database-д хадгалах талбаруудыг авна.
+        // Файлуудыг (xxx_file) болон тусгай талбаруудыг хасах ёстой.
         $data = $request->except([
             'img_file', 'img_url', 
             'banner_file', 'banner_url', 
             'trailer_file', 'trailer_url', 
             'download_file', 'download_url', 
-            'categories', 'screenshots_files'
+            'categories', 
+            'screenshots_files', // <--- Энийг заавал хасах ёстой
+            'screenshots'        // <--- Энийг бас хасах (хэрэв байгаа бол)
         ]);
 
         // 1. COVER IMAGE
@@ -167,19 +172,22 @@ class GameController extends Controller
                 $screenshots[] = '/storage/' . $path;
             }
         }
+        
+        // Array хоосон биш бол Database руу хадгална
         if (!empty($screenshots)) {
-            $data['screenshots'] = $screenshots;
+            $data['screenshots'] = $screenshots; // Model дээр casts => 'array' байх ёстой
         }
 
+        // Create Game
         $game = Game::create($data);
 
+        // Attach Categories
         if ($request->has('categories')) {
             $game->categories()->attach($request->input('categories'));
         }
         
         return redirect()->back()->with('success', 'Game added successfully!');
     }
-
     public function edit($id)
     {
         $game = Game::with('categories')->findOrFail($id);
@@ -187,7 +195,7 @@ class GameController extends Controller
         return view('admin.game.edit', compact('game', 'categories'));
     }
 
-    public function update(Request $request, $id)
+   public function update(Request $request, $id)
     {
         $game = Game::findOrFail($id);
 
@@ -198,11 +206,17 @@ class GameController extends Controller
             'img_file'    => 'nullable|image|max:5120', 
             'categories'  => 'nullable|array',
             'categories.*'=> 'exists:categories,id',
+            'screenshots_files.*' => 'image|max:5120',
         ]);
 
-        $data = $request->except(['img_file', 'img_url', 'categories', 'screenshots_files']); 
+        $data = $request->except([
+            'img_file', 'img_url', 
+            'categories', 
+            'screenshots_files', // <--- Хасах
+            'screenshots'        // <--- Хасах
+        ]); 
 
-        // Update logic for files/urls similar to store...
+        // Update logic (Files)
         if ($request->hasFile('img_file')) {
             $path = $request->file('img_file')->store('games/covers', 'public');
             $data['img'] = '/storage/' . $path;
@@ -210,7 +224,20 @@ class GameController extends Controller
             $data['img'] = $request->img_url;
         }
 
-        // (Add similar logic for banner, trailer, download if needed for update)
+        // ... (Banner, Trailer, Download update logic here if needed) ...
+
+        // Screenshots Update (Append to existing)
+        $currentScreenshots = $game->screenshots ?? [];
+        // Хэрэв хуучин дата string байвал array болгох
+        if(is_string($currentScreenshots)) $currentScreenshots = json_decode($currentScreenshots, true) ?? [];
+
+        if ($request->hasFile('screenshots_files')) {
+            foreach ($request->file('screenshots_files') as $file) {
+                $path = $file->store('games/screenshots', 'public');
+                $currentScreenshots[] = '/storage/' . $path;
+            }
+            $data['screenshots'] = $currentScreenshots;
+        }
 
         $game->update($data);
 
@@ -220,7 +247,6 @@ class GameController extends Controller
 
         return redirect()->route('admin.dashboard')->with('success', 'Game updated successfully!');
     }
-
     public function show($id)
     {
         $game = Game::with('categories')->findOrFail($id);
