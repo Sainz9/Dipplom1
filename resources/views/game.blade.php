@@ -554,13 +554,7 @@
                                     </button>
                                 </form>
 
-                                <form action="{{ route('cart.add') }}" method="POST" class="mt-3">
-                                    @csrf
-                                    <input type="hidden" name="game_id" value="{{ $game->id }}">
-                                    <button type="submit" class="w-full bg-white/5 hover:bg-white/10 text-white font-bold py-3 rounded-xl transition-colors border border-white/5 uppercase text-xs tracking-widest">
-                                        Сагсанд хийх
-                                    </button>
-                                </form>
+                           
                             @endif
                         </div>
 

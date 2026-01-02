@@ -355,13 +355,15 @@
             {{-- 4. OTHER SECTIONS (Dynamic) --}}
             @php
                 $sections = [
+                        'PreOrder'          => ['title' => '🔥 PreOrder', 'color' => 'green-500', 'border' => 'hover:border-green-500'],
+                        'EarlyAccess'          => ['title' => '🔥 EarlyAccess', 'color' => 'green-500', 'border' => 'hover:border-green-500'],
                     'GOTY'          => ['title' => '🏆 Шилдэг тоглоомууд', 'color' => 'yellow-500', 'border' => 'hover:border-yellow-500'],
                     'BestSelling'   => ['title' => '💎 Best Sellers', 'color' => 'blue-500', 'border' => 'hover:border-blue-500'],
                     'Эрэлттэй'      => ['title' => '⚡ Эрэлттэй', 'color' => 'orange-500', 'border' => 'hover:border-orange-500'],
                     'EditorsChoice' => ['title' => '🎖️ Editer сонголт', 'color' => 'pink-500', 'border' => 'hover:border-pink-500'],
                     'Шинэ'          => ['title' => '🔥 Шинэ (New)', 'color' => 'green-500', 'border' => 'hover:border-green-500'],
                     'Trending'          => ['title' => '🔥 Trending', 'color' => 'green-500', 'border' => 'hover:border-green-500'],
-                    
+                          
                 ];
             @endphp
             {{-- 5. DYNAMIC SECTIONS --}}

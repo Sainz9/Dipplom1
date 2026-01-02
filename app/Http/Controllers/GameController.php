@@ -8,7 +8,6 @@ use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Order;
 use App\Models\User;
-
 class GameController extends Controller
 {
     // Нүүр хуудас (Хайлт болон Шүүлтүүртэй)
@@ -61,12 +60,9 @@ class GameController extends Controller
         // Coming Soon
         $comingSoonGames = Game::where('tag', 'Тун удахгүй')->latest()->get();
 
-        // --- ЭНД ЗАСВАР ХИЙСЭН (Ambiguous column name алдааг засах) ---
         // Категориуд (Footer хэсэгт эсвэл өөр газар хэрэг болж магадгүй)
         $categories = Category::with(['games' => function($query) {
-            // 'latest()' нь зөвхөн 'created_at' гэж дууддаг тул хоёр хүснэгт нийлэхэд алдаа гардаг.
-            // Тиймээс хүснэгтийн нэрийг тодорхой зааж өгөв: 'games.created_at'
-            $query->orderBy('games.created_at', 'desc')->take(10);
+            $query->latest()->take(10);
         }])->get();
 
         // --- Navbar дээрх Dropdown цэсэнд зориулсан (АВТОМАТААР ШИНЭЧЛЭГДЭНЭ) ---
@@ -101,7 +97,6 @@ class GameController extends Controller
 
         Category::create([
             'name' => $request->name,
-            // Laravel автоматаар цагийг бөглөдөг тул created_at гараар бичих шаардлагагүй, гэхдээ үлдээлээ
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -128,6 +123,7 @@ class GameController extends Controller
             'categories'  => 'required|array',
             'categories.*'=> 'exists:categories,id',
             'banner'      => 'nullable',
+            'trailer'     => 'nullable',
             'trailer'     => 'nullable',
             'screenshots' => 'nullable|array',
             'tag'         => 'nullable',
@@ -160,6 +156,7 @@ class GameController extends Controller
         if ($request->has('categories')) {
             $game->categories()->attach($request->input('categories'));
         }
+
         
         return redirect()->back()->with('success', 'Game added successfully!');
     }
@@ -183,6 +180,7 @@ class GameController extends Controller
             'categories'  => 'nullable|array',
             'categories.*'=> 'exists:categories,id',
             'banner'      => 'nullable',
+            'trailer'     => 'nullable',
             'trailer'     => 'nullable',
             'screenshots' => 'nullable|array',
             'tag'         => 'nullable',
@@ -273,15 +271,17 @@ class GameController extends Controller
         return back()->with('error', 'Уучлаарай, та энэ тоглоомыг худалдаж аваагүй байна.');
     }
 
+
     public function about()
-    {
-        // Database-ээс нийт тоглоомын тоог авах
-        $gamesCount = Game::count();
+{
+    // Database-ээс нийт тоглоомын тоог авах
+    $gamesCount = Game::count();
 
-        // Database-ээс нийт бүртгэлтэй хэрэглэгчийн тоог авах
-        $gamersCount = User::count(); 
+    // Database-ээс нийт бүртгэлтэй хэрэглэгчийн тоог авах
+    // (Хэрэв танд 'users' table байгаа бол)
+    $gamersCount = User::count(); 
 
-        // View рүү хувьсагчуудаа дамжуулах
-        return view('profile.about', compact('gamesCount', 'gamersCount'));    
-    }
+    // View рүү хувьсагчуудаа дамжуулах
+return view('profile.about', compact('gamesCount', 'gamersCount'));    
+}
 }
