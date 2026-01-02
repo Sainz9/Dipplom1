@@ -50,6 +50,108 @@
 </head>
 <body class="antialiased flex flex-col min-h-screen overflow-x-hidden">
 
+    {{-- 
+        **************************************************************
+        * ЗАСВАР ХИЙСЭН: Function-ийг хувьсагч болгож энд зарлалаа *
+        * Ингэснээр 500 Error гарахгүй                            *
+        **************************************************************
+    --}}
+    @php
+        $renderGameCard = function($game, $customBorder = '') {
+            // Safety Checks
+            if (!$game) return;
+
+            // Badge Logic
+            $badgeHTML = '';
+            $tagText = $game->tag ?? ''; // Null safety
+
+            // Price Logic Checks
+            $isFree = (is_numeric($game->price) && $game->price == 0) || $tagText == 'FreeGame';
+            $isOnSale = ($game->sale_price && is_numeric($game->sale_price) && $game->sale_price > 0);
+
+            if ($isOnSale) {
+                $badgeHTML = '<div class="absolute top-2 right-2 z-20"><span class="bg-red-600 text-white text-[10px] font-black uppercase px-2 py-1 rounded-md border border-red-500 shadow-lg animate-pulse">🏷️ SALE</span></div>';
+            } elseif ($isFree) {
+                $badgeHTML = '<div class="absolute top-2 right-2 z-20"><span class="bg-green-500 text-black text-[10px] font-black uppercase px-2 py-1 rounded-md border border-green-400 shadow-lg">🎁 FREE</span></div>';
+            } elseif ($tagText) {
+                $badgeClass = 'bg-gray-600 text-white border-gray-500';
+                $icon = '✨';
+
+                switch($tagText) {
+                    case 'GOTY': $badgeClass = 'bg-yellow-500 text-black border-yellow-400 shadow-yellow-500/50'; $icon = '🏆'; break;
+                    case 'BestSelling': $badgeClass = 'bg-blue-500 text-white border-blue-400 shadow-blue-500/50'; $icon = '💎'; break;
+                    case 'EditorsChoice': $badgeClass = 'bg-purple-600 text-white border-purple-400'; $icon = '🎖️'; break;
+                    case 'Trending': $badgeClass = 'bg-orange-500 text-white border-orange-400'; $icon = '⚡'; break;
+                    case 'Тун удахгүй': $badgeClass = 'bg-gray-700 text-gray-300 border-gray-600'; $icon = '🚀'; break;
+                    case 'EarlyAccess': $badgeClass = 'bg-teal-600 text-white border-teal-500'; $icon = '🛠️'; $tagText = 'Туршилтын хувилбар'; break;
+                    case 'PreOrder': $badgeClass = 'bg-indigo-600 text-white border-indigo-500'; $icon = '📦'; $tagText = 'Урьдчилсан захиалга'; break;
+                }
+
+                $badgeHTML = "<div class='absolute top-2 right-2 z-20'>
+                    <span class='{$badgeClass} text-[10px] font-black uppercase px-2 py-1 rounded-md border flex items-center gap-1 shadow-lg transform group-hover:scale-105 transition-transform'>
+                        <span>{$icon}</span> <span>{$tagText}</span>
+                    </span>
+                </div>";
+            }
+
+            // Categories (Safe Loop)
+            $categoriesHTML = '';
+            if($game->categories) {
+                foreach($game->categories->unique('id')->take(3) as $c) {
+                    // ЗАСВАР: Null Safety ($c->name ?? '')
+                    $catName = \Str::before($c->name ?? 'Game', ' (');
+                    $categoriesHTML .= "<span class='text-[8px] font-black uppercase tracking-wider bg-black/70 text-gray-200 border border-white/10 px-1.5 py-0.5 rounded backdrop-blur-md shadow-sm'>{$catName}</span>";
+                }
+            }
+
+            // Price & Buttons
+            $isComingSoon = ($tagText === 'Тун удахгүй');
+            $priceHTML = '';
+            $actionBtn = '';
+            $route = route('game.show', $game->id);
+
+            if ($isComingSoon) {
+                $priceHTML = '<span class="text-[10px] text-gray-500 font-bold uppercase tracking-widest border border-white/10 px-2 py-1 rounded bg-white/5">Тун удахгүй</span>';
+                $actionBtn = '<div class="bg-white/5 p-1.5 rounded-full text-gray-500"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg></div>';
+            } else {
+                if($isFree) {
+                    $priceHTML = '<span class="text-brand font-bold text-sm tracking-wider">FREE</span>';
+                } elseif(is_numeric($game->price)) {
+                    if($isOnSale) {
+                        $priceHTML = '<div class="flex flex-col leading-none"><span class="text-[10px] text-gray-500 line-through">' . number_format((float)$game->price) . '₮</span><span class="text-green-400 font-bold text-sm">' . number_format((float)$game->sale_price) . '₮</span></div>';
+                    } else {
+                        $priceHTML = '<span class="text-gray-300 font-bold text-sm">' . number_format((float)$game->price) . '₮</span>';
+                    }
+                } else {
+                    $priceHTML = '<span class="text-xs text-gray-400 font-bold">' . ($game->price ?? '') . '</span>';
+                }
+                $actionBtn = '<div class="bg-white/10 p-1.5 rounded-full group-hover:bg-brand group-hover:text-black transition-colors text-white shadow-lg"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg></div>';
+            }
+
+            $borderClass = $customBorder ?: 'hover:border-brand/50';
+
+            // Safe Image Output
+            $imgSrc = $game->img ?? '';
+
+            echo "
+            <div class='swiper-slide transition-transform duration-300 hover:z-20 hover:scale-105'>
+                <a href='{$route}' class='block relative aspect-[3/4] rounded-xl overflow-hidden bg-[#1a1a20] border border-white/5 {$borderClass} hover:shadow-neon group'>
+                    <img src='{$imgSrc}' class='w-full h-full object-cover transition-transform duration-700 group-hover:scale-110' loading='lazy'>
+                    <div class='absolute inset-0 bg-gradient-to-t from-darkBG via-darkBG/20 to-transparent opacity-90'></div>
+                    {$badgeHTML}
+                    <div class='absolute bottom-[68px] left-3 z-20 flex flex-wrap gap-1 group-hover:bottom-[82px] transition-all duration-300 pointer-events-none'>{$categoriesHTML}</div>
+                    <div class='absolute bottom-0 p-4 w-full translate-y-2 group-hover:translate-y-0 transition-transform duration-300'>
+                        <h3 class='font-bold text-white truncate text-base mb-1 group-hover:text-brand transition-colors leading-tight'>{$game->title}</h3>
+                        <div class='flex justify-between items-center mt-2'>
+                            {$priceHTML}
+                            {$actionBtn}
+                        </div>
+                    </div>
+                </a>
+            </div>";
+        };
+    @endphp
+
     <nav class="fixed w-full z-50 top-0 bg-darkBG/90 backdrop-blur-xl border-b border-white/[0.05]">
         <div class="max-w-[1920px] mx-auto px-6 lg:px-12">
             <div class="flex justify-between items-center h-20">
@@ -90,9 +192,10 @@
                                 <div class="grid grid-cols-2 gap-2" id="categoryList">
                                     @if(isset($navCategories) && count($navCategories) > 0)
                                         @foreach($navCategories as $cat)
-                                        <a href="{{ url('/') }}?genre={{ $cat->name }}" class="cat-item flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 hover:text-brand transition-colors border border-transparent hover:border-white/10">
+                                        {{-- ЗАСВАР: $cat->name ?? 'Category' болгож засав --}}
+                                        <a href="{{ url('/') }}?genre={{ $cat->name ?? '' }}" class="cat-item flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 hover:text-brand transition-colors border border-transparent hover:border-white/10">
                                             <span class="text-xs font-bold uppercase tracking-wider text-gray-300 hover:text-white cat-name">
-                                                {{ $cat->name }}
+                                                {{ $cat->name ?? 'Category' }}
                                             </span>
                                         </a>
                                         @endforeach
@@ -172,106 +275,6 @@
 
         <div class="py-12 px-4 md:px-8 lg:px-12 space-y-16 -mt-10 relative z-10">
             
-            {{-- HELPER FUNCTION --}}
-           {{-- HELPER FUNCTION REPLACEMENT --}}
-@php
-    if (!function_exists('renderGameCard')) {
-        function renderGameCard($game, $customBorder = '') {
-            // Safety Checks
-            if (!$game) return '';
-
-            // Badge Logic
-            $badgeHTML = '';
-            $tagText = $game->tag ?? ''; // Null safety
-
-            // Price Logic Checks
-            $isFree = (is_numeric($game->price) && $game->price == 0) || $tagText == 'FreeGame';
-            $isOnSale = ($game->sale_price && is_numeric($game->sale_price) && $game->sale_price > 0);
-
-            if ($isOnSale) {
-                $badgeHTML = '<div class="absolute top-2 right-2 z-20"><span class="bg-red-600 text-white text-[10px] font-black uppercase px-2 py-1 rounded-md border border-red-500 shadow-lg animate-pulse">🏷️ SALE</span></div>';
-            } elseif ($isFree) {
-                $badgeHTML = '<div class="absolute top-2 right-2 z-20"><span class="bg-green-500 text-black text-[10px] font-black uppercase px-2 py-1 rounded-md border border-green-400 shadow-lg">🎁 FREE</span></div>';
-            } elseif ($tagText) {
-                $badgeClass = 'bg-gray-600 text-white border-gray-500';
-                $icon = '✨';
-
-                switch($tagText) {
-                    case 'GOTY': $badgeClass = 'bg-yellow-500 text-black border-yellow-400 shadow-yellow-500/50'; $icon = '🏆'; break;
-                    case 'BestSelling': $badgeClass = 'bg-blue-500 text-white border-blue-400 shadow-blue-500/50'; $icon = '💎'; break;
-                    case 'EditorsChoice': $badgeClass = 'bg-purple-600 text-white border-purple-400'; $icon = '🎖️'; break;
-                    case 'Trending': $badgeClass = 'bg-orange-500 text-white border-orange-400'; $icon = '⚡'; break;
-                    case 'Тун удахгүй': $badgeClass = 'bg-gray-700 text-gray-300 border-gray-600'; $icon = '🚀'; break;
-                    case 'EarlyAccess': $badgeClass = 'bg-teal-600 text-white border-teal-500'; $icon = '🛠️'; $tagText = 'Туршилтын хувилбар'; break;
-                    case 'PreOrder': $badgeClass = 'bg-indigo-600 text-white border-indigo-500'; $icon = '📦'; $tagText = 'Урьдчилсан захиалга'; break;
-                }
-
-                $badgeHTML = "<div class='absolute top-2 right-2 z-20'>
-                    <span class='{$badgeClass} text-[10px] font-black uppercase px-2 py-1 rounded-md border flex items-center gap-1 shadow-lg transform group-hover:scale-105 transition-transform'>
-                        <span>{$icon}</span> <span>{$tagText}</span>
-                    </span>
-                </div>";
-            }
-
-            // Categories (Safe Loop)
-            $categoriesHTML = '';
-            if($game->categories) {
-                foreach($game->categories->unique('id')->take(3) as $c) {
-                    // ЭНД ЗАСВАР ХИЙСЭН: Null Safety
-                    $catName = \Str::before($c->name ?? 'Game', ' (');
-                    $categoriesHTML .= "<span class='text-[8px] font-black uppercase tracking-wider bg-black/70 text-gray-200 border border-white/10 px-1.5 py-0.5 rounded backdrop-blur-md shadow-sm'>{$catName}</span>";
-                }
-            }
-
-            // Price & Buttons
-            $isComingSoon = ($tagText === 'Тун удахгүй');
-            $priceHTML = '';
-            $actionBtn = '';
-            $route = route('game.show', $game->id);
-
-            if ($isComingSoon) {
-                $priceHTML = '<span class="text-[10px] text-gray-500 font-bold uppercase tracking-widest border border-white/10 px-2 py-1 rounded bg-white/5">Тун удахгүй</span>';
-                $actionBtn = '<div class="bg-white/5 p-1.5 rounded-full text-gray-500"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg></div>';
-            } else {
-                if($isFree) {
-                    $priceHTML = '<span class="text-brand font-bold text-sm tracking-wider">FREE</span>';
-                } elseif(is_numeric($game->price)) {
-                    if($isOnSale) {
-                        $priceHTML = '<div class="flex flex-col leading-none"><span class="text-[10px] text-gray-500 line-through">' . number_format((float)$game->price) . '₮</span><span class="text-green-400 font-bold text-sm">' . number_format((float)$game->sale_price) . '₮</span></div>';
-                    } else {
-                        $priceHTML = '<span class="text-gray-300 font-bold text-sm">' . number_format((float)$game->price) . '₮</span>';
-                    }
-                } else {
-                    $priceHTML = '<span class="text-xs text-gray-400 font-bold">' . ($game->price ?? '') . '</span>';
-                }
-                $actionBtn = '<div class="bg-white/10 p-1.5 rounded-full group-hover:bg-brand group-hover:text-black transition-colors text-white shadow-lg"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg></div>';
-            }
-
-            $borderClass = $customBorder ?: 'hover:border-brand/50';
-
-            // Safe Image Output
-            $imgSrc = $game->img ?? '';
-
-            echo "
-            <div class='swiper-slide transition-transform duration-300 hover:z-20 hover:scale-105'>
-                <a href='{$route}' class='block relative aspect-[3/4] rounded-xl overflow-hidden bg-[#1a1a20] border border-white/5 {$borderClass} hover:shadow-neon group'>
-                    <img src='{$imgSrc}' class='w-full h-full object-cover transition-transform duration-700 group-hover:scale-110' loading='lazy'>
-                    <div class='absolute inset-0 bg-gradient-to-t from-darkBG via-darkBG/20 to-transparent opacity-90'></div>
-                    {$badgeHTML}
-                    <div class='absolute bottom-[68px] left-3 z-20 flex flex-wrap gap-1 group-hover:bottom-[82px] transition-all duration-300 pointer-events-none'>{$categoriesHTML}</div>
-                    <div class='absolute bottom-0 p-4 w-full translate-y-2 group-hover:translate-y-0 transition-transform duration-300'>
-                        <h3 class='font-bold text-white truncate text-base mb-1 group-hover:text-brand transition-colors leading-tight'>{$game->title}</h3>
-                        <div class='flex justify-between items-center mt-2'>
-                            {$priceHTML}
-                            {$actionBtn}
-                        </div>
-                    </div>
-                </a>
-            </div>";
-        }
-    }
-@endphp
-
             {{-- 1. COMING SOON SECTION --}}
             @php $comingSoonList = $games->where('tag', 'Тун удахгүй'); @endphp
             @if($comingSoonList->count() > 0)
@@ -289,7 +292,8 @@
                 <div class="swiper swiperComing !overflow-visible !pb-10">
                     <div class="swiper-wrapper">
                         @foreach($comingSoonList as $game)
-                            {{ renderGameCard($game, 'hover:border-purple-500') }}
+                            {{-- ЗАСВАР: Call the variable function --}}
+                            @php $renderGameCard($game, 'hover:border-purple-500') @endphp
                         @endforeach
                     </div>
                 </div>
@@ -313,7 +317,7 @@
                 <div class="swiper swiperSale !overflow-visible !pb-10">
                     <div class="swiper-wrapper">
                         @foreach($onSaleGames as $game)
-                            {{ renderGameCard($game, 'hover:border-red-600') }}
+                            @php $renderGameCard($game, 'hover:border-red-600') @endphp
                         @endforeach
                     </div>
                 </div>
@@ -340,7 +344,9 @@
                 </div>
                 <div class="swiper swiperFree !overflow-visible !pb-10">
                     <div class="swiper-wrapper">
-                        @foreach($freeGames as $game) {{ renderGameCard($game, 'hover:border-green-500') }} @endforeach
+                        @foreach($freeGames as $game) 
+                            @php $renderGameCard($game, 'hover:border-green-500') @endphp
+                        @endforeach
                     </div>
                 </div>
             </section>
@@ -355,20 +361,18 @@
                     'EditorsChoice' => ['title' => '🎖️ Editer сонголт', 'color' => 'pink-500', 'border' => 'hover:border-pink-500'],
                     'Шинэ'          => ['title' => '🔥 Шинэ (New)', 'color' => 'green-500', 'border' => 'hover:border-green-500'],
                     'Trending'          => ['title' => '🔥 Trending', 'color' => 'green-500', 'border' => 'hover:border-green-500'],
-                   
+                    
                 ];
             @endphp
-{{-- 5. DYNAMIC SECTIONS --}}
+            {{-- 5. DYNAMIC SECTIONS --}}
             @foreach($sections as $key => $style)
                 @php 
                     $filteredGames = collect();
 
                     if ($key === 'New' || $key === 'Шинэ') {
-                        // ЗАСВАР: "Тун удахгүй", "PreOrder", "GOTY" зэрэг Тусгай Тагтай тоглоомуудыг "Шинэ" хэсгээс ХАСАХ
                         $filteredGames = $games->whereNotIn('tag', ['Тун удахгүй', 'ComingSoon', 'PreOrder', 'EarlyAccess', "Хямдралтай", "FreeGame", 'GOTY'])
-                                               ->take(10);
+                                                       ->take(10);
                     } else {
-                        // Бусад үед Tag-аар нь яг тааруулж шүүнэ
                         $filteredGames = $games->where('tag', $key);
                     }
                 @endphp
@@ -388,7 +392,7 @@
                     <div class="swiper swiper-{{ $key }} !overflow-visible !pb-10">
                         <div class="swiper-wrapper">
                             @foreach($filteredGames as $game)
-                                {{ renderGameCard($game, $style['border']) }}
+                                @php $renderGameCard($game, $style['border']) @endphp
                             @endforeach
                         </div>
                     </div>
@@ -461,9 +465,9 @@
             });
         });
 
-        // --- CATEGORY SWIPERS (FIX) ---
+        // --- CATEGORY SWIPERS (FIXED JS) ---
         // Ensure $navCategories is available
-      const categoryIds = @json((isset($navCategories) && is_object($navCategories) && method_exists($navCategories, 'pluck')) ? $navCategories->pluck('id') : []);
+        const categoryIds = @json((isset($navCategories) && is_object($navCategories) && method_exists($navCategories, 'pluck')) ? $navCategories->pluck('id') : []);
         categoryIds.forEach(id => {
             new Swiper('.swiper-cat-' + id, {
                 slidesPerView: 2, spaceBetween: 16,
