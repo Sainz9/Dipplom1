@@ -7,7 +7,7 @@ use App\Models\Game;
 use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Order;
-
+use App\Models\User;
 class GameController extends Controller
 {
     // Нүүр хуудас (Хайлт болон Шүүлтүүртэй)
@@ -270,4 +270,18 @@ class GameController extends Controller
 
         return back()->with('error', 'Уучлаарай, та энэ тоглоомыг худалдаж аваагүй байна.');
     }
+
+
+    public function about()
+{
+    // Database-ээс нийт тоглоомын тоог авах
+    $gamesCount = Game::count();
+
+    // Database-ээс нийт бүртгэлтэй хэрэглэгчийн тоог авах
+    // (Хэрэв танд 'users' table байгаа бол)
+    $gamersCount = User::count(); 
+
+    // View рүү хувьсагчуудаа дамжуулах
+return view('profile.about', compact('gamesCount', 'gamersCount'));    
+}
 }

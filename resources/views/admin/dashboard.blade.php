@@ -196,7 +196,7 @@
             <option value="">Сонгоогүй (No Badge)</option>
             
             <optgroup label="Үндсэн төлөв">
-                <option value="New" class="text-green-400">🔥 Шинэ (New Release)</option>
+                <option value="Шинэ" class="text-green-400">🔥 Шинэ (New Release)</option>
                 <option value="Тун удахгүй" class="text-gray-400">🚀 Тун удахгүй (Coming Soon)</option>
                 <option value="FreeGame" class="text-green-500 font-bold">🎁 Үнэгүй (Free to Play)</option>
                 <option value="Хямдралтай" class="text-red-400">🏷️ Хямдралтай (On Sale)</option>
@@ -205,7 +205,7 @@
             <optgroup label="Эрэлт & Шагнал">
                 <option value="Trending" class="text-orange-400">⚡ Эрэлттэй (Trending)</option>
                 <option value="BestSelling" class="text-blue-400">💎 Шилдэг борлуулалт (Top Seller)</option>
-                <option value="GOTY" class="text-yellow-400 font-bold">🏆 Оны шилдэг (Game of the Year)</option>
+                <option value="GOTY" class="text-yellow-400 font-bold">🏆 Шилдэг тоглоомууд (Шилдэг тоглоомууд)</option>
                 <option value="EditorsChoice" class="text-purple-400">🎖️ Редакторын онцлох (Editor's Choice)</option>
             </optgroup>
 

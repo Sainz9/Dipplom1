@@ -1,10 +1,4 @@
-"Бидний тухай" хуудасны тоон үзүүлэлтүүдийг (Stats) зүгээр нэг текст биш, **0-ээс эхлэн гүйж тоологддог (Counter Animation)** болгож өөрчиллөө.
 
-Үүнийг хийхийн тулд HTML дээр `data-target` гэсэн утга оноож, доор нь багахан хэмжээний JavaScript бичсэн.
-
-Энэ кодыг **`about.blade.php`** файлдаа бүтнээр нь хуулж тавиарай.
-
-```html
 <!DOCTYPE html>
 <html lang="mn">
 <head>
@@ -92,39 +86,48 @@
                 </div>
             </div>
 
-            {{-- STATS (COUNTER ANIMATION ADDED) --}}
-            <div class="border-y border-white/10 py-12 mb-20" id="stats-section">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-                    <div>
-                        {{-- 500+ --}}
-                        <div class="text-4xl font-black text-white mb-2 flex justify-center items-baseline">
-                            <span class="count-up" data-target="100">0</span>+
-                        </div>
-                        <div class="text-sm text-gray-100 uppercase tracking-widest font-bold">Games</div>
-                    </div>
-                    <div>
-                        {{-- 10k+ --}}
-                        <div class="text-4xl font-black text-brand mb-2 flex justify-center items-baseline">
-                            <span class="count-up" data-target="10">0</span>k+
-                        </div>
-                        <div class="text-sm text-gray-500 uppercase tracking-widest font-bold">Gamers</div>
-                    </div>
-                    <div>
-                        {{-- 24/7 --}}
-                        <div class="text-4xl font-black text-white mb-2 flex justify-center items-baseline">
-                            <span class="count-up" data-target="24">0</span>/7
-                        </div>
-                        <div class="text-sm text-gray-500 uppercase tracking-widest font-bold">Support</div>
-                    </div>
-                    <div>
-                        {{-- 100% --}}
-                        <div class="text-4xl font-black text-purple-500 mb-2 flex justify-center items-baseline">
-                            <span class="count-up" data-target="100">0</span>%
-                        </div>
-                        <div class="text-sm text-gray-500 uppercase tracking-widest font-bold">Secure</div>
-                    </div>
-                </div>
+           {{-- STATS SECTION --}}
+<div class="border-y border-white/10 py-12 mb-20" id="stats-section">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        
+   
+        <div>
+            <div class="text-4xl font-black text-white mb-2 flex justify-center items-baseline">
+                {{-- $gamesCount хувьсагчийг энд тавьлаа --}}
+                <span class="count-up" data-target="{{ $gamesCount }}">0</span>
             </div>
+            <div class="text-sm text-gray-100 uppercase tracking-widest font-bold">Тоглоомууд
+
+            </div>
+        </div>
+
+      
+        <div>
+            <div class="text-4xl font-black text-brand mb-2 flex justify-center items-baseline">
+           
+                <span class="count-up" data-target="{{ $gamersCount }}">0</span>
+            
+            </div>
+            <div class="text-sm text-gray-500 uppercase tracking-widest font-bold">Бүртгүүлсэн хэрэглэгч</div>
+        </div>
+
+        {{-- SUPPORT (Статик хэвээр үлдээх нь зөв) --}}
+        <div>
+            <div class="text-4xl font-black text-white mb-2 flex justify-center items-baseline">
+                <span class="count-up" data-target="24">0</span>/7
+            </div>
+            <div class="text-sm text-gray-500 uppercase tracking-widest font-bold">Дэмжигч Байгуулга</div>
+        </div>
+
+        {{-- SECURE (Статик хэвээр үлдээх нь зөв) --}}
+        <div>
+            <div class="text-4xl font-black text-purple-500 mb-2 flex justify-center items-baseline">
+                <span class="count-up" data-target="100">0</span>%
+            </div>
+            <div class="text-sm text-gray-500 uppercase tracking-widest font-bold">Аяулгүйн баталгаа</div>
+        </div>
+    </div>
+</div>
 
             {{-- CONTACT CTA --}}
             <div class="text-center">
