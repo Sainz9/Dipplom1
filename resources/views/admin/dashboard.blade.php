@@ -274,20 +274,10 @@
                    accept="image/*" 
                    multiple 
                    class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-xs text-white focus:border-brand file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-brand file:text-black hover:file:bg-brand/80 cursor-pointer">
-            <p class="text-[10px] text-gray-600 mt-1">Олон зураг зэрэг сонгож болно.</p>
+        
         </div>
 
-        <div class="text-center text-xs text-gray-500 font-bold">- БАС / ЭСВЭЛ -</div>
-
-        {{-- B. URL PASTE --}}
-        <div>
-            <label class="text-[10px] text-gray-500 uppercase font-bold mb-1 block">Сонголт B: Шууд линк хуулах (URL)</label>
-            <textarea name="screenshots_urls" 
-                      rows="3" 
-                      placeholder="https://steam.../image1.jpg&#10;https://steam.../image2.jpg" 
-                      class="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-brand outline-none placeholder-gray-700 font-mono leading-relaxed"></textarea>
-            <p class="text-[10px] text-gray-600 mt-1">Нэг мөрөнд нэг линк байхаар Enter дарж бичнэ үү.</p>
-        </div>
+      
     </div>
 </div>
                         <div>
