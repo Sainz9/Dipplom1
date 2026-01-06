@@ -14,48 +14,62 @@ class GameController extends Controller
     // Нүүр хуудас (Хайлт болон Шүүлтүүртэй)
     public function index(Request $request)
     {
-        $games = Game::latest()->get();
-    return view('dashboard', compact('games'));
+        // 1. Үндсэн Query
         $query = Game::with('categories');
 
+        // 2. Хайлт (Search Input)
         if ($request->filled('search')) {
             $query->where('title', 'like', '%' . $request->search . '%');
         }
 
+        // 3. Төрөл (Genre/Category)
         if ($request->filled('genre')) {
             $query->whereHas('categories', function($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->genre . '%');
             });
         }
 
+        // 4. Платформ (Platform)
         if ($request->filled('platform')) {
             $query->where('platform', 'like', '%' . $request->platform . '%');
         }
 
+        // 5. Үнэ (Price)
         if ($request->filled('price')) {
             switch ($request->price) {
-                case 'free': $query->where('price', 0)->orWhere('tag', 'FreeGame'); break;
-                case 'sale': $query->whereNotNull('sale_price')->where('sale_price', '>', 0); break;
-                case 'under_20': $query->where('price', '<', 20000); break;
+                case 'free':
+                    $query->where('price', 0)->orWhere('tag', 'FreeGame');
+                    break;
+                case 'sale':
+                    $query->whereNotNull('sale_price')->where('sale_price', '>', 0);
+                    break;
+                case 'under_20':
+                    $query->where('price', '<', 20000);
+                    break;
             }
         }
 
-        // SQLite & MySQL compatible ordering
+        // Бүх тоглоом (Шүүлтүүртэй) - SQLite/MySQL compatible ordering
         $games = $query->orderBy('created_at', 'desc')->get();
 
+        // Slider-т зориулсан тоглоомууд
         $sliderGames = Game::whereNotNull('banner')->orderBy('created_at', 'desc')->take(5)->get();
         if ($sliderGames->isEmpty()) {
             $sliderGames = Game::orderBy('created_at', 'desc')->take(5)->get();
         }
 
-        $comingSoonGames = Game::where('tag', 'Тун удахгүй')->orderBy('created_at', 'desc')->get();
+        // Coming Soon
+        $comingSoonGames = Game::where('tag', 'Тун удахгүй')->orderBy('created_at', 'desc')->take(4)->get();
 
+        // Категориуд (Footer хэсэгт эсвэл өөр газар хэрэг болж магадгүй)
         $categories = Category::with(['games' => function($query) {
-            $query->orderBy('games.created_at', 'desc')->take(10);
+            $query->orderBy('created_at', 'desc')->take(10);
         }])->get();
 
+        // --- Navbar дээрх Dropdown цэсэнд зориулсан ---
         $navCategories = Category::orderBy('name', 'asc')->get();
 
+        // --- Нүүр хуудасны хэсгүүдийн тохиргоо ---
         $sections = [
             'GOTY'          => ['title' => '🏆 Game of the Year', 'color' => 'yellow-500', 'border' => 'hover:border-yellow-500'],
             'BestSelling'   => ['title' => '💎 Best Sellers', 'color' => 'blue-500', 'border' => 'hover:border-blue-500'],
@@ -91,21 +105,17 @@ class GameController extends Controller
         return redirect()->back()->with('success', 'Төрөл амжилттай устгагдлаа!');
     }
 
-    // --- ЗАССАН STORE ФУНКЦ (FILE & URL SUPPORT) ---
-  public function store(Request $request)
+    // --- STORE FUNCTION (With File Upload & Screenshots) ---
+    public function store(Request $request)
     {
         $request->validate([
             'title'           => 'required',
             'price'           => 'required',
             'sale_price'      => 'nullable|numeric',
-            
             'img_file'        => 'nullable|image|max:5120', 
             'img_url'         => 'nullable|url|required_without:img_file', 
-
             'categories'      => 'required|array',
             'categories.*'    => 'exists:categories,id',
-            
-            // Бусад талбарууд...
             'banner_file'     => 'nullable|image|max:10240',
             'banner_url'      => 'nullable|url',
             'trailer_file'    => 'nullable|mimetypes:video/mp4,video/webm|max:51200',
@@ -117,21 +127,16 @@ class GameController extends Controller
             'developer'       => 'nullable',
             'publisher'       => 'nullable',
             'release_date'    => 'nullable',
-            
-            // SCREENSHOTS
             'screenshots_files.*' => 'image|max:5120',
         ]);
 
-        // Request-ээс зөвхөн Database-д хадгалах талбаруудыг авна.
-        // Файлуудыг (xxx_file) болон тусгай талбаруудыг хасах ёстой.
         $data = $request->except([
             'img_file', 'img_url', 
             'banner_file', 'banner_url', 
             'trailer_file', 'trailer_url', 
             'download_file', 'download_url', 
             'categories', 
-            'screenshots_files', // <--- Энийг заавал хасах ёстой
-            'screenshots'        // <--- Энийг бас хасах (хэрэв байгаа бол)
+            'screenshots_files'
         ]);
 
         // 1. COVER IMAGE
@@ -166,7 +171,7 @@ class GameController extends Controller
             $data['download_link'] = $request->download_url;
         }
 
-        // 5. SCREENSHOTS (Upload only)
+        // 5. SCREENSHOTS
         $screenshots = [];
         if ($request->hasFile('screenshots_files')) {
             foreach ($request->file('screenshots_files') as $file) {
@@ -174,10 +179,8 @@ class GameController extends Controller
                 $screenshots[] = '/storage/' . $path;
             }
         }
-        
-        // Array хоосон биш бол Database руу хадгална
         if (!empty($screenshots)) {
-            $data['screenshots'] = $screenshots; // Model дээр casts => 'array' байх ёстой
+            $data['screenshots'] = $screenshots;
         }
 
         // Create Game
@@ -190,6 +193,7 @@ class GameController extends Controller
         
         return redirect()->back()->with('success', 'Game added successfully!');
     }
+
     public function edit($id)
     {
         $game = Game::with('categories')->findOrFail($id);
@@ -197,7 +201,7 @@ class GameController extends Controller
         return view('admin.game.edit', compact('game', 'categories'));
     }
 
-   public function update(Request $request, $id)
+    public function update(Request $request, $id)
     {
         $game = Game::findOrFail($id);
 
@@ -214,8 +218,8 @@ class GameController extends Controller
         $data = $request->except([
             'img_file', 'img_url', 
             'categories', 
-            'screenshots_files', // <--- Хасах
-            'screenshots'        // <--- Хасах
+            'screenshots_files', 
+            'screenshots'
         ]); 
 
         // Update logic (Files)
@@ -226,11 +230,10 @@ class GameController extends Controller
             $data['img'] = $request->img_url;
         }
 
-        // ... (Banner, Trailer, Download update logic here if needed) ...
+        // ... (Similar logic for banner, trailer, download update if needed) ...
 
         // Screenshots Update (Append to existing)
         $currentScreenshots = $game->screenshots ?? [];
-        // Хэрэв хуучин дата string байвал array болгох
         if(is_string($currentScreenshots)) $currentScreenshots = json_decode($currentScreenshots, true) ?? [];
 
         if ($request->hasFile('screenshots_files')) {
@@ -249,6 +252,7 @@ class GameController extends Controller
 
         return redirect()->route('admin.dashboard')->with('success', 'Game updated successfully!');
     }
+
     public function show($id)
     {
         $game = Game::with('categories')->findOrFail($id);
@@ -298,6 +302,13 @@ class GameController extends Controller
         }
 
         return back()->with('error', 'Уучлаарай, та энэ тоглоомыг худалдаж аваагүй байна.');
+    }
+
+    // Шууд худалдан авалтын функц (Checkout)
+    public function checkout($id)
+    {
+        $game = Game::findOrFail($id);
+        return view('checkout', compact('game'));
     }
 
     public function about()
