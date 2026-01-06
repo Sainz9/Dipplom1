@@ -154,6 +154,7 @@
 
     <nav class="fixed w-full z-50 top-0 bg-darkBG/90 backdrop-blur-xl border-b border-white/[0.05]">
         <div class="max-w-[1920px] mx-auto px-6 lg:px-12">
+            
             <div class="flex justify-between items-center h-20">
                 
                 <a href="/" class="text-2xl font-black tracking-tighter uppercase italic text-white hover:text-brand transition-colors">
@@ -225,6 +226,20 @@
         </div>
 
         <div id="mobileMenu" class="hidden lg:hidden bg-[#0a0a0f] border-b border-white/10 absolute w-full left-0 top-20 p-6 flex flex-col gap-6 shadow-2xl z-40">
+            <div class="relative group w-full">
+                <div class="flex items-center bg-white/5 border border-white/10 rounded-xl hover:border-brand/50 focus-within:border-brand transition-all w-full">
+                    <div class="flex-1 relative">
+                        <input type="text" id="mobileSearchInput" placeholder="Тоглоом хайх..." class="w-full bg-transparent border-none outline-none text-base text-white placeholder-gray-500 px-4 py-3 focus:ring-0">
+                    </div>
+                    <div class="pr-4 text-gray-500">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    </div>
+                </div>
+                {{-- Хайлтын үр дүн гарах хэсэг --}}
+                <div id="mobileSearchResults" class="absolute top-full left-0 w-full mt-2 bg-[#121218] border border-white/10 rounded-xl shadow-2xl hidden overflow-hidden z-50">
+                    <div id="mobileResultsContainer" class="max-h-64 overflow-y-auto custom-scroll"></div>
+                </div>
+            </div>
             <div class="flex flex-col gap-4">
                 <a href="{{ route('about') }}" class="text-lg font-bold text-white hover:text-brand">Бидний тухай</a>
             </div>
@@ -522,6 +537,51 @@
                 if(!searchInput.contains(e.target) && !searchResults.contains(e.target)) { searchResults.classList.add('hidden'); }
             });
         }
+        // Init Desktop Search
+        initGameSearch('globalSearch', 'resultsContainer', 'searchResults');
+        
+        // Init Mobile Search (ЭНЭ МӨР ЗААВАЛ БАЙХ ЁСТОЙ)
+        initGameSearch('mobileSearchInput', 'mobileResultsContainer', 'mobileSearchResults');
+        // --- UNIFIED SEARCH FUNCTION (Энийг заавал нэмээрэй) ---
+    function initGameSearch(inputId, resultsContainerId, searchResultsId) {
+        const searchInput = document.getElementById(inputId);
+        const resultsContainer = document.getElementById(resultsContainerId);
+        const searchResults = document.getElementById(searchResultsId);
+        const allGames = @json($games ?? []); 
+
+        if(searchInput && resultsContainer && searchResults) {
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                resultsContainer.innerHTML = '';
+
+                if(query.length === 0) { 
+                    searchResults.classList.add('hidden'); 
+                    return; 
+                }
+
+                const filtered = allGames.filter(g => g.title.toLowerCase().includes(query));
+
+                if(filtered.length > 0) {
+                    filtered.forEach(game => {
+                        const div = document.createElement('div');
+                        div.className = 'p-3 hover:bg-white/5 border-b border-white/5 flex gap-3 items-center cursor-pointer transition-colors group';
+                        div.onclick = () => window.location.href = `/games/${game.id}`;
+                        div.innerHTML = `<img src="${game.img}" class="w-10 h-14 object-cover rounded shadow-sm"><div class="flex flex-col"><h4 class="text-sm font-bold text-white group-hover:text-brand">${game.title}</h4></div>`;
+                        resultsContainer.appendChild(div);
+                    });
+                    searchResults.classList.remove('hidden');
+                } else { 
+                    searchResults.classList.add('hidden'); 
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if(!searchInput.contains(e.target) && !searchResults.contains(e.target)) { 
+                    searchResults.classList.add('hidden'); 
+                }
+            });
+        }
+    }
     </script>
 </body> 
 </html>

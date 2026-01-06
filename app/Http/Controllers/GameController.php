@@ -96,7 +96,7 @@ class GameController extends Controller
             'developer'       => 'nullable',
             'publisher'       => 'nullable',
             'release_date'    => 'nullable',
-            'screenshots_files.*' => 'image|max:5120',
+            'screenshots_files.*' => 'required|mimes:jpeg,jpg,png,gif,webp|max:10240',
         ]);
 
         $data = $request->except([
