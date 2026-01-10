@@ -50,7 +50,7 @@
 
                 <div class="w-full border-t border-gray-200 pt-4 flex justify-between items-center">
                     <span class="text-gray-500 text-xs font-bold">Төлөх дүн:</span>
-                    <span class="text-black text-xl font-black">{{ number_format($order->amount) }}₮</span>
+                   <span class="font-bold text-xl text-white">{{ number_format((float)$order->amount) }}₮</span>
                 </div>
             </div>
 
@@ -78,7 +78,7 @@
                 
                 <div class="flex justify-between items-center pt-2 border-t border-white/5 border-dashed">
                     <span class="text-xs text-gray-500 uppercase font-bold">Төлөх дүн</span>
-                    <span class="font-bold text-xl text-white">{{ number_format($order->amount) }}₮</span>
+                   <span class="text-black text-xl font-black">{{ number_format((float)$order->amount) }}₮</span>
                 </div>
             </div>
         @endif

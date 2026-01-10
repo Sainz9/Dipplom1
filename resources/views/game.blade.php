@@ -46,7 +46,7 @@
             mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
         }
 
-        /* Mobile Safe Area for Sticky Bottom */
+        /* Mobile Safe Area */
         .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
     </style>
 
@@ -141,12 +141,12 @@
                 <span class="text-lg md:text-xl font-bold tracking-tight text-white">Play<span class="text-brand">Vision</span></span>
             </a>
             <div class="flex items-center gap-4 md:gap-8">
-                <a href="/" class="text-xs md:text-sm font-medium text-gray-400 hover:text-white transition-colors">STORE</a>
+                <a href="/" class="text-xs md:text-sm font-medium text-gray-400 hover:text-white transition-colors">Дэлгүүр</a>
                 @auth
                     @if(Auth::user()->usertype === 'admin')
                         <a href="{{ url('/admin/dashboard') }}" class="text-xs md:text-sm font-bold text-brand hover:text-white border border-brand/50 px-3 md:px-4 py-1.5 rounded-full">ADMIN</a>
                     @else
-                        <a href="{{ route('dashboard') }}" class="text-xs md:text-sm font-bold text-white hover:text-brand border border-white/20 px-3 md:px-4 py-1.5 rounded-full">DASHBOARD</a>
+                        <a href="{{ route('dashboard') }}" class="text-xs md:text-sm font-bold text-white hover:text-brand border border-white/20 px-3 md:px-4 py-1.5 rounded-full">Хянах самбар</a>
                     @endif
                 @else
                     <a href="{{ route('login') }}" class="px-4 md:px-5 py-1.5 md:py-2 rounded-full border border-white/10 bg-white/5 text-xs md:text-sm font-bold text-white hover:bg-white/10">LOGIN</a>
@@ -155,7 +155,7 @@
         </div>
     </nav>
 
-    {{-- MAIN CONTENT (Added pb-32 for Mobile Sticky Bar Space) --}}
+    {{-- MAIN CONTENT --}}
     <main class="pt-24 md:pt-32 pb-32 md:pb-20 flex-grow relative z-10 animate-fade-in">
         <div class="max-w-[1400px] mx-auto px-4 md:px-6">
             
@@ -183,7 +183,7 @@
                         } elseif($tag == 'GOTY') {
                             $badgeClass = 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50 shadow-[0_0_10px_rgba(234,179,8,0.3)]';
                             $label = '🏆 Оны шилдэг';
-                        } elseif($tag == 'FreeGame') {
+                        } elseif($tag == 'FreeGame' || $game->price == 0) {
                             $badgeClass = 'bg-green-500/20 text-green-400 border-green-500/50';
                             $label = '🎁 Үнэгүй';
                         } elseif($tag == 'New' || $tag == 'Шинэ') {
@@ -277,7 +277,7 @@
                         </div>
                     </div>
 
-                    {{-- 4. REVIEWS & RATING SECTION --}}
+                    {{-- 4. REVIEWS & RATING --}}
                     <div id="reviews-section" class="w-full mt-8 md:mt-12">
                         <h3 class="text-xl md:text-2xl font-bold text-white mb-6 border-l-4 border-yellow-500 pl-4">Сэтгэгдэл & Үнэлгээ</h3>
 
@@ -329,7 +329,6 @@
                                 @foreach($game->reviews as $review)
                                     <div class="bg-white/5 p-4 rounded-xl border border-white/10 relative group/review">
                                         
-                                        {{-- 1. Display Mode --}}
                                         <div id="review-display-{{ $review->id }}">
                                             <div class="flex justify-between items-start mb-2">
                                                 <div class="flex items-center gap-3">
@@ -351,7 +350,6 @@
                                                 <div class="flex items-center gap-3">
                                                     <div class="text-gray-600 text-xs font-mono">{{ $review->created_at->diffForHumans() }}</div>
                                                     
-                                                    {{-- Edit/Delete Buttons --}}
                                                     @if(auth()->id() === $review->user_id)
                                                         <div class="flex gap-2">
                                                             <button onclick="toggleEdit({{ $review->id }})" class="text-blue-500 hover:text-white text-xs uppercase font-bold transition">Засах</button>
@@ -367,7 +365,6 @@
                                             <p class="text-gray-300 text-sm pl-12 border-l-2 border-white/10 ml-1 break-words">{{ $review->comment }}</p>
                                         </div>
 
-                                        {{-- 2. Edit Mode --}}
                                         @if(auth()->id() === $review->user_id)
                                             <div id="review-edit-{{ $review->id }}" class="hidden">
                                                 <form action="{{ route('reviews.update', $review->id) }}" method="POST">
@@ -402,12 +399,11 @@
                         </div>
                     </div>
 
-                    {{-- 5. SPECS (FIXED LAYOUT) --}}
+                    {{-- 5. SPECS --}}
                     <div class="w-full mt-8 md:mt-12 mb-8 md:mb-12">
                         <h3 class="text-xl md:text-2xl font-bold text-white mb-6 border-l-4 border-brand pl-4">System Requirements</h3>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                            
                             {{-- Minimum --}}
                             <div class="bg-white/5 p-5 md:p-6 rounded-xl border border-white/10">
                                 <h4 class="text-red-500 font-bold uppercase tracking-widest text-xs mb-4 flex items-center gap-2">
@@ -496,17 +492,21 @@
                     <div class="bg-surface/90 backdrop-blur-md p-6 rounded-2xl border border-white/10 shadow-2xl relative overflow-hidden lg:sticky lg:top-24">
                         <div class="absolute -top-10 -right-10 w-32 h-32 bg-brand/20 blur-3xl rounded-full pointer-events-none"></div>
 
+                        {{-- PRICE DISPLAY LOGIC (FIXED) --}}
                         <div class="mb-6 relative z-10 text-center">
                             @php 
                                 $isPriceNumeric = is_numeric($game->price);
-                                $isComingSoon = ($game->tag == 'Тун удахгүй' || !$isPriceNumeric);
+                                $isSpecialStatus = in_array($game->tag, ['PreOrder', 'EarlyAccess']);
+                                $isComingSoon = ($game->tag == 'Тун удахгүй' || (!$isPriceNumeric && !$isSpecialStatus));
                             @endphp
 
-                            @if($isComingSoon && $game->tag !== 'PreOrder')
-                                <div class="text-2xl font-black text-gray-200">COMING SOON</div>
-                                <div class="text-gray-500 text-sm mt-1">Pre-order details coming soon.</div>
-                            @elseif($game->price == 0)
-                                <div class="text-3xl font-black text-white">Free to Play</div>
+                            @if($isComingSoon && !$isSpecialStatus)
+                                <div class="text-2xl font-black text-gray-200 uppercase">Coming Soon</div>
+                                <div class="text-gray-500 text-sm mt-1">Тун удахгүй нээлтээ хийнэ.</div>
+                            
+                            @elseif($game->price == 0 && !$isSpecialStatus)
+                                <div class="text-3xl font-black text-brand">Free to Play</div>
+                            
                             @elseif($game->sale_price && is_numeric($game->sale_price))
                                 <div class="flex flex-col items-center">
                                     <span class="text-gray-500 line-through text-sm mb-1">{{ number_format((float)$game->price) }}₮</span>
@@ -515,6 +515,7 @@
                                         <span class="bg-green-500 text-black px-1.5 py-0.5 rounded text-xs font-bold">-{{ round((((float)$game->price - (float)$game->sale_price) / (float)$game->price) * 100) }}%</span>
                                     </div>
                                 </div>
+                            
                             @else
                                 <div class="text-3xl font-black text-white">{{ number_format((float)$game->price) }}₮</div>
                             @endif
@@ -536,13 +537,12 @@
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                                     ТАТАХ (Download)
                                 </a>
-                            @elseif($isComingSoon && $game->tag !== 'PreOrder')
+                            @elseif($isComingSoon && !$isSpecialStatus)
                                 <button disabled class="w-full bg-white/5 text-gray-500 font-bold py-4 rounded-xl cursor-not-allowed border border-white/5 uppercase tracking-wide">Not Available</button>
                             @else
                                 <form action="{{ route('checkout.index') }}" method="GET">
                                     <input type="hidden" name="game_id" value="{{ $game->id }}">
                                     
-                                    {{-- DYNAMIC BUTTON TEXT --}}
                                     <button type="submit" class="w-full bg-brand hover:bg-brandHover text-black font-black py-4 rounded-xl uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(0,120,242,0.4)] hover:shadow-[0_0_30px_rgba(0,120,242,0.6)] transform active:scale-[0.98]">
                                         @if($game->tag == 'PreOrder')
                                             Урьдчилан захиалах
@@ -553,12 +553,10 @@
                                         @endif
                                     </button>
                                 </form>
-
-                           
                             @endif
                         </div>
 
-                        {{-- DYNAMIC DEVELOPER & PUBLISHER & RELEASE DATE --}}
+                        {{-- DYNAMIC INFO --}}
                         <div class="border-t border-white/10 pt-4 space-y-3 text-sm text-gray-400">
                             <div class="flex justify-between">
                                 <span>Developer</span> 
@@ -614,9 +612,9 @@
                                             @if(is_numeric($related->price))
                                                 <span class="bg-green-500/20 text-green-400 px-1.5 py-0.5 rounded text-xs">-{{ round((($related->price - $related->sale_price) / $related->price) * 100) }}%</span>
                                             @endif
-                                            <span class="text-gray-300 font-bold ml-1">{{ number_format($related->sale_price) }}₮</span>
+                                            <span class="text-gray-300 font-bold ml-1">{{ number_format((float)$related->sale_price) }}₮</span>
                                         @elseif(is_numeric($related->price))
-                                            <span class="text-gray-300 font-bold">{{ number_format($related->price) }}₮</span>
+                                            <span class="text-gray-300 font-bold">{{ number_format((float)$related->price) }}₮</span>
                                         @else
                                             <span class="text-gray-400 font-bold text-xs uppercase">{{ $related->price }}</span>
                                         @endif
@@ -634,14 +632,14 @@
 
     </main>
 
-    {{-- MOBILE STICKY ACTION BAR (New Feature) --}}
+    {{-- MOBILE STICKY ACTION BAR --}}
     <div class="fixed bottom-0 left-0 w-full z-50 bg-[#0f0f0f]/90 backdrop-blur-md border-t border-white/10 p-4 lg:hidden pb-safe">
         <div class="flex items-center gap-4">
             
             <div class="flex flex-col">
-                @if($isComingSoon && $game->tag !== 'PreOrder')
+                @if($isComingSoon && !$isSpecialStatus)
                     <span class="text-xs text-gray-500 font-bold uppercase">Coming Soon</span>
-                @elseif($game->price == 0)
+                @elseif($game->price == 0 && !$isSpecialStatus)
                     <span class="text-lg font-black text-brand">Free</span>
                 @elseif($game->sale_price && is_numeric($game->sale_price))
                     <span class="text-xs text-gray-500 line-through">{{ number_format((float)$game->price) }}₮</span>
@@ -653,10 +651,10 @@
 
             <div class="flex-1 flex gap-2">
                 @if($userOwnsGame)
-                     <a href="{{ route('game.download', $game->id) }}" class="flex-1 bg-green-600 text-white font-bold py-3 rounded-lg text-center text-sm uppercase tracking-wide">
+                      <a href="{{ route('game.download', $game->id) }}" class="flex-1 bg-green-600 text-white font-bold py-3 rounded-lg text-center text-sm uppercase tracking-wide">
                         Татах
                     </a>
-                @elseif($isComingSoon && $game->tag !== 'PreOrder')
+                @elseif($isComingSoon && !$isSpecialStatus)
                     <button disabled class="flex-1 bg-white/10 text-gray-500 font-bold py-3 rounded-lg cursor-not-allowed">Unavailable</button>
                 @else
                     <form action="{{ route('checkout.index') }}" method="GET" class="flex-1">
@@ -743,7 +741,6 @@
             }
         }
 
-        // --- NEW: TOGGLE EDIT FUNCTION ---
         function toggleEdit(reviewId) {
             const displayDiv = document.getElementById('review-display-' + reviewId);
             const editDiv = document.getElementById('review-edit-' + reviewId);
@@ -759,7 +756,7 @@
 
         if (mediaList.some(m => m.type === 'video')) {
             let tag = document.createElement('script');
-            tag.src = "https://www.youtube.com/iframe_api";
+            tag.src  = "https://www.youtube.com/iframe_api";
             let firstScriptTag = document.getElementsByTagName('script')[0];
             firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
         }

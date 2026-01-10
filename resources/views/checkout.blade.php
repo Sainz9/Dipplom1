@@ -65,7 +65,7 @@
     <form action="{{ route('payment.process') }}" method="POST" class="relative z-10 min-h-screen flex flex-col lg:flex-row max-w-7xl mx-auto py-10 px-4 lg:px-8 gap-8 lg:gap-16">
         @csrf
         <input type="hidden" name="game_id" value="{{ $game->id }}">
-        <input type="hidden" name="amount" value="{{ $game->sale_price ?? $game->price }}">
+     <input type="hidden" name="amount" value="{{ is_numeric($game->sale_price ?? $game->price) ? ($game->sale_price ?? $game->price) : 0 }}">
 
         <div class="flex-1 order-2 lg:order-1">
             <h1 class="text-3xl font-black italic uppercase text-white mb-8 flex items-center gap-3">
@@ -210,7 +210,7 @@
                         <div class="flex justify-between items-end italic">
                             <span class="text-gray-400 font-bold uppercase text-[10px] tracking-widest pb-1">Нийт төлөх дүн</span>
                             <span class="text-4xl font-black text-brand drop-shadow-[0_0_20px_rgba(0,212,255,0.4)]">
-                                {{ number_format($game->sale_price ?? $game->price) }} <span class="text-sm font-medium text-gray-500 not-italic uppercase">₮</span>
+                               {{ number_format((float)($game->sale_price ?? $game->price)) }} <span class="text-sm font-medium text-gray-500 not-italic uppercase">₮</span>
                             </span>
                         </div>
                     </div>

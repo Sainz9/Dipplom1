@@ -140,69 +140,41 @@
                             </div>
                         </div>
 
-                        {{-- DUAL INPUT SECTIONS --}}
+                        {{-- URL ONLY INPUTS (MODIFIED) --}}
                         <div class="space-y-4 pt-2">
                             {{-- 1. Cover Image --}}
                             <div class="p-3 bg-white/5 rounded-xl border border-white/10">
-                                <label class="block text-xs text-gray-400 font-semibold mb-2">1. Cover Image (Босоо) <span class="text-red-500">*</span></label>
-                                <div class="space-y-2">
-                                    <div class="relative">
-                                        <span class="absolute left-3 top-2.5 text-[10px] text-brand font-bold">FILE:</span>
-                                        <input type="file" name="img_file" accept="image/*" class="w-full bg-black/40 border border-white/10 rounded-lg pl-12 pr-3 py-2 text-xs text-white focus:border-brand outline-none file:hidden cursor-pointer text-gray-400">
-                                    </div>
-                                    <div class="text-[10px] text-center text-gray-600 font-bold">- OR -</div>
-                                    <div class="relative">
-                                        <span class="absolute left-3 top-2.5 text-[10px] text-gray-500 font-bold">URL:</span>
-                                        <input type="text" name="img_url" placeholder="https://image.com/cover.jpg" class="w-full bg-black/40 border border-white/10 rounded-lg pl-12 pr-3 py-2 text-xs text-white focus:border-brand outline-none placeholder-gray-700">
-                                    </div>
+                                <label class="block text-xs text-gray-400 font-semibold mb-2">1. Cover Image (Босоо) - URL <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-2.5 text-[10px] text-brand font-bold">LINK:</span>
+                                    <input type="text" name="img_url" placeholder="https://image.com/cover.jpg" class="w-full bg-black/40 border border-white/10 rounded-lg pl-12 pr-3 py-2 text-xs text-white focus:border-brand outline-none placeholder-gray-700">
                                 </div>
                             </div>
 
                             {{-- 2. Banner Image --}}
                             <div class="p-3 bg-white/5 rounded-xl border border-white/10">
-                                <label class="block text-xs text-gray-400 font-semibold mb-2">2. Banner Image (Хэвтээ)</label>
-                                <div class="space-y-2">
-                                    <div class="relative">
-                                        <span class="absolute left-3 top-2.5 text-[10px] text-brand font-bold">FILE:</span>
-                                        <input type="file" name="banner_file" accept="image/*" class="w-full bg-black/40 border border-white/10 rounded-lg pl-12 pr-3 py-2 text-xs text-white focus:border-brand outline-none file:hidden cursor-pointer text-gray-400">
-                                    </div>
-                                    <div class="text-[10px] text-center text-gray-600 font-bold">- OR -</div>
-                                    <div class="relative">
-                                        <span class="absolute left-3 top-2.5 text-[10px] text-gray-500 font-bold">URL:</span>
-                                        <input type="text" name="banner_url" placeholder="https://image.com/banner.jpg" class="w-full bg-black/40 border border-white/10 rounded-lg pl-12 pr-3 py-2 text-xs text-white focus:border-brand outline-none placeholder-gray-700">
-                                    </div>
+                                <label class="block text-xs text-gray-400 font-semibold mb-2">2. Banner Image (Хэвтээ) - URL</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-2.5 text-[10px] text-brand font-bold">LINK:</span>
+                                    <input type="text" name="banner_url" placeholder="https://image.com/banner.jpg" class="w-full bg-black/40 border border-white/10 rounded-lg pl-12 pr-3 py-2 text-xs text-white focus:border-brand outline-none placeholder-gray-700">
                                 </div>
                             </div>
 
                             {{-- 3. Game File --}}
                             <div class="p-3 bg-white/5 rounded-xl border border-white/10">
-                                <label class="block text-xs text-green-500 font-semibold mb-2">3. Game File / Download</label>
-                                <div class="space-y-2">
-                                    <div class="relative">
-                                        <span class="absolute left-3 top-2.5 text-[10px] text-green-500 font-bold">FILE:</span>
-                                        <input type="file" name="download_file" accept=".zip,.rar,.apk,.exe" class="w-full bg-black/40 border border-white/10 rounded-lg pl-12 pr-3 py-2 text-xs text-white focus:border-green-500 outline-none file:hidden cursor-pointer text-gray-400">
-                                    </div>
-                                    <div class="text-[10px] text-center text-gray-600 font-bold">- OR -</div>
-                                    <div class="relative">
-                                        <span class="absolute left-3 top-2.5 text-[10px] text-gray-500 font-bold">LINK:</span>
-                                        <input type="text" name="download_url" placeholder="Google Drive Link..." class="w-full bg-black/40 border border-white/10 rounded-lg pl-12 pr-3 py-2 text-xs text-white focus:border-green-500 outline-none placeholder-gray-700">
-                                    </div>
+                                <label class="block text-xs text-green-500 font-semibold mb-2">3. Game Download Link</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-2.5 text-[10px] text-green-500 font-bold">URL:</span>
+                                    <input type="text" name="download_url" placeholder="Google Drive Link..." class="w-full bg-black/40 border border-white/10 rounded-lg pl-12 pr-3 py-2 text-xs text-white focus:border-green-500 outline-none placeholder-gray-700">
                                 </div>
                             </div>
 
                             {{-- 4. Trailer --}}
                             <div class="p-3 bg-white/5 rounded-xl border border-white/10">
-                                <label class="block text-xs text-red-500 font-semibold mb-2">4. Trailer Video</label>
-                                <div class="space-y-2">
-                                    <div class="relative">
-                                        <span class="absolute left-3 top-2.5 text-[10px] text-red-500 font-bold">FILE:</span>
-                                        <input type="file" name="trailer_file" accept="video/mp4" class="w-full bg-black/40 border border-white/10 rounded-lg pl-12 pr-3 py-2 text-xs text-white focus:border-red-500 outline-none file:hidden cursor-pointer text-gray-400">
-                                    </div>
-                                    <div class="text-[10px] text-center text-gray-600 font-bold">- OR -</div>
-                                    <div class="relative">
-                                        <span class="absolute left-3 top-2.5 text-[10px] text-gray-500 font-bold">LINK:</span>
-                                        <input type="text" name="trailer_url" placeholder="YouTube Embed Link..." class="w-full bg-black/40 border border-white/10 rounded-lg pl-12 pr-3 py-2 text-xs text-white focus:border-red-500 outline-none placeholder-gray-700">
-                                    </div>
+                                <label class="block text-xs text-red-500 font-semibold mb-2">4. YouTube Trailer Link</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-2.5 text-[10px] text-red-500 font-bold">URL:</span>
+                                    <input type="text" name="trailer_url" placeholder="YouTube Embed Link..." class="w-full bg-black/40 border border-white/10 rounded-lg pl-12 pr-3 py-2 text-xs text-white focus:border-red-500 outline-none placeholder-gray-700">
                                 </div>
                             </div>
                         </div>
@@ -211,7 +183,7 @@
                             <div>
                                 <label class="block text-xs text-gray-400 font-semibold mb-2 ml-1">Select Categories <span class="text-red-500">*</span></label>
                                 
-                                {{-- NEW: CATEGORY SEARCH INPUT --}}
+                                {{-- CATEGORY SEARCH INPUT --}}
                                 <div class="relative mb-2">
                                     <input type="text" id="catSearch" placeholder="Search categories..." class="w-full bg-black/40 border border-white/10 rounded-lg pl-8 pr-3 py-2 text-xs text-white focus:border-brand outline-none placeholder-gray-600 transition-colors focus:bg-black/60">
                                     <div class="absolute left-2.5 top-2 text-gray-600">
@@ -271,16 +243,23 @@
                             </div>
                         </div>
 
-                        {{-- Screenshots (Upload only, Max 15) --}}
+                        {{-- Screenshots (URL ONLY) --}}
+                       {{-- Screenshots (15 URL Inputs) --}}
                         <div class="border-t border-white/5 pt-4 mt-2">
-                            <label class="block text-xs text-gray-400 font-semibold mb-2 ml-1 flex justify-between items-center">
-                                <span>Game Screenshots (Max 15)</span>
-                                <span class="text-[10px] text-brand font-bold">Multiple select supported</span>
+                            <label class="block text-xs text-gray-400 font-semibold mb-3 ml-1 flex justify-between">
+                                <span>Game Screenshot URLs (Max 15)</span>
+                                <span class="text-[10px] text-brand font-bold">Зөвхөн линк хуулж тавина</span>
                             </label>
-                            <div class="grid grid-cols-1 gap-3">
-                                <input type="file" name="screenshots_files[]" accept="image/*" multiple class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-xs text-white focus:border-brand file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-gray-700 file:text-white">
-                                <p class="text-[10px] text-gray-500">Ctrl/Select дарж байгаад олон зураг зэрэг сонгоно уу.</p>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 bg-black/20 p-4 rounded-xl border border-white/5 max-h-60 overflow-y-auto custom-scrollbar">
+                                @for ($i = 1; $i <= 15; $i++)
+                                    <div class="relative">
+                                        <span class="absolute left-3 top-2.5 text-[10px] text-gray-500 font-mono">{{ $i }}.</span>
+                                        <input type="text" name="screenshots[]" placeholder="https://..." class="w-full bg-black/40 border border-white/10 rounded-lg pl-8 pr-3 py-2 text-xs text-white focus:border-brand outline-none placeholder-gray-700 transition-colors">
+                                    </div>
+                                @endfor
                             </div>
+                            <p class="text-[10px] text-gray-500 mt-2 ml-1">* Хоосон үлдээж болно. Зөвхөн бөглөсөн линкүүд хадгалагдана.</p>
                         </div>
 
                         <div>

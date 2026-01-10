@@ -48,7 +48,7 @@
                         Play<span class="text-brand">Vision</span>
                     </h1>
                 </a>
-                <p class="text-gray-400 text-sm mt-2 font-medium uppercase tracking-widest">Welcome back, Gamer</p>
+                <p class="text-gray-400 text-sm mt-2 font-medium uppercase tracking-widest">Welcome back</p>
             </div>
 
             <!-- Login Card -->
@@ -86,7 +86,7 @@
                     <div class="space-y-1">
                         <label for="email" class="text-xs font-bold text-gray-400 uppercase tracking-wide ml-1">Email</label>
                         <div class="relative group">
-                            <input id="email" class="block w-full bg-black/40 border border-white/10 rounded-lg text-white px-4 py-3 focus:border-brand focus:ring-1 focus:ring-brand focus:outline-none transition-all placeholder-gray-600 text-sm group-hover:border-white/20" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" placeholder="name@example.com" />
+                            <input id="email" class="block w-full bg-black/40 border border-white/10 rounded-lg text-white px-4 py-3 focus:border-brand focus:ring-1 focus:ring-brand focus:outline-none transition-all placeholder-gray-600 text-sm group-hover:border-white/20" type="email" name="email" :value="old('email')" required autofocus autocomplete="username"/>
                         </div>
                         @error('email')
                             <p class="mt-1 text-red-500 text-xs font-bold ml-1">{{ $message }}</p>
@@ -108,26 +108,26 @@
                     <div class="flex items-center justify-between">
                         <label for="remember_me" class="inline-flex items-center cursor-pointer group">
                             <input id="remember_me" type="checkbox" class="rounded bg-white/10 border-transparent text-brand focus:ring-brand focus:ring-offset-0 w-4 h-4 cursor-pointer border-white/20" name="remember">
-                            <span class="ms-2 text-xs text-gray-400 group-hover:text-white transition-colors">Remember me</span>
+                            <span class="ms-2 text-xs text-gray-400 group-hover:text-white transition-colors">Сануулах</span>
                         </label>
 
                         @if (Route::has('password.request'))
                             <a class="text-xs text-brand font-bold hover:text-white transition-colors" href="{{ route('password.request') }}">
-                                Forgot password?
+                               Нууц үг мартсан
                             </a>
                         @endif
                     </div>
 
                     <!-- Submit Button -->
                     <button type="submit" class="w-full bg-brand hover:bg-white hover:text-black text-black font-black uppercase tracking-widest py-3.5 rounded-lg shadow-[0_0_15px_rgba(0,212,255,0.4)] transition-all transform hover:-translate-y-0.5 active:scale-95 text-sm">
-                        Log In Now
+                   Нэвтрэх
                     </button>
 
                     <!-- Register Link -->
                     <div class="text-center pt-2">
                         <p class="text-xs text-gray-500">
-                            Don't have an account?
-                            <a href="{{ route('register') }}" class="text-white font-bold hover:text-brand hover:underline transition-colors ml-1">Sign Up Free</a>
+                            Account байгаа юу?
+                            <a href="{{ route('register') }}" class="text-white font-bold hover:text-brand hover:underline transition-colors ml-1">Бүртгүүлэх</a>
                         </p>
                     </div>
                 </form>

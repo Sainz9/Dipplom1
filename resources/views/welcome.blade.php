@@ -213,7 +213,7 @@
                     </div>
 
                     @auth
-                        <a href="{{ url('/dashboard') }}" class="text-xs font-bold text-brand border border-brand px-5 py-2.5 rounded-full hover:bg-brand hover:text-black transition-all shadow-[0_0_10px_rgba(0,212,255,0.2)]">Dashboard</a>
+                        <a href="{{ url('/dashboard') }}" class="text-xs font-bold text-brand border border-brand px-5 py-2.5 rounded-full hover:bg-brand hover:text-black transition-all shadow-[0_0_10px_rgba(0,212,255,0.2)]">Хянах самбар</a>
                     @else
                         <a href="{{ route('login') }}" class="text-xs font-bold text-white hover:text-brand transition-colors uppercase tracking-wider">Нэвтрэх</a>
                     @endauth
@@ -386,7 +386,7 @@
                     $filteredGames = collect();
 
                     if ($key === 'New' || $key === 'Шинэ') {
-                        $filteredGames = $games->whereNotIn('tag', ['Тун удахгүй', 'ComingSoon', 'PreOrder', 'EarlyAccess', "Хямдралтай", "FreeGame", "BestSelling", 'GOTY'])
+                        $filteredGames = $games->whereNotIn('tag', ['Тун удахгүй', 'ComingSoon', 'PreOrder', 'EarlyAccess', "Хямдралтай", "FreeGame", "BestSelling", 'Trending', 'GOTY'])
                                                        ->take(10);
                     } else {
                         $filteredGames = $games->where('tag', $key);

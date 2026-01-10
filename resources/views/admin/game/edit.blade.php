@@ -101,93 +101,48 @@
                         </div>
                     </div>
 
-                    {{-- 2. MEDIA (Dual Input: File + URL) --}}
+                    {{-- 2. MEDIA (URL ONLY) --}}
                     <div class="space-y-4 pt-2">
                         
                         {{-- Cover Image --}}
                         <div class="p-3 bg-white/5 rounded-xl border border-white/10">
-                            <label class="block text-xs text-gray-400 font-semibold mb-2">1. Cover Image (Босоо) <span class="text-red-500">*</span></label>
-                            <div class="space-y-2">
-                                <div class="relative">
-                                    <span class="absolute left-3 top-2.5 text-[10px] text-brand font-bold">FILE:</span>
-                                    <input type="file" name="img_file" accept="image/*" class="w-full bg-black/40 border border-white/10 rounded-lg pl-12 pr-3 py-2 text-xs text-white focus:border-brand outline-none file:hidden cursor-pointer text-gray-400">
-                                </div>
-                                <div class="text-[10px] text-center text-gray-600 font-bold">- OR -</div>
-                                <div class="relative">
-                                    <span class="absolute left-3 top-2.5 text-[10px] text-gray-500 font-bold">URL:</span>
-                                    <input type="text" name="img_url" value="{{ str_starts_with($game->img, 'http') ? $game->img : '' }}" placeholder="Current: {{ $game->img }}" class="w-full bg-black/40 border border-white/10 rounded-lg pl-12 pr-3 py-2 text-xs text-white focus:border-brand outline-none placeholder-gray-700">
-                                </div>
+                            <label class="block text-xs text-gray-400 font-semibold mb-2">1. Cover Image (Босоо) - URL <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-2.5 text-[10px] text-brand font-bold">LINK:</span>
+                                <input type="text" name="img_url" value="{{ $game->img }}" placeholder="https://image.com/cover.jpg" class="w-full bg-black/40 border border-white/10 rounded-lg pl-12 pr-3 py-2 text-xs text-white focus:border-brand outline-none placeholder-gray-700">
                             </div>
                         </div>
 
                         {{-- Banner Image --}}
                         <div class="p-3 bg-white/5 rounded-xl border border-white/10">
-                            <label class="block text-xs text-gray-400 font-semibold mb-2">2. Banner Image (Хэвтээ)</label>
-                            <div class="space-y-2">
-                                <div class="relative">
-                                    <span class="absolute left-3 top-2.5 text-[10px] text-brand font-bold">FILE:</span>
-                                    <input type="file" name="banner_file" accept="image/*" class="w-full bg-black/40 border border-white/10 rounded-lg pl-12 pr-3 py-2 text-xs text-white focus:border-brand outline-none file:hidden cursor-pointer text-gray-400">
-                                </div>
-                                <div class="text-[10px] text-center text-gray-600 font-bold">- OR -</div>
-                                <div class="relative">
-                                    <span class="absolute left-3 top-2.5 text-[10px] text-gray-500 font-bold">URL:</span>
-                                    <input type="text" name="banner_url" value="{{ $game->banner }}" placeholder="https://..." class="w-full bg-black/40 border border-white/10 rounded-lg pl-12 pr-3 py-2 text-xs text-white focus:border-brand outline-none placeholder-gray-700">
-                                </div>
+                            <label class="block text-xs text-gray-400 font-semibold mb-2">2. Banner Image (Хэвтээ) - URL</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-2.5 text-[10px] text-brand font-bold">LINK:</span>
+                                <input type="text" name="banner_url" value="{{ $game->banner }}" placeholder="https://image.com/banner.jpg" class="w-full bg-black/40 border border-white/10 rounded-lg pl-12 pr-3 py-2 text-xs text-white focus:border-brand outline-none placeholder-gray-700">
                             </div>
                         </div>
 
                         {{-- Game File --}}
                         <div class="p-3 bg-white/5 rounded-xl border border-white/10">
-                            <label class="block text-xs text-green-500 font-semibold mb-2">3. Game File / Download</label>
-                            <div class="space-y-2">
-                                <div class="relative">
-                                    <span class="absolute left-3 top-2.5 text-[10px] text-green-500 font-bold">FILE:</span>
-                                    <input type="file" name="download_file" accept=".zip,.rar,.apk,.exe" class="w-full bg-black/40 border border-white/10 rounded-lg pl-12 pr-3 py-2 text-xs text-white focus:border-green-500 outline-none file:hidden cursor-pointer text-gray-400">
-                                </div>
-                                <div class="text-[10px] text-center text-gray-600 font-bold">- OR -</div>
-                                <div class="relative">
-                                    <span class="absolute left-3 top-2.5 text-[10px] text-gray-500 font-bold">LINK:</span>
-                                    <input type="text" name="download_url" value="{{ $game->download_link }}" placeholder="Google Drive Link..." class="w-full bg-black/40 border border-white/10 rounded-lg pl-12 pr-3 py-2 text-xs text-white focus:border-green-500 outline-none placeholder-gray-700">
-                                </div>
+                            <label class="block text-xs text-green-500 font-semibold mb-2">3. Game Download Link</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-2.5 text-[10px] text-green-500 font-bold">URL:</span>
+                                <input type="text" name="download_url" value="{{ $game->download_link }}" placeholder="Google Drive Link..." class="w-full bg-black/40 border border-white/10 rounded-lg pl-12 pr-3 py-2 text-xs text-white focus:border-green-500 outline-none placeholder-gray-700">
                             </div>
                         </div>
 
                         {{-- Trailer --}}
                         <div class="p-3 bg-white/5 rounded-xl border border-white/10">
-                            <label class="block text-xs text-red-500 font-semibold mb-2">4. Trailer Video</label>
-                            <div class="space-y-2">
-                                <div class="relative">
-                                    <span class="absolute left-3 top-2.5 text-[10px] text-red-500 font-bold">FILE:</span>
-                                    <input type="file" name="trailer_file" accept="video/mp4" class="w-full bg-black/40 border border-white/10 rounded-lg pl-12 pr-3 py-2 text-xs text-white focus:border-red-500 outline-none file:hidden cursor-pointer text-gray-400">
-                                </div>
-                                <div class="text-[10px] text-center text-gray-600 font-bold">- OR -</div>
-                                <div class="relative">
-                                    <span class="absolute left-3 top-2.5 text-[10px] text-gray-500 font-bold">LINK:</span>
-                                    <input type="text" name="trailer_url" value="{{ $game->trailer }}" placeholder="YouTube Embed Link..." class="w-full bg-black/40 border border-white/10 rounded-lg pl-12 pr-3 py-2 text-xs text-white focus:border-red-500 outline-none placeholder-gray-700">
-                                </div>
+                            <label class="block text-xs text-red-500 font-semibold mb-2">4. YouTube Trailer Link</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-2.5 text-[10px] text-red-500 font-bold">URL:</span>
+                                <input type="text" name="trailer_url" value="{{ $game->trailer }}" placeholder="YouTube Embed Link..." class="w-full bg-black/40 border border-white/10 rounded-lg pl-12 pr-3 py-2 text-xs text-white focus:border-red-500 outline-none placeholder-gray-700">
                             </div>
                         </div>
                     </div>
 
-                    {{-- 3. METADATA --}}
-                    <div class="grid grid-cols-3 gap-3">
+                    <div class="space-y-4">
                         <div>
-                            <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Developer</label>
-                            <input type="text" name="developer" value="{{ old('developer', $game->developer) }}" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-3 text-xs focus:border-brand focus:outline-none text-brand/80 font-bold placeholder-gray-600">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Publisher</label>
-                            <input type="text" name="publisher" value="{{ old('publisher', $game->publisher) }}" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-3 text-xs focus:border-brand focus:outline-none text-brand/80 font-bold placeholder-gray-600">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Release Date</label>
-                            <input type="date" name="release_date" value="{{ old('release_date', $game->release_date) }}" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-3 text-xs focus:border-brand focus:outline-none text-white uppercase tracking-wider">
-                        </div>
-                    </div>
-
-                    {{-- 4. CATEGORIES & TAGS --}}
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="md:col-span-2">
                             <label class="block text-xs text-gray-400 font-semibold mb-2 ml-1">Categories</label>
                             <div class="bg-black/40 border border-white/10 rounded-xl p-3 max-h-40 overflow-y-auto custom-scrollbar">
                                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -206,59 +161,83 @@
                         </div>
 
                         <div>
-                           
-  <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Game Status / Badge</label>
-    <div class="relative">
-        <select name="tag" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand focus:outline-none text-white appearance-none cursor-pointer">
-            <option value="">Сонгоогүй (No Badge)</option>
-            
-            <optgroup label="Үндсэн төлөв">
-                <option value="Шинэ" class="text-green-400">🔥 Шинэ (New Release)</option>
-                <option value="Тун удахгүй" class="text-gray-400">🚀 Тун удахгүй (Coming Soon)</option>
-                <option value="FreeGame" class="text-green-500 font-bold">🎁 Үнэгүй (Free to Play)</option>
-                <option value="Хямдралтай" class="text-red-400">🏷️ Хямдралтай (On Sale)</option>
-            </optgroup>
+                            <label class="block text-xs text-gray-400 font-semibold mb-1.5 ml-1">Game Status / Badge</label>
+                            <div class="relative">
+                                <select name="tag" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand focus:outline-none text-white appearance-none cursor-pointer">
+                                    <option value="">Сонгоогүй (No Badge)</option>
+                                    
+                                    <optgroup label="Үндсэн төлөв">
+                                        <option value="Шинэ" {{ $game->tag == 'Шинэ' ? 'selected' : '' }} class="text-green-400">🔥 Шинэ (New Release)</option>
+                                        <option value="Тун удахгүй" {{ $game->tag == 'Тун удахгүй' ? 'selected' : '' }} class="text-gray-400">🚀 Тун удахгүй (Coming Soon)</option>
+                                        <option value="FreeGame" {{ $game->tag == 'FreeGame' ? 'selected' : '' }} class="text-green-500 font-bold">🎁 Үнэгүй (Free to Play)</option>
+                                        <option value="Хямдралтай" {{ $game->tag == 'Хямдралтай' ? 'selected' : '' }} class="text-red-400">🏷️ Хямдралтай (On Sale)</option>
+                                    </optgroup>
 
-            <optgroup label="Эрэлт & Шагнал">
-                <option value="Trending" class="text-orange-400">⚡ Эрэлттэй (Trending)</option>
-                <option value="BestSelling" class="text-blue-400">💎 Шилдэг борлуулалт (Top Seller)</option>
-                <option value="GOTY" class="text-yellow-400 font-bold">🏆 Оны шилдэг (Game of the Year)</option>
-                <option value="EditorsChoice" class="text-purple-400">🎖️ Редакторын онцлох (Editor's Choice)</option>
-            </optgroup>
+                                    <optgroup label="Эрэлт & Шагнал">
+                                        <option value="Trending" {{ $game->tag == 'Trending' ? 'selected' : '' }} class="text-orange-400">⚡ Эрэлттэй (Trending)</option>
+                                        <option value="BestSelling" {{ $game->tag == 'BestSelling' ? 'selected' : '' }} class="text-blue-400">💎 Шилдэг борлуулалт (Top Seller)</option>
+                                        <option value="GOTY" {{ $game->tag == 'GOTY' ? 'selected' : '' }} class="text-yellow-400 font-bold">🏆 Оны шилдэг (Game of the Year)</option>
+                                        <option value="EditorsChoice" {{ $game->tag == 'EditorsChoice' ? 'selected' : '' }} class="text-purple-400">🎖️ Редакторын онцлох (Editor's Choice)</option>
+                                    </optgroup>
 
-            <optgroup label="Бусад">
-                <option value="EarlyAccess" class="text-teal-400">🛠️ Туршилтын хувилбар (Early Access)</option>
-                <option value="PreOrder" class="text-indigo-400">📦 Урьдчилсан захиалга (Pre-Order)</option>
-            </optgroup>
-        </select>
-        <div class="absolute right-4 top-3.5 pointer-events-none text-gray-500">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-        </div>
-    </div>
-</div>
-                        </div>
-
-                    {{-- 5. SCREENSHOTS (Max 15, Upload Only) --}}
-                    <div class="border-t border-white/5 pt-4 mt-2">
-                        <label class="block text-xs text-gray-400 font-semibold mb-2 ml-1 flex justify-between items-center">
-                            <span>Game Screenshots (Max 15)</span>
-                            <span class="text-[10px] text-gray-600 font-normal">Add new screenshots (Will append)</span>
-                        </label>
-                        <div class="grid grid-cols-1 gap-3">
-                             <input type="file" name="screenshots_files[]" accept="image/*" multiple class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-xs text-white focus:border-brand file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-gray-700 file:text-white">
-                             
-                             {{-- Show Existing Screenshots --}}
-                             @php
-                                $currentScreenshots = is_array($game->screenshots) ? $game->screenshots : (json_decode($game->screenshots, true) ?? []);
-                             @endphp
-                             @if(count($currentScreenshots) > 0)
-                                <div class="flex gap-2 overflow-x-auto mt-2 pb-2">
-                                    @foreach($currentScreenshots as $ss)
-                                        <img src="{{ $ss }}" class="w-16 h-10 object-cover rounded border border-white/10">
-                                    @endforeach
+                                    <optgroup label="Бусад">
+                                        <option value="EarlyAccess" {{ $game->tag == 'EarlyAccess' ? 'selected' : '' }} class="text-teal-400">🛠️ Туршилтын хувилбар (Early Access)</option>
+                                        <option value="PreOrder" {{ $game->tag == 'PreOrder' ? 'selected' : '' }} class="text-indigo-400">📦 Урьдчилсан захиалга (Pre-Order)</option>
+                                    </optgroup>
+                                </select>
+                                <div class="absolute right-4 top-3.5 pointer-events-none text-gray-500">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                                 </div>
-                             @endif
+                            </div>
                         </div>
+                    </div>
+
+                    {{-- 5. SCREENSHOTS (URL ONLY) --}}
+                   {{-- 5. SCREENSHOTS (Editable Textarea) --}}
+                    <div class="border-t border-white/5 pt-4 mt-2">
+                        <label class="block text-xs text-gray-400 font-semibold mb-2 ml-1">Screenshot URLs</label>
+                        
+                        {{-- Logic to convert Array to String (New Line Separated) --}}
+                        @php
+                            $currentScreenshots = [];
+                            if (isset($game->screenshots)) {
+                                if (is_array($game->screenshots)) {
+                                    $currentScreenshots = $game->screenshots;
+                                } elseif (is_string($game->screenshots)) {
+                                    $decoded = json_decode($game->screenshots, true);
+                                    if (is_array($decoded)) {
+                                        $currentScreenshots = $decoded;
+                                    }
+                                }
+                            }
+                            // Массивыг шинэ мөрөөр тусгаарласан текст болгох
+                            $screenshotsString = implode("\n", $currentScreenshots);
+                        @endphp
+                        
+                        {{-- Preview Images (Харагдах байдал) --}}
+                        @if(count($currentScreenshots) > 0)
+                            <div class="flex gap-2 overflow-x-auto mb-3 pb-2 custom-scrollbar">
+                                @foreach($currentScreenshots as $ss)
+                                    <div class="relative group shrink-0">
+                                        <img src="{{ $ss }}" class="w-24 h-14 object-cover rounded border border-white/10">
+                                        <div class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-[10px] text-white pointer-events-none">
+                                            Preview
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+
+                        {{-- Editable Textarea --}}
+                        <textarea name="screenshots_urls" rows="6" 
+                            placeholder="https://image1.jpg&#10;https://image2.jpg&#10;https://image3.jpg" 
+                            class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-xs text-white focus:border-brand resize-y placeholder-gray-600 custom-scrollbar leading-relaxed font-mono"
+                            spellcheck="false">{{ $screenshotsString }}</textarea>
+                        
+                        <p class="text-[10px] text-gray-500 mt-2 ml-1 flex items-center gap-1">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Нэг мөрөнд нэг URL байхаар Enter дарж бичнэ үү.
+                        </p>
                     </div>
 
                     {{-- 6. DESCRIPTION --}}

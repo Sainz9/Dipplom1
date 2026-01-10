@@ -81,8 +81,7 @@ class GameController extends Controller
             'title'           => 'required',
             'price'           => 'required',
             'sale_price'      => 'nullable|numeric',
-            'img_file'        => 'nullable|image|max:5120', 
-            'img_url'         => 'nullable|url|required_without:img_file', 
+           'img_url' => 'required',
             'categories'      => 'required|array',
             'categories.*'    => 'exists:categories,id',
             'banner_file'     => 'nullable|image|max:10240',
@@ -111,28 +110,28 @@ class GameController extends Controller
         // File Upload Logic
         if ($request->hasFile('img_file')) {
             $path = $request->file('img_file')->store('games/covers', 'public');
-            $data['img'] = '/storage/' . $path;
+         $data['img'] = $request->img_url;
         } elseif ($request->filled('img_url')) {
             $data['img'] = $request->img_url;
         }
 
         if ($request->hasFile('banner_file')) {
             $path = $request->file('banner_file')->store('games/banners', 'public');
-            $data['banner'] = '/storage/' . $path;
+            $data['banner'] = $request->banner_url;
         } elseif ($request->filled('banner_url')) {
             $data['banner'] = $request->banner_url;
         }
 
         if ($request->hasFile('trailer_file')) {
             $path = $request->file('trailer_file')->store('games/trailers', 'public');
-            $data['trailer'] = '/storage/' . $path;
+               $data['trailer'] = $request->trailer_url;
         } elseif ($request->filled('trailer_url')) {
             $data['trailer'] = $request->trailer_url;
         }
 
         if ($request->hasFile('download_file')) {
             $path = $request->file('download_file')->store('games/files', 'public');
-            $data['download_link'] = '/storage/' . $path;
+          $data['download_link'] = $request->download_url;
         } elseif ($request->filled('download_url')) {
             $data['download_link'] = $request->download_url;
         }
@@ -253,15 +252,16 @@ class GameController extends Controller
             return redirect($game->download_link);
         }
 
-        if (Auth::check()) {
-            $hasPaid = Order::where('user_id', Auth::id())
-                            ->where('game_id', $id)
-                            ->where('status', 'paid')
-                            ->exists();
-            if ($hasPaid) {
+    if ($hasPaid) {
+                // --- ШИНЭ НЭМЭЛТ: PRE-ORDER ШАЛГАХ ---
+                // Хэрэв PreOrder бөгөөд Нээлтийн хугацаа нь болоогүй бол татуулахгүй
+                if ($game->tag == 'PreOrder' && $game->release_date > now()) {
+                    return back()->with('error', 'Баяр хүргэе! Та урьдчилсан захиалга хийсэн байна. Тоглоом ' . $game->release_date . '-нд нээгдэнэ.');
+                }
+                
+                // Бусад үед татна
                 return redirect($game->download_link);
             }
-        }
 
         return back()->with('error', 'Уучлаарай, та энэ тоглоомыг худалдаж аваагүй байна.');
     }

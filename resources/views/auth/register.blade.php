@@ -38,7 +38,7 @@
 <body class="bg-dark text-white font-sans antialiased selection:bg-brand selection:text-black">
 
     <div class="fixed inset-0 z-0">
-        <img src="https://images.alphacoders.com/134/1349380.png" class="w-full h-full object-cover opacity-20" alt="Background">
+        <img src="https://images7.alphacoders.com/749/thumb-1920-749807.png" class="w-full h-full object-cover opacity-20" alt="Background">
         <div class="absolute inset-0 bg-gradient-to-t from-[#0f0f0f] via-[#0f0f0f]/80 to-transparent"></div>
     </div>
 
@@ -60,14 +60,16 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div class="space-y-1">
-                        <label for="name" class="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Full Name</label>
-                        <input id="name" class="block w-full bg-black/40 border border-white/10 rounded-xl text-white px-4 py-3.5 focus:border-brand focus:ring-1 focus:ring-brand focus:outline-none transition-all placeholder-gray-600 text-sm" type="text" name="name" :value="old('name')" required autofocus placeholder="John Doe" />
+                        <label for="name" class="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Нэр</label>
+                        <input id="name" class="block w-full bg-black/40 border border-white/10 rounded-xl text-white px-4 py-3.5 focus:border-brand focus:ring-1 focus:ring-brand focus:outline-none transition-all placeholder-gray-600 text-sm" type="text" name="name" :value="old('name')" required autofocus placeholder="Анхбаяр" />
                         @error('name') <p class="text-red-500 text-[10px] mt-1 font-bold">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="space-y-1">
                         <label for="email" class="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Email</label>
-                        <input id="email" class="block w-full bg-black/40 border border-white/10 rounded-xl text-white px-4 py-3.5 focus:border-brand focus:ring-1 focus:ring-brand focus:outline-none transition-all placeholder-gray-600 text-sm" type="email" name="email" :value="old('email')" required placeholder="name@example.com" />
+                        <input id="email" class="block w-full bg-black/40 border border-white/10 rounded-xl text-white px-4 py-3.5 focus:border-brand focus:ring-1 
+                        focus:ring-brand focus:outline-none transition-all placeholder-gray-600 text-sm" type="email" name="email" :value="old('email')" required 
+                        />
                         @error('email') <p class="text-red-500 text-[10px] mt-1 font-bold">{{ $message }}</p> @enderror
                     </div>
                 </div>
@@ -88,18 +90,18 @@
                         <input id="terms" type="checkbox" required class="w-4 h-4 rounded bg-white/10 border-white/20 text-brand focus:ring-brand focus:ring-offset-0">
                     </div>
                     <label for="terms" class="ml-3 text-xs text-gray-400 leading-normal">
-                        I agree to the <a href="#" class="text-brand hover:underline font-bold">Terms of Service</a> and <a href="#" class="text-brand hover:underline font-bold">Privacy Policy</a>.
+                       Би Үйлчилгээний нөхцөл болон   . <a href="#" class="text-brand hover:underline font-bold">Нууцлалын  бодлогыг зөвшөөрч  </a>байна <a href="#" class="text-brand hover:underline font-bold"></a>.
                     </label>
                 </div>
 
                 <button type="submit" class="w-full bg-brand hover:bg-white hover:text-black text-black font-black uppercase tracking-[0.2em] py-4 rounded-xl shadow-[0_10px_30px_rgba(0,212,255,0.2)] transition-all transform hover:-translate-y-1 active:scale-95 text-sm mt-4">
-                    Create Account
+                     Account Үүсгэх 
                 </button>
 
                 <div class="text-center pt-6 border-t border-white/5">
                     <p class="text-xs text-gray-500">
-                        Already a member?
-                        <a href="{{ route('login') }}" class="text-white font-bold hover:text-brand transition-colors ml-1 uppercase tracking-widest">Sign In</a>
+                        Тань д account байгаа юу?
+                        <a href="{{ route('login') }}" class="text-white font-bold hover:text-brand transition-colors ml-1 uppercase tracking-widest">Бүртгүүлэх</a>
                     </p>
                 </div>
             </form>
