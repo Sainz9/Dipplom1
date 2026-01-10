@@ -222,16 +222,13 @@ class GamesController extends Controller
         return redirect()->back()->with('success', 'Шинэ төрөл амжилттай нэмэгдлээ!');
     }
 
-    public function destroyCategory($id)
-    {
-        $category = Category::findOrFail($id);
-        $category->games()->detach();
-        $category->delete();
-        return redirect()->back()->with('success', 'Төрөл амжилттай устгагдлаа!');
-    }
-
-    public function about()
-    {
-        return view('profile.about');
-    }
+       public function destroyGame($id)
+{
+    Game::destroy($id);
+    return back()->with('success', 'Game deleted.');
+}
+public function about()
+{
+    return view('profile.about');
+}
 }
