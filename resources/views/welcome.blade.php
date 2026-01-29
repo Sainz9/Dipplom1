@@ -37,7 +37,7 @@
     </script>
 
     <style>
-        body { background-color: #0a0a0f; color: #e5e7eb; overflow-x: hidden; }
+        body { background-color: #0a0a0f; color: #e5e7eb; }
         .swiper-button-next, .swiper-button-prev { color: #fff !important; width: 40px !important; height: 40px !important; background: rgba(255,255,255,0.1); border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(4px); transition: all 0.3s; }
         .swiper-button-next:hover, .swiper-button-prev:hover { background: #00D4FF; color: #000 !important; border-color: #00D4FF; }
         .swiper-button-next:after, .swiper-button-prev:after { font-size: 16px !important; font-weight: bold; }
@@ -50,12 +50,6 @@
 </head>
 <body class="antialiased flex flex-col min-h-screen overflow-x-hidden">
 
-    {{-- 
-        **************************************************************
-        * ЗАСВАР 1: Function-ийг хувьсагч болгож энд зарлалаа.      *
-        * Ингэснээр "Cannot redeclare function" алдаа гарахгүй.      *
-        **************************************************************
-    --}}
     @php
         $renderGameCard = function($game, $customBorder = '') {
             // Safety Checks
@@ -190,7 +184,7 @@
                             </div>
 
                             <div class="max-h-64 overflow-y-auto custom-scroll p-3">
-                                <div class="grid grid-cols-1 gap-2" id="categoryList">
+                                <div class="grid grid-cols-2 gap-2" id="categoryList">
                                     @if(isset($navCategories) && count($navCategories) > 0)
                                         @foreach($navCategories as $cat)
                                         {{-- ЗАСВАР 3: $cat->name ?? 'Category' болгож засав --}}
@@ -269,9 +263,9 @@
                                 <span class="bg-purple-600 text-white text-xs font-black px-3 py-1.5 rounded mb-4 inline-block uppercase tracking-widest shadow-[0_0_15px_rgba(147,51,234,0.5)]">
                                     {{ $game->tag ?? 'Featured' }}
                                 </span>
-                                <h1 class="text-4xl md:text-7xl font-black uppercase leading-none mb-6 text-white drop-shadow-2xl">
-                                    {{ $game->title }}
-                                </h1>
+                               <h1 class="text-2xl md:text-7xl font-black uppercase leading-none mb-3 text-white break-words">
+    {{ $game->title }}
+</h1>
                                 <p class="text-gray-300 text-sm md:text-lg mb-8 line-clamp-2 max-w-xl font-medium drop-shadow-md leading-relaxed">
                                     {{ $game->description }}
                                 </p>
@@ -306,7 +300,7 @@
                 <div class="swiper swiperComing !overflow-visible !pb-10">
                     <div class="swiper-wrapper">
                         @foreach($comingSoonList as $game)
-                            {{-- ЗАСВАР: Хувьсагч функцийг дуудах --}}
+                           
                             @php $renderGameCard($game, 'hover:border-purple-500') @endphp
                         @endforeach
                     </div>
@@ -452,7 +446,7 @@
 
         // --- SWIPER LOGIC ---
         const commonBreakpoints = {
-            320: { slidesPerView: 1, spaceBetween: 12 },
+            320: { slidesPerView: 2, spaceBetween: 12 },
             640: { slidesPerView: 3, spaceBetween: 20 },
             1024: { slidesPerView: 4, spaceBetween: 24 },
             1280: { slidesPerView: 5, spaceBetween: 24 },
