@@ -190,7 +190,7 @@
                             </div>
 
                             <div class="max-h-64 overflow-y-auto custom-scroll p-3">
-                                <div class="grid grid-cols-2 gap-2" id="categoryList">
+                                <div class="grid grid-cols-1 gap-2" id="categoryList">
                                     @if(isset($navCategories) && count($navCategories) > 0)
                                         @foreach($navCategories as $cat)
                                         {{-- ЗАСВАР 3: $cat->name ?? 'Category' болгож засав --}}
@@ -386,7 +386,7 @@
                     $filteredGames = collect();
 
                     if ($key === 'New' || $key === 'Шинэ') {
-                        $filteredGames = $games->whereNotIn('tag', ['Тун удахгүй', 'ComingSoon', 'PreOrder', 'EarlyAccess', "Хямдралтай", "FreeGame", "BestSelling", 'Trending', 'GOTY'])
+                        $filteredGames = $games->whereNotIn('tag', ['Тун удахгүй', 'ComingSoon', 'PreOrder', 'EarlyAccess', "Хямдралтай", "FreeGame", "BestSelling", 'Trending', 'EditorsChoice', 'GOTY'])
                                                        ->take(10);
                     } else {
                         $filteredGames = $games->where('tag', $key);
@@ -452,7 +452,7 @@
 
         // --- SWIPER LOGIC ---
         const commonBreakpoints = {
-            320: { slidesPerView: 2, spaceBetween: 12 },
+            320: { slidesPerView: 1, spaceBetween: 12 },
             640: { slidesPerView: 3, spaceBetween: 20 },
             1024: { slidesPerView: 4, spaceBetween: 24 },
             1280: { slidesPerView: 5, spaceBetween: 24 },

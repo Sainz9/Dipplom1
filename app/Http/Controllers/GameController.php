@@ -240,7 +240,7 @@ class GameController extends Controller
     }
 
     // --- Download Game (Protected) ---
-    public function download($id)
+ public function download($id)
     {
         $game = Game::findOrFail($id);
 
@@ -248,20 +248,36 @@ class GameController extends Controller
             return back()->with('error', 'Энэ тоглоомд татах холбоос байхгүй байна.');
         }
 
+        // Хэрэв үнэгүй бол шууд татна
         if ($game->price == 0) {
             return redirect($game->download_link);
         }
 
-    if ($hasPaid) {
-                // --- ШИНЭ НЭМЭЛТ: PRE-ORDER ШАЛГАХ ---
-                // Хэрэв PreOrder бөгөөд Нээлтийн хугацаа нь болоогүй бол татуулахгүй
-                if ($game->tag == 'PreOrder' && $game->release_date > now()) {
-                    return back()->with('error', 'Баяр хүргэе! Та урьдчилсан захиалга хийсэн байна. Тоглоом ' . $game->release_date . '-нд нээгдэнэ.');
-                }
-                
-                // Бусад үед татна
-                return redirect($game->download_link);
+        // --- ЗАСВАР ЭНДЭЭС ЭХЛЭНЭ ---
+        
+        // 1. Хэрэглэгч нэвтэрсэн эсэхийг шалгах
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Та тоглоом татахын тулд нэвтрэх шаардлагатай.');
+        }
+
+        // 2. $hasPaid хувьсагчийг тодорхойлох (Өгөгдлийн сангаас шалгах)
+        // Order модель ашиглан тухайн хэрэглэгч энэ тоглоомыг авсан эсэхийг шалгана.
+        $hasPaid = Order::where('user_id', Auth::id())
+                        ->where('game_id', $game->id)
+                        ->where('status', 'paid') // Эсвэл 'completed' гэх мэт танай бааз дээрх төлөв
+                        ->exists();
+
+        // --- ЗАСВАР ДУУСЛАА ---
+
+        if ($hasPaid) {
+            // --- ШИНЭ НЭМЭЛТ: PRE-ORDER ШАЛГАХ ---
+            if ($game->tag == 'PreOrder' && $game->release_date > now()) {
+                return back()->with('error', 'Баяр хүргэе! Та урьдчилсан захиалга хийсэн байна. Тоглоом ' . $game->release_date . '-нд нээгдэнэ.');
             }
+            
+            // Бусад үед татна
+            return redirect($game->download_link);
+        }
 
         return back()->with('error', 'Уучлаарай, та энэ тоглоомыг худалдаж аваагүй байна.');
     }
@@ -272,7 +288,6 @@ class GameController extends Controller
         $game = Game::findOrFail($id);
         return view('checkout', compact('game'));
     }
-
     // --- Category Management ---
     public function storeCategory(Request $request)
     {
